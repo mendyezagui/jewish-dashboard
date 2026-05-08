@@ -157,11 +157,9 @@ function fetchHebDate(){
 }
 function fetchHY(){
   if(!hebData)return Promise.resolve();
-  var now=new Date();
-  var laD=new Date(now.toLocaleString('en-US',{timeZone:TZ}));
-  var dateStr=(laD.getMonth()+1)+'/'+laD.getDate()+'/'+laD.getFullYear();
   g('hyRef').textContent=hebData.hd+' '+hebData.hm+', '+hebData.hy;
-  return fetch('/api/hayomyom?date='+encodeURIComponent(dateStr))
+  // No ?date= param — Chabad 404s on dated mobile URLs. Endpoint always returns today.
+  return fetch('/api/hayomyom')
     .then(function(r){return r.json()}).then(function(d){
       var en=d.teaching_en||'';
       var he=d.teaching_he||'';
