@@ -44,13 +44,11 @@ function parseHayomYom(html) {
     hebrewDate: null,
   };
 
-  // Extract English block: from <div class="hayom-yom-native hayom-yom-language"> until next <div class="hayom-yom-hebrew
   const enStart = html.indexOf('class="hayom-yom-native hayom-yom-language"');
   const enEnd = html.indexOf('class="hayom-yom-hebrew');
   if (enStart === -1) return out;
   const enBlock = enEnd > enStart ? html.substring(enStart, enEnd) : html.substring(enStart, enStart + 8000);
 
-  // Date row: <tr class="hayom-yom-date"> with 3 td: day, date+omer, year
   const dateRow = enBlock.match(/<tr class="hayom-yom-date"[\s\S]*?<\/tr>/i);
   if (dateRow) {
     const cells = Array.from(dateRow[0].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)).map(m => stripHtml(m[1]));
@@ -62,7 +60,6 @@ function parseHayomYom(html) {
     if (cells[2]) out.year = cells[2];
   }
 
-  // Torah lessons: rows with class hayom-yom-shiur
   const shiurRows = Array.from(enBlock.matchAll(/<td[^>]*class="hayom-yom-shiur"[^>]*>([\s\S]*?)<\/td>/gi)).map(m => stripHtml(m[1]));
   for (const row of shiurRows) {
     if (/^Chumash:/i.test(row)) out.chumash = row.replace(/^Chumash:\s*/i, '').replace(/\.$/, '');
@@ -70,7 +67,6 @@ function parseHayomYom(html) {
     else if (/^Tanya:/i.test(row)) out.tanya = row.replace(/^Tanya:\s*/i, '').replace(/\.$/, '');
   }
 
-  // Teaching paragraph(s): <p> tags after the </table> in the english block, before <p class="inlineCopyright"
   const afterTable = enBlock.split(/<\/table>\s*<\/div>/);
   if (afterTable.length > 1) {
     const remainder = afterTable.slice(1).join('</table></div>');
@@ -82,7 +78,6 @@ function parseHayomYom(html) {
     if (paragraphs.length) out.teaching_en = paragraphs.join('\n\n');
   }
 
-  // Hebrew block
   if (enEnd > 0) {
     const heBlock = html.substring(enEnd, enEnd + 8000);
     const heDateRow = heBlock.match(/<tr class="hayom-yom-date"[\s\S]*?<\/tr>/i);
