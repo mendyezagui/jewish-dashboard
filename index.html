@@ -106,11 +106,21 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .t-dot{color:var(--border-strong);font-size:0.7em;margin:0 0.2em}
 .t-empty{color:var(--text-3);font-style:italic;padding:0 1rem}
 @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:0.35}}
-/* ------- Right column ------- */
-.rcol{display:flex;flex-direction:column;gap:clamp(0.7rem,1.1vw,1.4rem);min-height:0;min-width:0;overflow-y:auto;padding-right:0.2rem}
-.rcol::-webkit-scrollbar{width:6px}
-.rcol::-webkit-scrollbar-track{background:transparent}
-.rcol::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
+/* ------- Right column: each card scrolls independently ------- */
+.rcol{display:flex;flex-direction:column;gap:clamp(0.7rem,1.1vw,1.4rem);min-height:0;min-width:0}
+.rcol > .card{display:flex;flex-direction:column;min-height:0;flex:1 1 0}
+.rcol > .card > #learn,
+.rcol > .card > #zmanim,
+.rcol > .card > #sTimes{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:0.4rem;margin-right:-0.2rem}
+.rcol > .card > #learn::-webkit-scrollbar,
+.rcol > .card > #zmanim::-webkit-scrollbar,
+.rcol > .card > #sTimes::-webkit-scrollbar{width:6px}
+.rcol > .card > #learn::-webkit-scrollbar-track,
+.rcol > .card > #zmanim::-webkit-scrollbar-track,
+.rcol > .card > #sTimes::-webkit-scrollbar-track{background:transparent}
+.rcol > .card > #learn::-webkit-scrollbar-thumb,
+.rcol > .card > #zmanim::-webkit-scrollbar-thumb,
+.rcol > .card > #sTimes::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
 .lcard::before{background:linear-gradient(90deg,#06b6d4,#0e7490)}
 .lcard .ctitle{color:var(--teal)}
 .litem{display:flex;align-items:baseline;gap:0.5rem;padding:clamp(0.34rem,0.5vh,0.6rem) 0;border-bottom:1px solid var(--border)}
@@ -144,7 +154,11 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
   .body{grid-template-columns:1fr;height:auto;min-height:60vh}
   html,body{overflow:auto;height:auto}
   .dashboard{height:auto;min-height:100vh}
-  .rcol{overflow-y:visible}
+  /* On mobile, page scrolls — cards size to content, no internal scroll */
+  .rcol > .card{flex:0 0 auto}
+  .rcol > .card > #learn,
+  .rcol > .card > #zmanim,
+  .rcol > .card > #sTimes{overflow-y:visible;max-height:none}
 }
 @media(max-width:600px){.dashboard{padding:0.8rem}.clock{font-size:2.4rem}}
 </style>
