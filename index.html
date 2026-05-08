@@ -72,7 +72,7 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .hycard::before{background:linear-gradient(90deg,#d4a017,#b08c00)}
 .hycard .ctitle{color:var(--gold-strong)}
 .hyref{font-size:clamp(0.62rem,0.78vw,0.85rem);color:var(--text-3);font-style:italic;margin-bottom:clamp(0.3rem,0.5vh,0.6rem)}
-.hybody{font-size:clamp(0.92rem,1.15vw,1.4rem);line-height:1.7;color:var(--text);flex:1 1 0;min-height:0;overflow-y:auto;padding-right:0.4rem}
+.hybody{font-size:clamp(1.05rem,1.32vw,1.55rem);line-height:1.75;color:var(--text);flex:1 1 0;min-height:0;overflow-y:auto;padding-right:0.4rem}
 .hybody::-webkit-scrollbar{width:6px}
 .hybody::-webkit-scrollbar-track{background:transparent}
 .hybody::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
@@ -243,11 +243,11 @@ function autoScroll(elId, speedPxPerSec){
   if(el._asEnter){el.removeEventListener('mouseenter',el._asEnter);el._asEnter=null}
   if(el._asLeave){el.removeEventListener('mouseleave',el._asLeave);el._asLeave=null}
   el.scrollTop=0;
-  // No animation if content fits
+  // No animation if content fits comfortably
   if(el.scrollHeight - el.clientHeight < 6) return;
-  var speed=speedPxPerSec||22; // px/sec — comfortable reading speed
-  var endPause=3500; // ms pause at top/bottom so viewers see start/end
-  var dir=1, hovered=false, pausedUntil=performance.now()+1500, last=performance.now();
+  var speed=speedPxPerSec||35; // px/sec — visible from across a room
+  var endPause=2000; // ms pause at top/bottom so viewers see start/end
+  var dir=1, hovered=false, pausedUntil=performance.now()+700, last=performance.now();
   function step(now){
     if(!hovered && now>pausedUntil){
       var max=el.scrollHeight-el.clientHeight;
@@ -268,10 +268,10 @@ function autoScroll(elId, speedPxPerSec){
 function autoScrollAll(){
   // Slight delay so layout settles after innerHTML changes
   setTimeout(function(){
-    autoScroll('hyBody', 22);
-    autoScroll('learn', 18);
-    autoScroll('zmanim', 18);
-  },250);
+    autoScroll('hyBody', 38);
+    autoScroll('learn', 28);
+    autoScroll('zmanim', 28);
+  },200);
 }
 (function(){
   var t;
