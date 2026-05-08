@@ -1,8 +1,6 @@
 export const config = { runtime: 'edge' };
 
 export default async function handler(req) {
-  const url = new URL(req.url);
-  const date = url.searchParams.get('date') || '';
   const headers = {
     'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400',
     'content-type': 'application/json; charset=utf-8',
@@ -12,7 +10,8 @@ export default async function handler(req) {
   const ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
 
   try {
-    const fetchUrl = 'https://m.chabad.org/dailystudy/hayomyom.htm' + (date ? '?tdate=' + encodeURIComponent(date) : '');
+    // Always today — Chabad's mobile endpoint 404s on dated URLs.
+    const fetchUrl = 'https://m.chabad.org/dailystudy/hayomyom.htm';
     const r = await fetch(fetchUrl, {
       headers: { 'user-agent': ua, 'accept': 'text/html', 'accept-language': 'en-US,en' }
     });
