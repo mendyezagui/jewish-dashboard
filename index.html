@@ -234,6 +234,49 @@ function tick(){
   g('engDate').textContent=now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric',timeZone:TZ});
 }
 setInterval(tick,1000);tick();
+// ---- Auto-scroll: smoothly scrolls a card's content up & down when it overflows ----
+function autoScroll(elId, speedPxPerSec){
+  var el=g(elId);
+  if(!el) return;
+  // Cancel prior animation + listeners
+  if(el._asRaf){cancelAnimationFrame(el._asRaf);el._asRaf=null}
+  if(el._asEnter){el.removeEventListener('mouseenter',el._asEnter);el._asEnter=null}
+  if(el._asLeave){el.removeEventListener('mouseleave',el._asLeave);el._asLeave=null}
+  el.scrollTop=0;
+  // No animation if content fits
+  if(el.scrollHeight - el.clientHeight < 6) return;
+  var speed=speedPxPerSec||22; // px/sec — comfortable reading speed
+  var endPause=3500; // ms pause at top/bottom so viewers see start/end
+  var dir=1, hovered=false, pausedUntil=performance.now()+1500, last=performance.now();
+  function step(now){
+    if(!hovered && now>pausedUntil){
+      var max=el.scrollHeight-el.clientHeight;
+      var dt=Math.min(0.05,(now-last)/1000);
+      el.scrollTop += dir*speed*dt;
+      if(el.scrollTop>=max && dir>0){el.scrollTop=max;dir=-1;pausedUntil=now+endPause}
+      else if(el.scrollTop<=0 && dir<0){el.scrollTop=0;dir=1;pausedUntil=now+endPause}
+    }
+    last=now;
+    el._asRaf=requestAnimationFrame(step);
+  }
+  el._asEnter=function(){hovered=true};
+  el._asLeave=function(){hovered=false;last=performance.now()};
+  el.addEventListener('mouseenter',el._asEnter);
+  el.addEventListener('mouseleave',el._asLeave);
+  el._asRaf=requestAnimationFrame(step);
+}
+function autoScrollAll(){
+  // Slight delay so layout settles after innerHTML changes
+  setTimeout(function(){
+    autoScroll('hyBody', 22);
+    autoScroll('learn', 18);
+    autoScroll('zmanim', 18);
+  },250);
+}
+(function(){
+  var t;
+  window.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(autoScrollAll,300)});
+})();
 function omerDay(mo,d){if(mo==='Nisan'&&d>=16)return d-15;if(mo==='Iyyar')return 15+d;if(mo==='Sivan'&&d<=5)return 44+d;return null}
 function fetchHebDate(){
   var now=new Date(),ds=now.toLocaleDateString('en-CA',{timeZone:TZ});
@@ -479,7 +522,14 @@ function checkShabbosMode(){
     }
   }
 }
-function loadAll(){fetchHebDate().then(function(){fetchHY();fetchLearn();fetchZmanim();fetchShabbos().then(checkShabbosMode)})}
+function loadAll(){
+  return fetchHebDate().then(function(){
+    return Promise.all([fetchHY(),fetchLearn(),fetchZmanim(),fetchShabbos()]);
+  }).then(function(){
+    checkShabbosMode();
+    autoScrollAll();
+  });
+}
 loadAll();fetchScores();setInterval(loadAll,REFRESH);
 function midnightRefresh(){var now=new Date(),tom=new Date(now);tom.setDate(tom.getDate()+1);tom.setHours(0,0,5,0);setTimeout(function(){loadAll();midnightRefresh()},tom-now)}
 midnightRefresh();
