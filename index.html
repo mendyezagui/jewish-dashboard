@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jewish Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%2780%27 font-size=%2780%27>&#10017;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#0f1629;--card:#141d30;--card2:#1a2440;--border:#1e2d4a;--text:#f1f5f9;--text2:#94a3b8;--dim:#64748b;--gold:#f0c674;--gold-bg:rgba(240,198,116,0.12);--teal:#38bdf8;--teal-bg:rgba(56,189,248,0.1);--warm:#fb923c;--warm-bg:rgba(251,146,60,0.1);--purple:#a78bfa;--shadow:0 4px 24px rgba(0,0,0,0.4)}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+body{background:radial-gradient(ellipse at 50% 0%,#111d35 0%,#0a0e1a 60%)}
+.dashboard{display:grid;grid-template-columns:1.15fr 1fr;grid-template-rows:auto 1fr;gap:clamp(0.8rem,1.3vw,1.6rem);height:100vh;padding:clamp(1rem,2vw,2.5rem)}
+.hdr{grid-column:1/-1;text-align:center;padding:clamp(0.2rem,0.6vh,0.8rem) 0}
+.clock{font-size:clamp(3.5rem,7vw,9rem);font-weight:800;line-height:1.05;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;background:linear-gradient(180deg,#fff 20%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(255,255,255,0.07))}
+.clock .ampm{font-size:0.32em;font-weight:600;-webkit-text-fill-color:#64748b;margin-left:0.12em}
+.eng-date{font-size:clamp(1rem,1.7vw,1.9rem);font-weight:400;color:var(--text2);margin-top:clamp(0.05rem,0.2vh,0.25rem);letter-spacing:0.01em}
+.heb-line{display:flex;align-items:center;justify-content:center;gap:clamp(0.4rem,0.7vw,0.9rem);margin-top:clamp(0.05rem,0.2vh,0.3rem)}
+.heb-txt{font-family:'Heebo',sans-serif;font-size:clamp(1rem,1.7vw,1.9rem);font-weight:700;color:var(--gold);direction:rtl}
+.heb-sep{color:var(--dim);font-size:clamp(0.6rem,0.8vw,0.9rem)}
+.heb-en{font-size:clamp(0.9rem,1.4vw,1.6rem);font-weight:400;color:var(--gold);opacity:0.7}
+.badges{display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-top:clamp(0.15rem,0.3vh,0.4rem);flex-wrap:wrap}
+.badge{display:inline-block;padding:0.12em 0.65em;border-radius:999px;font-size:clamp(0.65rem,0.85vw,0.95rem);font-weight:600}
+.badge-gold{background:var(--gold-bg);color:var(--gold);border:1px solid rgba(240,198,116,0.2)}
+.badge-purple{background:rgba(167,139,250,0.12);color:var(--purple);border:1px solid rgba(167,139,250,0.2)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:clamp(0.7rem,1vw,1.1rem);padding:clamp(0.8rem,1.2vw,1.6rem);box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:1rem 1rem 0 0}
+.ctitle{font-size:clamp(0.6rem,0.8vw,0.9rem);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:clamp(0.4rem,0.7vh,0.8rem);display:flex;align-items:center;gap:0.45rem}
+.ctitle .ic{font-size:clamp(0.85rem,1.05vw,1.2rem)}
+.hycard{grid-column:1;grid-row:2;display:flex;flex-direction:column;background:linear-gradient(160deg,var(--card) 0%,var(--card2) 100%)}
+.hycard::before{background:linear-gradient(90deg,#f0c674,#e2b055)}
+.hycard .ctitle{color:var(--gold)}
+.hyref{font-size:clamp(0.6rem,0.75vw,0.82rem);color:var(--dim);font-style:italic;margin-bottom:clamp(0.25rem,0.4vh,0.5rem)}
+.hybody{font-size:clamp(0.85rem,1.1vw,1.3rem);line-height:1.72;color:var(--text);flex:1;overflow-y:auto;padding-right:0.3rem}
+.hybody::-webkit-scrollbar{width:3px}
+.hybody::-webkit-scrollbar-track{background:transparent}
+.hybody::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.hybody em,.hybody i{color:var(--gold);font-style:italic}
+.hy-he{font-family:'Heebo',sans-serif;font-size:clamp(0.8rem,1vw,1.15rem);line-height:1.85;color:var(--text2);direction:rtl;text-align:right;border-top:1px solid var(--border);margin-top:clamp(0.5rem,0.7vh,0.9rem);padding-top:clamp(0.5rem,0.7vh,0.9rem)}
+.rcol{grid-column:2;grid-row:2;display:flex;flex-direction:column;gap:clamp(0.7rem,1.1vw,1.4rem)}
+.lcard::before{background:linear-gradient(90deg,#38bdf8,#0ea5e9)}
+.lcard .ctitle{color:var(--teal)}
+.litem{display:flex;align-items:baseline;gap:0.5rem;padding:clamp(0.25rem,0.4vh,0.5rem) 0;border-bottom:1px solid rgba(30,45,74,0.4)}
+.litem:last-child{border-bottom:none}
+.llbl{font-size:clamp(0.65rem,0.82vw,0.92rem);font-weight:600;color:var(--teal);white-space:nowrap;min-width:clamp(4.2rem,5.2vw,6.2rem)}
+.lval{font-size:clamp(0.7rem,0.9vw,1.05rem);color:var(--text)}
+.zcard::before{background:linear-gradient(90deg,#a78bfa,#8b5cf6)}
+.zcard .ctitle{color:var(--purple)}
+.zgrid{display:grid;grid-template-columns:1fr 1fr;gap:0.4rem 1.2rem}
+.zitem{display:flex;justify-content:space-between;align-items:baseline;padding:clamp(0.18rem,0.3vh,0.35rem) 0;border-bottom:1px solid rgba(30,45,74,0.3)}
+.zlbl{font-size:clamp(0.65rem,0.8vw,0.92rem);color:var(--text2);font-weight:500}
+.zval{font-size:clamp(0.7rem,0.9vw,1.05rem);color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
+.scard{background:linear-gradient(160deg,#1a1a2e 0%,#1c2541 100%);border-color:rgba(251,146,60,0.15)}
+.scard::before{background:linear-gradient(90deg,#fb923c,#f97316)}
+.scard .ctitle{color:var(--warm)}
+.sitem{display:flex;justify-content:space-between;align-items:center;padding:clamp(0.2rem,0.35vh,0.45rem) 0}
+.slbl{font-size:clamp(0.7rem,0.9vw,1rem);color:var(--text2)}
+.stm{font-size:clamp(0.9rem,1.15vw,1.35rem);font-weight:700;color:var(--warm);font-variant-numeric:tabular-nums}
+.sparsha{text-align:center;font-size:clamp(0.75rem,0.95vw,1.1rem);color:var(--text2);margin-top:0.2rem;padding-top:0.35rem;border-top:1px solid rgba(251,146,60,0.12)}
+.vcard{flex:1;min-height:clamp(120px,16vh,260px);padding:0;overflow:hidden;border:1px solid var(--border)}
+.vcard::before{display:none}
+.vcard iframe{width:100%;height:100%;border:none;display:block}
+.vimg{width:100%;height:100%;background:#000 center/cover no-repeat;position:relative}
+.vimg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 50%,rgba(10,14,26,0.8) 100%);pointer-events:none}
+.vimg-caption{position:absolute;bottom:1rem;left:0;right:0;text-align:center;color:var(--gold);font-size:clamp(0.85rem,1vw,1.1rem);font-weight:500;letter-spacing:0.04em;text-shadow:0 2px 8px rgba(0,0,0,0.8);z-index:1}
+.loading{color:var(--dim);font-style:italic;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.err{color:var(--dim);font-style:italic}
+.err a{color:var(--gold);text-decoration:none}
+.err a:hover{text-decoration:underline}
+.hidden{display:none !important}
+.fadein{animation:fi .5s ease-out forwards}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1024px){.dashboard{grid-template-columns:1fr;grid-template-rows:auto auto auto;height:auto;min-height:100vh;overflow-y:auto}.hdr{grid-column:1}.hycard{grid-column:1;grid-row:2;max-height:45vh}.rcol{grid-column:1;grid-row:3}}
+@media(max-width:600px){.dashboard{padding:0.8rem}.clock{font-size:3rem}}
+</style>
+</head>
+<body>
+<div class="dashboard">
+  <header class="hdr">
+    <div class="clock" id="clock">--:--</div>
+    <div class="eng-date" id="engDate"></div>
+    <div class="heb-line">
+      <span class="heb-txt" id="hebTxt"></span>
+      <span class="heb-sep" id="hebSep"></span>
+      <span class="heb-en" id="hebEn"></span>
+    </div>
+    <div class="badges" id="badges"></div>
+  </header>
+  <section class="card hycard">
+    <div class="ctitle"><span class="ic">&#10017;</span> Hayom Yom</div>
+    <div class="hyref" id="hyRef"></div>
+    <div class="hybody" id="hyBody"><span class="loading">Loading today&#39;s teaching&#8230;</span></div>
+  </section>
+  <div class="rcol">
+    <section class="card lcard">
+      <div class="ctitle"><span class="ic">&#128214;</span> Daily Learning</div>
+      <div id="learn"><span class="loading">Loading schedule&#8230;</span></div>
+    </section>
+    <section class="card zcard">
+      <div class="ctitle"><span class="ic">&#9728;&#65039;</span> Zmanim &middot; Los Angeles</div>
+      <div id="zmanim"><span class="loading">Loading zmanim&#8230;</span></div>
+    </section>
+    <section class="card scard hidden" id="sCard">
+      <div class="ctitle"><span class="ic">&#128367;&#65039;</span> <span id="sTitle">Shabbos Times</span></div>
+      <div id="sTimes"></div>
+    </section>
+    <section class="card vcard" id="vCard">
+      <iframe id="vid" src="https://www.youtube.com/embed/vCtCh28Af2w?autoplay=1&mute=1&loop=1&playlist=vCtCh28Af2w&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>
+      <div id="vImage" class="vimg hidden"></div>
+    </section>
+  </div>
+</div>
+<script>
+(function(){
+var TZ='America/Los_Angeles',ZIP='90035',REFRESH=3600000;
+var TEHILLIM={1:'1-9',2:'10-17',3:'18-22',4:'23-28',5:'29-34',6:'35-38',7:'39-43',8:'44-48',9:'49-54',10:'55-59',11:'60-65',12:'66-68',13:'69-71',14:'72-76',15:'77-78',16:'79-82',17:'83-87',18:'88-89',19:'90-96',20:'97-103',21:'104-105',22:'106-107',23:'108-112',24:'113-118',25:'119:1-58',26:'119:59-117',27:'119:118-176',28:'120-134',29:'135-139',30:'140-150'};
+var ALIYAH=['Rishon','Sheni','Shlishi',"Revi'i",'Chamishi','Shishi',"Shevi'i"];
+var hebData=null;
+function g(id){return document.getElementById(id)}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function fmtTime(iso){try{return new Date(iso).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:TZ})}catch(e){return iso}}
+function tick(){
+  var now=new Date();
+  var h=now.toLocaleString('en-US',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:TZ});
+  var parts=h.split(/(AM|PM)/i);
+  if(parts.length>=2){g('clock').innerHTML=parts[0].trim()+'<span class="ampm">'+parts[1]+'</span>'}
+  else{g('clock').textContent=h}
+  g('engDate').textContent=now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric',timeZone:TZ});
+}
+setInterval(tick,1000);tick();
+function omerDay(mo,d){if(mo==='Nisan'&&d>=16)return d-15;if(mo==='Iyyar')return 15+d;if(mo==='Sivan'&&d<=5)return 44+d;return null}
+function fetchHebDate(){
+  var now=new Date(),ds=now.toLocaleDateString('en-CA',{timeZone:TZ});
+  return fetch('https://www.hebcal.com/converter?cfg=json&date='+ds+'&g2h=1&strict=1')
+    .then(function(r){return r.json()}).then(function(d){
+      hebData=d;
+      g('hebTxt').textContent=d.hebrew||'';
+      g('hebSep').textContent='•';
+      g('hebEn').textContent=d.hd+' '+d.hm+', '+d.hy;
+      var badges='';
+      if(d.events&&d.events.length){d.events.forEach(function(e){badges+='<span class="badge badge-gold">'+esc(e)+'</span>'})}
+      var om=omerDay(d.hm,d.hd);
+      if(om!==null){
+        var w=Math.floor(om/7),r2=om%7;
+        var wk=w>0?(w+(w===1?' week':' weeks')):'';
+        var dy=r2>0?(r2+(r2===1?' day':' days')):'';
+        var os='Day '+om+' of the Omer';
+        if(wk||dy)os+=' ('+[wk,dy].filter(Boolean).join(', ')+')';
+        badges+='<span class="badge badge-purple">'+esc(os)+'</span>';
+      }
+      g('badges').innerHTML=badges;return d;
+    }).catch(function(e){console.error('Heb date err:',e);g('hebEn').textContent='Unable to load Hebrew date'});
+}
+function fetchHY(){
+  if(!hebData)return Promise.resolve();
+  var now=new Date();
+  var laD=new Date(now.toLocaleString('en-US',{timeZone:TZ}));
+  var dateStr=(laD.getMonth()+1)+'/'+laD.getDate()+'/'+laD.getFullYear();
+  g('hyRef').textContent=hebData.hd+' '+hebData.hm+', '+hebData.hy;
+  return fetch('/api/hayomyom?date='+encodeURIComponent(dateStr))
+    .then(function(r){return r.json()}).then(function(d){
+      var en=d.teaching_en||'';
+      var he=d.teaching_he||'';
+      if(!en){
+        var fallback='https://www.chabad.org/dailystudy/hayomyom.htm';
+        g('hyBody').innerHTML='<div class="err" style="text-align:center;padding:1rem">Visit <a href="'+fallback+'" target="_blank">Chabad.org</a> for today&#39;s Hayom Yom</div>';
+        return;
+      }
+      var html='<div class="fadein">';
+      if(d.dateHeader){
+        html+='<div style="font-size:0.95rem;color:var(--text2);margin-bottom:0.5rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border)">'+esc(d.dateHeader)+(d.year?' &middot; '+esc(d.year):'')+'</div>';
+      }
+      html+='<div>'+esc(en).replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>')+'</div>';
+      html+='</div>';
+      if(he){
+        html+='<div class="hy-he fadein">';
+        if(d.hebrewDate)html+='<div style="font-size:0.85rem;opacity:0.7;margin-bottom:0.4rem">'+esc(d.hebrewDate)+'</div>';
+        html+=esc(he).replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+        html+='</div>';
+      }
+      g('hyBody').innerHTML=html;
+    }).catch(function(){
+      var fallback='https://www.chabad.org/dailystudy/hayomyom.htm';
+      g('hyBody').innerHTML='<div class="err" style="text-align:center;padding:1rem">Visit <a href="'+fallback+'" target="_blank">Chabad.org</a> for today&#39;s Hayom Yom</div>';
+    });
+}
+function fetchLearn(){
+  var el=g('learn'),now=new Date(),laD=new Date(now.toLocaleString('en-US',{timeZone:TZ})),dow=laD.getDay();
+  return fetch('https://www.sefaria.org/api/calendars').then(function(r){return r.json()}).then(function(data){
+    var items=[];
+    if(data.calendar_items){
+      var p=data.calendar_items.find(function(i){return i.title&&i.title.en==='Parashat Hashavua'});
+      if(p){var nm=p.displayValue?p.displayValue.en:(p.ref||'');items.push({l:'Chumash',v:nm+' — '+ALIYAH[dow]})}
+      if(hebData){var th=TEHILLIM[hebData.hd]||TEHILLIM[30];items.push({l:'Tehillim',v:'Psalms '+th})}
+      var ty=data.calendar_items.find(function(i){return i.title&&i.title.en==='Tanya Yomi'});
+      if(ty){
+        var tv='';
+        if(ty.ref){tv=ty.ref.replace(/^Tanya,?\s*/,'').replace(/Part I;?\s*/,'').replace(/Part II;?\s*/,'Iggeret HaKodesh ').replace(/;\s*/g,', ');}
+        else if(ty.displayValue&&ty.displayValue.en)tv=ty.displayValue.en;
+        items.push({l:'Tanya',v:tv});
+      }
+      var rm1=data.calendar_items.find(function(i){return i.title&&i.title.en==='Daily Rambam'});
+      if(rm1){var v1=rm1.displayValue?rm1.displayValue.en:(rm1.ref||'');items.push({l:'Rambam (1 ch)',v:v1});}
+      var rm3=data.calendar_items.filter(function(i){return i.title&&i.title.en==='Daily Rambam (3 Chapters)'});
+      if(rm3.length){var v3=rm3.map(function(i){return i.displayValue?i.displayValue.en:(i.ref||'')}).filter(Boolean).join('; ');items.push({l:'Rambam (3 ch)',v:v3});}
+      var df=data.calendar_items.find(function(i){return i.title&&i.title.en==='Daf Yomi'});
+      if(df)items.push({l:'Daf Yomi',v:df.displayValue?df.displayValue.en:(df.ref||'')});
+    }
+    if(!items.length)items.push({l:'Info',v:'Unable to load schedule'});
+    el.innerHTML=items.map(function(it){return '<div class="litem fadein"><span class="llbl">'+esc(it.l)+'</span><span class="lval">'+esc(it.v)+'</span></div>'}).join('');
+  }).catch(function(){el.innerHTML='<span class="err">Unable to load daily learning</span>'});
+}
+var shabbosTimes={candleLighting:null,havdalah:null};
+function fetchShabbos(){
+  var card=g('sCard'),el=g('sTimes'),titleEl=g('sTitle');
+  var now=new Date(),todayStr=now.toLocaleDateString('en-CA',{timeZone:TZ});
+  var dow=now.toLocaleDateString('en-US',{weekday:'long',timeZone:TZ});
+  var isFri=dow==='Friday',isSat=dow==='Saturday';
+  return fetch('https://www.hebcal.com/shabbat?cfg=json&zip='+ZIP+'&M=on').then(function(r){return r.json()}).then(function(data){
+    if(!data.items||!data.items.length){card.classList.add('hidden');return}
+    var candleToday=false,hasHoliday=false;
+    shabbosTimes.candleLighting=null;shabbosTimes.havdalah=null;
+    data.items.forEach(function(it){
+      var dd=it.date?it.date.substring(0,10):'';
+      if(dd===todayStr&&it.category==='candles')candleToday=true;
+      if(it.yomtov&&dd===todayStr)hasHoliday=true;
+      if(it.category==='candles'&&!shabbosTimes.candleLighting)shabbosTimes.candleLighting=it.date;
+      if(it.category==='havdalah'&&!shabbosTimes.havdalah)shabbosTimes.havdalah=it.date;
+    });
+    if(!isFri&&!isSat&&!candleToday&&!hasHoliday){card.classList.add('hidden');return}
+    card.classList.remove('hidden');
+    titleEl.textContent=hasHoliday?'Yom Tov Times':'Shabbos Times';
+    var htm='',parsha='';
+    data.items.forEach(function(it){
+      if(it.category==='candles'){htm+='<div class="sitem"><span class="slbl">Candle Lighting</span><span class="stm">'+fmtTime(it.date)+'</span></div>'}
+      else if(it.category==='havdalah'){htm+='<div class="sitem"><span class="slbl">Havdalah</span><span class="stm">'+fmtTime(it.date)+'</span></div>'}
+      else if(it.category==='parashat'){parsha=it.title||''}
+    });
+    if(parsha)htm+='<div class="sparsha">'+esc(parsha)+'</div>';
+    el.innerHTML=htm||'<span class="err">No times available</span>';
+  }).catch(function(){card.classList.add('hidden')});
+}
+function fetchZmanim(){
+  var el=g('zmanim');
+  return fetch('https://www.hebcal.com/zmanim?cfg=json&zip='+ZIP).then(function(r){return r.json()}).then(function(d){
+    var t=d.times||{};
+    var rows=[
+      {l:'Alos',v:t.alotHaShachar},
+      {l:'Hanetz',v:t.sunrise},
+      {l:'Latest Shma',v:t.sofZmanShmaBaalHatanya||t.sofZmanShma},
+      {l:'Latest Tefilla',v:t.sofZmanTfilaBaalHatanya||t.sofZmanTfilla},
+      {l:'Chatzos',v:t.chatzot},
+      {l:'Mincha Gedolah',v:t.minchaGedolaBaalHatanya||t.minchaGedola},
+      {l:'Mincha Ketana',v:t.minchaKetanaBaalHatanya||t.minchaKetana},
+      {l:'Plag',v:t.plagHaminchaBaalHatanya||t.plagHaMincha},
+      {l:'Shkia',v:t.sunset},
+      {l:'Tzeis',v:t.tzaisBaalHatanya||t.tzeit72min}
+    ].filter(function(r){return r.v});
+    el.innerHTML='<div class="zgrid">'+rows.map(function(r){return '<div class="zitem"><span class="zlbl">'+esc(r.l)+'</span><span class="zval">'+fmtTime(r.v)+'</span></div>'}).join('')+'</div>';
+  }).catch(function(){el.innerHTML='<span class="err">Unable to load zmanim</span>'});
+}
+function checkShabbosMode(){
+  var now=new Date();
+  var laD=new Date(now.toLocaleString('en-US',{timeZone:TZ}));
+  var dow=laD.getDay();
+  var isShabbosOrYT=false;
+  if(dow===6){
+    if(shabbosTimes.havdalah){
+      var hav=new Date(shabbosTimes.havdalah);
+      if(now<hav)isShabbosOrYT=true;
+    }else{isShabbosOrYT=true}
+  }
+  if(dow===5&&shabbosTimes.candleLighting){
+    var cl=new Date(shabbosTimes.candleLighting);
+    if(now>=cl)isShabbosOrYT=true;
+  }
+  if(hebData&&hebData.events){
+    for(var i=0;i<hebData.events.length;i++){
+      var ev=hebData.events[i].toLowerCase();
+      if(/pesach|sukkot|sukkos|shavuot|shavuos|rosh hashan|yom kippur|shemini atzeret|simchat torah|simchas torah/i.test(ev)&&!/erev|chol hamoed/i.test(ev)){
+        isShabbosOrYT=true;break;
+      }
+    }
+  }
+  var vid=g('vid'),img=g('vImage');
+  if(isShabbosOrYT){
+    if(!vid.classList.contains('hidden')){
+      vid.classList.add('hidden');
+      try{vid.src='about:blank'}catch(e){}
+    }
+    if(img.classList.contains('hidden')){
+      img.classList.remove('hidden');
+      img.style.backgroundImage="url('https://i.ytimg.com/vi/vCtCh28Af2w/maxresdefault.jpg')";
+      img.innerHTML='<div class="vimg-caption">Shabbat Shalom</div>';
+    }
+  }else{
+    if(img&&!img.classList.contains('hidden')){img.classList.add('hidden');img.innerHTML=''}
+    if(vid&&vid.classList.contains('hidden')){
+      vid.classList.remove('hidden');
+      vid.src='https://www.youtube.com/embed/vCtCh28Af2w?autoplay=1&mute=1&loop=1&playlist=vCtCh28Af2w&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1';
+    }
+  }
+}
+function loadAll(){fetchHebDate().then(function(){fetchHY();fetchLearn();fetchZmanim();fetchShabbos().then(checkShabbosMode)})}
+loadAll();setInterval(loadAll,REFRESH);
+function midnightRefresh(){var now=new Date(),tom=new Date(now);tom.setDate(tom.getDate()+1);tom.setHours(0,0,5,0);setTimeout(function(){loadAll();midnightRefresh()},tom-now)}
+midnightRefresh();
+})();
+</script>
+</body>
+</html>
