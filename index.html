@@ -40,89 +40,92 @@
 }
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
 body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(--bg-grad-to) 70%)}
-.dashboard{display:grid;grid-template-columns:1.15fr 1fr;grid-template-rows:auto 1fr;gap:clamp(0.8rem,1.3vw,1.6rem);height:100vh;padding:clamp(1rem,2vw,2.5rem)}
-.hdr{grid-column:1/-1;text-align:center;padding:clamp(0.2rem,0.6vh,0.8rem) 0}
-.clock{font-size:clamp(3.5rem,7vw,9rem);font-weight:800;line-height:1.05;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;background:linear-gradient(180deg,#18181b 20%,#71717a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.04))}
-.clock .ampm{font-size:0.32em;font-weight:600;-webkit-text-fill-color:#a1a1aa;margin-left:0.12em}
-.eng-date{font-size:clamp(1rem,1.7vw,1.9rem);font-weight:400;color:var(--text-2);margin-top:clamp(0.05rem,0.2vh,0.25rem);letter-spacing:0.01em}
-.heb-line{display:flex;align-items:center;justify-content:center;gap:clamp(0.4rem,0.7vw,0.9rem);margin-top:clamp(0.05rem,0.2vh,0.3rem)}
-.heb-txt{font-family:'Heebo',sans-serif;font-size:clamp(1rem,1.7vw,1.9rem);font-weight:700;color:var(--gold-strong);direction:rtl}
+.dashboard{display:grid;grid-template-rows:auto 1fr;gap:clamp(0.7rem,1.1vw,1.4rem);height:100vh;padding:clamp(0.9rem,1.7vw,2rem)}
+/* ------- Top bar: clock left, center info, Rebbe video right ------- */
+.topbar{display:grid;grid-template-columns:auto 1fr clamp(220px,22vw,320px);gap:clamp(0.9rem,1.6vw,1.8rem);align-items:stretch;height:clamp(110px,15vh,170px)}
+.tb-clock{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 clamp(0.4rem,0.6vw,0.8rem);min-width:clamp(160px,18vw,260px)}
+.clock{font-size:clamp(2.2rem,4vw,4.6rem);font-weight:800;line-height:1;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;background:linear-gradient(180deg,#18181b 20%,#52525b 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.clock .ampm{font-size:0.34em;font-weight:600;-webkit-text-fill-color:#a1a1aa;margin-left:0.18em}
+.tb-clock-sub{font-size:clamp(0.78rem,1.05vw,1.18rem);color:var(--text-2);font-weight:500;margin-top:0.15rem;letter-spacing:0.01em}
+.tb-center{display:flex;flex-direction:column;justify-content:center;gap:clamp(0.25rem,0.45vh,0.5rem);min-width:0}
+.eng-date{font-size:clamp(1rem,1.5vw,1.7rem);font-weight:600;color:var(--text);letter-spacing:-0.005em}
+.heb-line{display:flex;align-items:baseline;gap:clamp(0.4rem,0.7vw,0.9rem);flex-wrap:wrap}
+.heb-txt{font-family:'Heebo',sans-serif;font-size:clamp(0.95rem,1.4vw,1.55rem);font-weight:700;color:var(--gold-strong);direction:rtl}
 .heb-sep{color:var(--text-3);font-size:clamp(0.6rem,0.8vw,0.9rem)}
-.heb-en{font-size:clamp(0.9rem,1.4vw,1.6rem);font-weight:500;color:var(--gold);opacity:0.85}
-.badges{display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-top:clamp(0.2rem,0.4vh,0.5rem);flex-wrap:wrap}
-.badge{display:inline-block;padding:0.18em 0.7em;border-radius:999px;font-size:clamp(0.65rem,0.85vw,0.95rem);font-weight:600;border:1px solid transparent}
+.heb-en{font-size:clamp(0.85rem,1.2vw,1.35rem);font-weight:500;color:var(--gold);opacity:0.9}
+.badges{display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;margin-top:0.05rem}
+.badge{display:inline-block;padding:0.18em 0.7em;border-radius:999px;font-size:clamp(0.65rem,0.82vw,0.92rem);font-weight:600;border:1px solid transparent}
 .badge-gold{background:var(--gold-bg);color:var(--gold-strong);border-color:rgba(176,140,0,0.18)}
 .badge-purple{background:var(--purple-bg);color:var(--purple);border-color:rgba(124,58,237,0.16)}
+.tb-video{position:relative;border-radius:clamp(0.85rem,1.1vw,1.2rem);overflow:hidden;background:#000;border:1px solid var(--border);box-shadow:var(--shadow)}
+.tb-video iframe{width:100%;height:100%;border:none;display:block}
+.tb-video .vimg{width:100%;height:100%;background:#000 center/cover no-repeat;position:relative}
+.tb-video .vimg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 50%,rgba(0,0,0,0.65) 100%);pointer-events:none}
+.tb-video .vimg-caption{position:absolute;bottom:0.55rem;left:0;right:0;text-align:center;color:#fef9e7;font-size:clamp(0.78rem,1vw,1.05rem);font-weight:600;letter-spacing:0.04em;text-shadow:0 2px 8px rgba(0,0,0,0.6);z-index:1}
+/* ------- Body: 2 cols ------- */
+.body{display:grid;grid-template-columns:1.15fr 1fr;gap:clamp(0.7rem,1.1vw,1.4rem);min-height:0}
 .card{background:var(--card);border:1px solid var(--border);border-radius:clamp(0.9rem,1.2vw,1.3rem);padding:clamp(0.9rem,1.3vw,1.7rem);box-shadow:var(--shadow);position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
 .ctitle{font-size:clamp(0.62rem,0.82vw,0.92rem);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:clamp(0.5rem,0.8vh,0.95rem);display:flex;align-items:center;gap:0.5rem;color:var(--text-2)}
 .ctitle .ic{font-size:clamp(0.85rem,1.05vw,1.2rem)}
-.lcol{grid-column:1;grid-row:2;display:flex;flex-direction:column;gap:clamp(0.7rem,1.1vw,1.4rem);min-height:0}
+.lcol{display:flex;flex-direction:column;gap:clamp(0.7rem,1.1vw,1.4rem);min-height:0}
 .hycard{flex:1 1 0;min-height:0;display:flex;flex-direction:column;background:linear-gradient(180deg,#fffdf6 0%,#ffffff 70%)}
 .hycard::before{background:linear-gradient(90deg,#d4a017,#b08c00)}
 .hycard .ctitle{color:var(--gold-strong)}
 .hyref{font-size:clamp(0.62rem,0.78vw,0.85rem);color:var(--text-3);font-style:italic;margin-bottom:clamp(0.3rem,0.5vh,0.6rem)}
-.hybody{font-size:clamp(0.88rem,1.1vw,1.3rem);line-height:1.7;color:var(--text);flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:0.4rem}
+.hybody{font-size:clamp(0.92rem,1.15vw,1.4rem);line-height:1.7;color:var(--text);flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:0.4rem}
 .hybody::-webkit-scrollbar{width:5px}
 .hybody::-webkit-scrollbar-track{background:transparent}
 .hybody::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
 .hybody em,.hybody i{color:var(--gold-strong);font-style:italic}
-.hy-he{font-family:'Heebo',sans-serif;font-size:clamp(0.82rem,1vw,1.18rem);line-height:1.85;color:var(--text-2);direction:rtl;text-align:right;border-top:1px solid var(--border);margin-top:clamp(0.6rem,0.8vh,1rem);padding-top:clamp(0.6rem,0.8vh,1rem)}
-.spcard{flex:0 0 auto}
+.hy-he{font-family:'Heebo',sans-serif;font-size:clamp(0.85rem,1.05vw,1.25rem);line-height:1.85;color:var(--text-2);direction:rtl;text-align:right;border-top:1px solid var(--border);margin-top:clamp(0.6rem,0.8vh,1rem);padding-top:clamp(0.6rem,0.8vh,1rem)}
+/* ------- Sports (smallest section, compact horizontal rows) ------- */
+.spcard{flex:0 0 auto;padding:clamp(0.55rem,0.85vw,0.95rem) clamp(0.85rem,1.2vw,1.4rem)}
 .spcard::before{background:linear-gradient(90deg,#0891b2,#0e7490)}
-.spcard .ctitle{color:var(--teal)}
-.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(0.6rem,1vw,1.1rem)}
-.sp-team{display:flex;flex-direction:column;gap:0.35rem;padding:clamp(0.55rem,0.9vw,0.85rem) clamp(0.7rem,1vw,1rem);border:1px solid var(--border);border-radius:0.75rem;background:var(--card-2)}
-.sp-team.dodgers{border-left:3px solid #005A9C}
-.sp-team.lakers{border-left:3px solid #552583}
-.sp-head{display:flex;align-items:center;gap:0.45rem}
-.sp-icon{font-size:clamp(1rem,1.25vw,1.4rem);line-height:1}
-.sp-tname{font-size:clamp(0.78rem,0.95vw,1.05rem);font-weight:700;color:var(--text);letter-spacing:0.01em}
-.sp-pill{margin-left:auto;display:inline-flex;align-items:center;gap:0.3em;padding:0.12em 0.55em;border-radius:999px;font-size:clamp(0.6rem,0.72vw,0.78rem);font-weight:700;letter-spacing:0.04em;border:1px solid transparent}
-.sp-pill.live{background:var(--red-bg);color:var(--red);border-color:rgba(220,38,38,0.18)}
-.sp-pill.live::before{content:'';display:inline-block;width:0.45em;height:0.45em;border-radius:50%;background:var(--red);animation:pulseDot 1.4s ease-in-out infinite}
-.sp-pill.win{background:var(--green-bg);color:var(--green);border-color:rgba(21,128,61,0.18)}
-.sp-pill.loss{background:var(--red-bg);color:var(--red);border-color:rgba(220,38,38,0.18)}
-.sp-pill.upcoming{background:var(--teal-bg);color:var(--teal);border-color:rgba(14,116,144,0.18)}
-.sp-pill.final{background:var(--bg-grad-to);color:var(--text-2);border-color:var(--border)}
-.sp-line{display:flex;align-items:baseline;justify-content:space-between;gap:0.5rem;font-size:clamp(0.78rem,0.95vw,1.05rem);color:var(--text)}
-.sp-matchup{color:var(--text-2);font-weight:500}
-.sp-score{font-weight:700;font-variant-numeric:tabular-nums;color:var(--text)}
-.sp-score.win{color:var(--green)}
-.sp-score.loss{color:var(--red)}
-.sp-meta{font-size:clamp(0.7rem,0.82vw,0.88rem);color:var(--text-3);display:flex;align-items:baseline;justify-content:space-between;gap:0.5rem}
-.sp-meta .lbl{color:var(--text-3);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;font-size:0.72em}
-.sp-empty{color:var(--text-3);font-style:italic;font-size:clamp(0.78rem,0.9vw,1rem)}
+.spcard .ctitle{color:var(--teal);margin-bottom:clamp(0.3rem,0.5vh,0.55rem);font-size:clamp(0.58rem,0.75vw,0.85rem)}
+.sp-rows{display:flex;flex-direction:column}
+.sp-row{display:grid;grid-template-columns:auto 1.1fr 1fr;align-items:baseline;gap:clamp(0.5rem,0.9vw,1rem);padding:clamp(0.32rem,0.55vh,0.5rem) 0;font-size:clamp(0.78rem,0.95vw,1.02rem)}
+.sp-row+.sp-row{border-top:1px solid var(--border)}
+.sp-tag{display:flex;align-items:center;gap:0.35rem;min-width:clamp(3.6rem,4.6vw,5.2rem);font-weight:700;font-size:clamp(0.7rem,0.85vw,0.92rem);letter-spacing:0.06em;color:var(--text)}
+.sp-tag.dodgers{color:#0a4ea8}
+.sp-tag.lakers{color:#552583}
+.sp-tag .ic{font-size:1.05em;line-height:1}
+.sp-cell{display:flex;align-items:baseline;gap:0.35rem;min-width:0;color:var(--text-2);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-cell .lbl{font-size:0.72em;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-3)}
+.sp-cell .lbl.live{color:var(--red);display:inline-flex;align-items:center;gap:0.3em}
+.sp-cell .lbl.live::before{content:'';display:inline-block;width:0.5em;height:0.5em;border-radius:50%;background:var(--red);animation:pulseDot 1.4s ease-in-out infinite}
+.sp-cell .lbl.win{color:var(--green)}
+.sp-cell .lbl.loss{color:var(--red)}
+.sp-cell .score{color:var(--text);font-weight:700}
+.sp-cell .score.win{color:var(--green)}
+.sp-cell .score.loss{color:var(--red)}
+.sp-cell .vs{color:var(--text-2)}
+.sp-cell .empty{color:var(--text-3)}
 @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:0.35}}
-.rcol{grid-column:2;grid-row:2;display:flex;flex-direction:column;gap:clamp(0.7rem,1.1vw,1.4rem);min-height:0;overflow-y:auto;padding-right:0.2rem}
+/* ------- Right column ------- */
+.rcol{display:flex;flex-direction:column;gap:clamp(0.7rem,1.1vw,1.4rem);min-height:0;overflow-y:auto;padding-right:0.2rem}
 .rcol::-webkit-scrollbar{width:5px}
 .rcol::-webkit-scrollbar-track{background:transparent}
 .rcol::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
 .lcard::before{background:linear-gradient(90deg,#06b6d4,#0e7490)}
 .lcard .ctitle{color:var(--teal)}
-.litem{display:flex;align-items:baseline;gap:0.5rem;padding:clamp(0.3rem,0.45vh,0.55rem) 0;border-bottom:1px solid var(--border)}
+.litem{display:flex;align-items:baseline;gap:0.5rem;padding:clamp(0.34rem,0.5vh,0.6rem) 0;border-bottom:1px solid var(--border)}
 .litem:last-child{border-bottom:none}
-.llbl{font-size:clamp(0.66rem,0.82vw,0.92rem);font-weight:700;color:var(--teal);white-space:nowrap;min-width:clamp(4.2rem,5.4vw,6.4rem);text-transform:uppercase;letter-spacing:0.03em}
-.lval{font-size:clamp(0.78rem,0.95vw,1.08rem);color:var(--text)}
+.llbl{font-size:clamp(0.7rem,0.86vw,0.96rem);font-weight:700;color:var(--teal);white-space:nowrap;min-width:clamp(4.2rem,5.4vw,6.4rem);text-transform:uppercase;letter-spacing:0.03em}
+.lval{font-size:clamp(0.86rem,1.05vw,1.18rem);color:var(--text)}
 .zcard::before{background:linear-gradient(90deg,#a78bfa,#7c3aed)}
 .zcard .ctitle{color:var(--purple)}
-.zgrid{display:grid;grid-template-columns:1fr 1fr;gap:0.4rem 1.2rem}
-.zitem{display:flex;justify-content:space-between;align-items:baseline;padding:clamp(0.2rem,0.32vh,0.38rem) 0;border-bottom:1px solid var(--border)}
-.zlbl{font-size:clamp(0.66rem,0.82vw,0.92rem);color:var(--text-2);font-weight:500}
-.zval{font-size:clamp(0.78rem,0.95vw,1.08rem);color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
+.zgrid{display:grid;grid-template-columns:1fr 1fr;gap:0.45rem 1.3rem}
+.zitem{display:flex;justify-content:space-between;align-items:baseline;padding:clamp(0.25rem,0.38vh,0.45rem) 0;border-bottom:1px solid var(--border)}
+.zlbl{font-size:clamp(0.72rem,0.88vw,1rem);color:var(--text-2);font-weight:500}
+.zval{font-size:clamp(0.86rem,1.05vw,1.18rem);color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
 .scard{background:linear-gradient(180deg,#fffaf3 0%,#ffffff 70%);border-color:#fde4cc}
 .scard::before{background:linear-gradient(90deg,#fb923c,#c2410c)}
 .scard .ctitle{color:var(--warm)}
-.sitem{display:flex;justify-content:space-between;align-items:center;padding:clamp(0.25rem,0.4vh,0.5rem) 0}
-.slbl{font-size:clamp(0.78rem,0.95vw,1.08rem);color:var(--text-2)}
-.stm{font-size:clamp(0.95rem,1.18vw,1.4rem);font-weight:700;color:var(--warm);font-variant-numeric:tabular-nums}
-.sparsha{text-align:center;font-size:clamp(0.78rem,0.95vw,1.1rem);color:var(--text-2);margin-top:0.3rem;padding-top:0.4rem;border-top:1px solid #fde4cc}
-.vcard{flex:0 0 auto;height:clamp(160px,22vh,300px);padding:0;overflow:hidden;border:1px solid var(--border);border-radius:clamp(0.9rem,1.2vw,1.3rem);background:#000}
-.vcard::before{display:none}
-.vcard iframe{width:100%;height:100%;border:none;display:block}
-.vimg{width:100%;height:100%;background:#000 center/cover no-repeat;position:relative}
-.vimg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 50%,rgba(0,0,0,0.65) 100%);pointer-events:none}
-.vimg-caption{position:absolute;bottom:1rem;left:0;right:0;text-align:center;color:#fef9e7;font-size:clamp(0.9rem,1.1vw,1.15rem);font-weight:600;letter-spacing:0.04em;text-shadow:0 2px 8px rgba(0,0,0,0.6);z-index:1}
+.sitem{display:flex;justify-content:space-between;align-items:center;padding:clamp(0.28rem,0.44vh,0.55rem) 0}
+.slbl{font-size:clamp(0.86rem,1.05vw,1.18rem);color:var(--text-2)}
+.stm{font-size:clamp(1.05rem,1.3vw,1.55rem);font-weight:700;color:var(--warm);font-variant-numeric:tabular-nums}
+.sparsha{text-align:center;font-size:clamp(0.86rem,1.05vw,1.2rem);color:var(--text-2);margin-top:0.3rem;padding-top:0.4rem;border-top:1px solid #fde4cc}
 .loading{color:var(--text-3);font-style:italic;animation:pulse 1.5s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
 .err{color:var(--text-3);font-style:italic}
@@ -132,56 +135,63 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .fadein{animation:fi .5s ease-out forwards}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:1024px){
-  .dashboard{grid-template-columns:1fr;grid-template-rows:auto auto auto;height:auto;min-height:100vh;overflow-y:auto}
-  .hdr{grid-column:1}
-  .lcol{grid-column:1;grid-row:2}
-  .hycard{max-height:50vh}
-  .rcol{grid-column:1;grid-row:3;overflow-y:visible}
-  .sp-grid{grid-template-columns:1fr}
+  .topbar{grid-template-columns:1fr;height:auto}
+  .tb-video{height:clamp(140px,22vh,200px)}
+  .body{grid-template-columns:1fr;height:auto;min-height:60vh}
+  html,body{overflow:auto;height:auto}
+  .dashboard{height:auto;min-height:100vh}
+  .rcol{overflow-y:visible}
 }
-@media(max-width:600px){.dashboard{padding:0.8rem}.clock{font-size:3rem}}
+@media(max-width:600px){.dashboard{padding:0.8rem}.clock{font-size:2.4rem}.sp-row{grid-template-columns:auto 1fr}.sp-row .sp-cell.secondary{grid-column:1/-1;padding-left:calc(3.6rem + 0.5rem)}}
 </style>
 </head>
 <body>
 <div class="dashboard">
-  <header class="hdr">
-    <div class="clock" id="clock">--:--</div>
-    <div class="eng-date" id="engDate"></div>
-    <div class="heb-line">
-      <span class="heb-txt" id="hebTxt"></span>
-      <span class="heb-sep" id="hebSep"></span>
-      <span class="heb-en" id="hebEn"></span>
+  <header class="topbar">
+    <div class="tb-clock">
+      <div class="clock" id="clock">--:--</div>
+      <div class="tb-clock-sub" id="tbClockSub">Los Angeles</div>
     </div>
-    <div class="badges" id="badges"></div>
-  </header>
-  <div class="lcol">
-    <section class="card hycard">
-      <div class="ctitle"><span class="ic">&#10017;</span> Hayom Yom</div>
-      <div class="hyref" id="hyRef"></div>
-      <div class="hybody" id="hyBody"><span class="loading">Loading today&#39;s teaching&#8230;</span></div>
-    </section>
-    <section class="card spcard">
-      <div class="ctitle"><span class="ic">&#127942;</span> Scores &middot; Los Angeles</div>
-      <div id="scores"><span class="loading">Loading scores&#8230;</span></div>
-    </section>
-  </div>
-  <div class="rcol">
-    <section class="card lcard">
-      <div class="ctitle"><span class="ic">&#128214;</span> Daily Learning</div>
-      <div id="learn"><span class="loading">Loading schedule&#8230;</span></div>
-    </section>
-    <section class="card zcard">
-      <div class="ctitle"><span class="ic">&#9728;&#65039;</span> Zmanim &middot; Los Angeles</div>
-      <div id="zmanim"><span class="loading">Loading zmanim&#8230;</span></div>
-    </section>
-    <section class="card scard hidden" id="sCard">
-      <div class="ctitle"><span class="ic">&#128367;&#65039;</span> <span id="sTitle">Shabbos Times</span></div>
-      <div id="sTimes"></div>
-    </section>
-    <section class="card vcard" id="vCard">
+    <div class="tb-center">
+      <div class="eng-date" id="engDate"></div>
+      <div class="heb-line">
+        <span class="heb-txt" id="hebTxt"></span>
+        <span class="heb-sep" id="hebSep"></span>
+        <span class="heb-en" id="hebEn"></span>
+      </div>
+      <div class="badges" id="badges"></div>
+    </div>
+    <div class="tb-video" id="vCard">
       <iframe id="vid" src="https://www.youtube.com/embed/vCtCh28Af2w?autoplay=1&mute=1&loop=1&playlist=vCtCh28Af2w&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>
       <div id="vImage" class="vimg hidden"></div>
-    </section>
+    </div>
+  </header>
+  <div class="body">
+    <div class="lcol">
+      <section class="card hycard">
+        <div class="ctitle"><span class="ic">&#10017;</span> Hayom Yom</div>
+        <div class="hyref" id="hyRef"></div>
+        <div class="hybody" id="hyBody"><span class="loading">Loading today&#39;s teaching&#8230;</span></div>
+      </section>
+      <section class="card spcard">
+        <div class="ctitle"><span class="ic">&#127942;</span> Scores &middot; Los Angeles</div>
+        <div id="scores" class="sp-rows"><span class="loading">Loading scores&#8230;</span></div>
+      </section>
+    </div>
+    <div class="rcol">
+      <section class="card lcard">
+        <div class="ctitle"><span class="ic">&#128214;</span> Daily Learning</div>
+        <div id="learn"><span class="loading">Loading schedule&#8230;</span></div>
+      </section>
+      <section class="card zcard">
+        <div class="ctitle"><span class="ic">&#9728;&#65039;</span> Zmanim &middot; Los Angeles</div>
+        <div id="zmanim"><span class="loading">Loading zmanim&#8230;</span></div>
+      </section>
+      <section class="card scard hidden" id="sCard">
+        <div class="ctitle"><span class="ic">&#128367;&#65039;</span> <span id="sTitle">Shabbos Times</span></div>
+        <div id="sTimes"></div>
+      </section>
+    </div>
   </div>
 </div>
 <script>
@@ -217,7 +227,6 @@ function fetchHebDate(){
       var omerCalc=omerDay(d.hm,d.hd);
       if(d.events&&d.events.length){
         d.events.forEach(function(e){
-          // Skip hebcal's generic Omer event when we have our own enriched badge below.
           if(omerCalc!==null && /omer/i.test(e)) return;
           badges+='<span class="badge badge-gold">'+esc(e)+'</span>';
         });
@@ -236,7 +245,6 @@ function fetchHebDate(){
 function fetchHY(){
   if(!hebData)return Promise.resolve();
   g('hyRef').textContent=hebData.hd+' '+hebData.hm+', '+hebData.hy;
-  // No ?date= param — Chabad 404s on dated mobile URLs. Endpoint always returns today.
   return fetch('/api/hayomyom')
     .then(function(r){return r.json()}).then(function(d){
       var en=d.teaching_en||'';
@@ -339,76 +347,59 @@ function fetchZmanim(){
     el.innerHTML='<div class="zgrid">'+rows.map(function(r){return '<div class="zitem"><span class="zlbl">'+esc(r.l)+'</span><span class="zval">'+fmtTime(r.v)+'</span></div>'}).join('')+'</div>';
   }).catch(function(){el.innerHTML='<span class="err">Unable to load zmanim</span>'});
 }
-// ---- Sports ticker (Dodgers + Lakers) ----
-function buildTeamBlock(team, classKey, icon, label){
-  if(!team){return blockEmpty(classKey,icon,label,'No data');}
-  // Pick the primary game to surface
-  var primary=team.live||team.todayEvent||team.lastFinal||null;
-  var secondary=null;
-  if(team.live){secondary=team.nextScheduled;}
-  else if(team.todayEvent){
-    if(team.todayEvent.completed){secondary=team.nextScheduled;}
-    else{secondary=team.lastFinal;}
-  } else {
-    secondary=team.nextScheduled;
-  }
-  if(!primary && !secondary){return blockEmpty(classKey,icon,label,'No games');}
-  var pillHtml='';
-  if(team.live){pillHtml='<span class="sp-pill live">LIVE</span>';}
-  else if(primary && primary.completed){
-    var won=primary.us&&primary.us.winner;
-    pillHtml='<span class="sp-pill '+(won?'win':'loss')+'">'+(won?'W':'L')+'</span>';
-  } else if(primary){
-    pillHtml='<span class="sp-pill upcoming">NEXT</span>';
-  }
-  var head='<div class="sp-head"><span class="sp-icon">'+icon+'</span><span class="sp-tname">'+esc(label)+'</span>'+pillHtml+'</div>';
-  var primaryRow=primary?renderGameRow(primary,true):'';
-  var secondaryRow=(secondary&&(!primary||secondary.id!==primary.id))?renderGameRow(secondary,false):'';
-  return '<div class="sp-team '+classKey+' fadein">'+head+primaryRow+secondaryRow+'</div>';
+// ---------- Sports ticker (compact horizontal rows) ----------
+function buildScoresHtml(d){
+  return [
+    teamRow(d.dodgers,'dodgers','&#9918;&#65039;','DOD'),
+    teamRow(d.lakers,'lakers','&#127936;','LAL')
+  ].join('');
 }
-function blockEmpty(classKey,icon,label,msg){
-  return '<div class="sp-team '+classKey+'"><div class="sp-head"><span class="sp-icon">'+icon+'</span><span class="sp-tname">'+esc(label)+'</span></div><div class="sp-empty">'+esc(msg)+'</div></div>';
+function teamRow(team, classKey, icon, abbr){
+  var tagHtml='<div class="sp-tag '+classKey+'"><span class="ic">'+icon+'</span><span>'+esc(abbr)+'</span></div>';
+  if(!team){return '<div class="sp-row">'+tagHtml+'<div class="sp-cell"><span class="empty">No data</span></div><div class="sp-cell"></div></div>';}
+  // Pick primary and secondary
+  var primary, secondary;
+  if(team.live){primary=team.live;secondary=team.nextScheduled;}
+  else if(team.todayEvent){primary=team.todayEvent;secondary=team.todayEvent.completed?team.nextScheduled:team.lastFinal;}
+  else {primary=team.lastFinal;secondary=team.nextScheduled;}
+  // Avoid showing the same game twice
+  if(primary && secondary && primary.id===secondary.id) secondary=null;
+  var primaryHtml=primary?gameCell(primary,true):'<div class="sp-cell"><span class="empty">&mdash;</span></div>';
+  var secondaryHtml=secondary?gameCell(secondary,false):'<div class="sp-cell secondary"><span class="empty">&mdash;</span></div>';
+  return '<div class="sp-row fadein">'+tagHtml+primaryHtml+secondaryHtml+'</div>';
 }
-function renderGameRow(game, isPrimary){
+function gameCell(game, isPrimary){
   var prefix=game.home?'vs':'@';
-  var oppName=(game.them&&(game.them.name||game.them.abbr))||'TBD';
-  var matchup=prefix+' '+oppName;
-  if(game.state==='in'){
-    // LIVE: show score and inning/period
+  var opp=(game.them&&(game.them.abbr||game.them.name))||'TBD';
+  var isLive=game.state==='in';
+  var won=game.us&&game.us.winner;
+  var lblClass=isLive?'live':(game.completed?(won?'win':'loss'):'');
+  var lblText=isLive?'LIVE':(game.completed?(won?'W':'L'):(isPrimary?'NEXT':'NEXT'));
+  if(isLive){
     var us=(game.us&&game.us.score!=null)?game.us.score:'-';
     var them=(game.them&&game.them.score!=null)?game.them.score:'-';
     var ourLead=Number(us)>Number(them);
-    var when=game.shortDetail||game.detail||'In Progress';
-    return '<div class="sp-line"><span class="sp-matchup">'+esc(matchup)+'</span><span class="sp-score '+(ourLead?'win':(Number(us)<Number(them)?'loss':''))+'">'+esc(us)+'&ndash;'+esc(them)+'</span></div>'+
-           '<div class="sp-meta"><span class="lbl">'+esc(when)+'</span><span></span></div>';
+    var inning=game.shortDetail||game.detail||'';
+    return '<div class="sp-cell"><span class="lbl '+lblClass+'">'+lblText+'</span><span class="score '+(ourLead?'win':(Number(us)<Number(them)?'loss':''))+'">'+esc(us)+'&ndash;'+esc(them)+'</span><span class="vs">'+esc(prefix)+' '+esc(opp)+(inning?' &middot; '+esc(inning):'')+'</span></div>';
   }
   if(game.completed){
     var su=(game.us&&game.us.score!=null)?game.us.score:'-';
     var st=(game.them&&game.them.score!=null)?game.them.score:'-';
-    var won=game.us&&game.us.winner;
-    var resultClass=won?'win':(game.us?'loss':'');
-    var dateLine=fmtDayTime(game.date);
-    var lbl=isPrimary?'FINAL':'LAST';
-    return '<div class="sp-line"><span class="sp-matchup">'+esc(matchup)+'</span><span class="sp-score '+resultClass+'">'+esc(su)+'&ndash;'+esc(st)+'</span></div>'+
-           '<div class="sp-meta"><span class="lbl">'+lbl+' &middot; '+esc(dateLine)+'</span><span></span></div>';
+    var dt=fmtDayTime(game.date);
+    return '<div class="sp-cell"><span class="lbl '+lblClass+'">'+lblText+'</span><span class="score '+(won?'win':(game.us?'loss':''))+'">'+esc(su)+'&ndash;'+esc(st)+'</span><span class="vs">'+esc(prefix)+' '+esc(opp)+' &middot; '+esc(dt)+'</span></div>';
   }
   // Upcoming
-  var lblU=isPrimary?'NEXT':'NEXT';
-  return '<div class="sp-line"><span class="sp-matchup">'+esc(matchup)+'</span><span class="sp-score" style="color:var(--text-3);font-weight:500">&mdash;</span></div>'+
-         '<div class="sp-meta"><span class="lbl">'+lblU+' &middot; '+esc(fmtDayTime(game.date))+'</span><span></span></div>';
+  return '<div class="sp-cell '+(isPrimary?'':'secondary')+'"><span class="lbl">NEXT</span><span class="vs">'+esc(fmtDayTime(game.date))+' '+esc(prefix)+' '+esc(opp)+'</span></div>';
 }
 function fetchScores(){
   var el=g('scores');
   return fetch('/api/scores').then(function(r){return r.json()}).then(function(d){
     if(d&&d.error){throw new Error(d.error);}
-    var dod=buildTeamBlock(d.dodgers,'dodgers','&#9918;&#65039;','Dodgers');
-    var lak=buildTeamBlock(d.lakers,'lakers','&#127936;','Lakers');
-    el.innerHTML='<div class="sp-grid">'+dod+lak+'</div>';
-    // Adjust refresh interval based on whether anything is live
+    el.innerHTML=buildScoresHtml(d);
     var anyLive=(d.dodgers&&d.dodgers.live)||(d.lakers&&d.lakers.live);
     scheduleNextScores(anyLive?SCORES_REFRESH_LIVE:SCORES_REFRESH_IDLE);
-  }).catch(function(err){
-    el.innerHTML='<div class="sp-empty">Scores unavailable</div>';
+  }).catch(function(){
+    el.innerHTML='<div class="sp-row"><div class="sp-tag"></div><div class="sp-cell"><span class="empty">Scores unavailable</span></div><div class="sp-cell"></div></div>';
     scheduleNextScores(SCORES_REFRESH_IDLE);
   });
 }
