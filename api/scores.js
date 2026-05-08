@@ -96,7 +96,7 @@ function compact(e, teamId) {
   return {
     id: e.id,
     date: e.date,
-    state: st.state || null,           // pre | in | post
+    state: st.state || null,
     completed: !!st.completed,
     detail: st.detail || null,
     shortDetail: st.shortDetail || null,
