@@ -110,7 +110,7 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .rcol{display:flex;flex-direction:column;gap:clamp(0.7rem,1.1vw,1.4rem);min-height:0;min-width:0}
 .rcol > .card{display:flex;flex-direction:column;min-height:0;flex:1 1 0}
 .rcol > .card > #learn,
-.rcol > .card > #zmanim,
+.rcol > .card > #zmanim{flex:1 1 auto;min-height:0;overflow:hidden}
 .rcol > .card > #sTimes{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:0.4rem;margin-right:-0.2rem}
 .rcol > .card > #learn::-webkit-scrollbar,
 .rcol > .card > #zmanim::-webkit-scrollbar,
@@ -148,6 +148,11 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .hidden{display:none !important}
 .fadein{animation:fi .5s ease-out forwards}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* Vertical marquee — always-on continuous scroll for list cards */
+@keyframes marqY{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+.marq-page{padding-bottom:clamp(0.6rem,1.1vw,1.2rem)}
+.marq-track{will-change:transform}
+.marq-track:hover{animation-play-state:paused}
 @media(max-width:1024px){
   .topbar{grid-template-columns:1fr;height:auto}
   .tb-video{height:clamp(140px,22vh,200px)}
@@ -265,13 +270,39 @@ function autoScroll(elId, speedPxPerSec){
   el.addEventListener('mouseleave',el._asLeave);
   el._asRaf=requestAnimationFrame(step);
 }
+// ---- Continuous vertical marquee — always loops regardless of fit ----
+function makeVerticalMarquee(elId, speedPxPerSec){
+  var el=g(elId);
+  if(!el || !el.innerHTML) return;
+  // Cancel any prior scrollTop animation on this element
+  if(el._asRaf){cancelAnimationFrame(el._asRaf);el._asRaf=null}
+  if(el._asEnter){el.removeEventListener('mouseenter',el._asEnter);el._asEnter=null}
+  if(el._asLeave){el.removeEventListener('mouseleave',el._asLeave);el._asLeave=null}
+  el.scrollTop=0;
+  // Recover source HTML if previously wrapped
+  var existing=el.querySelector('.marq-page');
+  var srcHTML=existing?existing.innerHTML:el.innerHTML;
+  el.style.overflow='hidden';
+  el.innerHTML='<div class="marq-track"><div class="marq-page">'+srcHTML+'</div><div class="marq-page">'+srcHTML+'</div></div>';
+  // Set animation speed based on actual page height
+  requestAnimationFrame(function(){
+    var page=el.querySelector('.marq-page');
+    var track=el.querySelector('.marq-track');
+    if(!page||!track) return;
+    var pageH=page.offsetHeight;
+    if(pageH<10) return;
+    var speed=speedPxPerSec||28;
+    var dur=Math.max(10, pageH/speed);
+    track.style.animation='marqY '+dur+'s linear infinite';
+  });
+}
 function autoScrollAll(){
   // Slight delay so layout settles after innerHTML changes
   setTimeout(function(){
-    autoScroll('hyBody', 38);
-    autoScroll('learn', 28);
-    autoScroll('zmanim', 28);
-  },200);
+    autoScroll('hyBody', 38);                  // prose: oscillating up/down
+    makeVerticalMarquee('learn', 28);          // list: continuous loop
+    makeVerticalMarquee('zmanim', 28);         // list: continuous loop
+  },220);
 }
 (function(){
   var t;
