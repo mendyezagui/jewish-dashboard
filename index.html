@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=1920, initial-scale=1, user-scalable=no" />
 <title>Jewish Dashboard</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%2780%27 font-size=%2780%27>&#10017;</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -78,39 +78,11 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .hybody::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
 .hybody em,.hybody i{color:var(--gold-strong);font-style:italic}
 .hy-he{font-family:'Heebo',sans-serif;font-size:clamp(0.85rem,1.05vw,1.25rem);line-height:1.85;color:var(--text-2);direction:rtl;text-align:right;border-top:1px solid var(--border);margin-top:clamp(0.6rem,0.8vh,1rem);padding-top:clamp(0.6rem,0.8vh,1rem)}
-/* ------- Sports: live marquee ticker (smallest section) ------- */
-.spcard{flex:0 0 auto;padding:clamp(0.5rem,0.8vw,0.9rem) 0;overflow:hidden}
-.spcard::before{background:linear-gradient(90deg,#0891b2,#0e7490)}
-.spcard .ctitle{color:var(--teal);margin:0 clamp(0.85rem,1.2vw,1.4rem) clamp(0.35rem,0.5vh,0.55rem);font-size:clamp(0.58rem,0.75vw,0.85rem)}
-.ticker-frame{position:relative;overflow:hidden;white-space:nowrap;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 4%,#000 96%,transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 4%,#000 96%,transparent 100%)}
-.ticker-track{display:inline-flex;align-items:center;gap:clamp(1.5rem,2.5vw,3rem);animation:tickerScroll 55s linear infinite;font-variant-numeric:tabular-nums;font-size:clamp(0.88rem,1.1vw,1.2rem);padding-left:100%;will-change:transform}
-.ticker-track:hover{animation-play-state:paused}
-@keyframes tickerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.t-item{display:inline-flex;align-items:center;gap:0.55em;white-space:nowrap}
-.t-icon{font-size:1.15em;line-height:1}
-.t-name{font-weight:700;letter-spacing:0.02em;color:var(--text)}
-.t-name.dodgers{color:#0a4ea8}
-.t-name.lakers{color:#552583}
-.t-tag{display:inline-flex;align-items:center;gap:0.3em;font-size:0.78em;font-weight:700;letter-spacing:0.05em;padding:0.12em 0.55em;border-radius:999px;border:1px solid transparent;text-transform:uppercase}
-.t-tag.live{background:var(--red-bg);color:var(--red);border-color:rgba(220,38,38,0.18)}
-.t-tag.live::before{content:'';display:inline-block;width:0.45em;height:0.45em;border-radius:50%;background:var(--red);animation:pulseDot 1.4s ease-in-out infinite}
-.t-tag.win{background:var(--green-bg);color:var(--green);border-color:rgba(21,128,61,0.18)}
-.t-tag.loss{background:var(--red-bg);color:var(--red);border-color:rgba(220,38,38,0.18)}
-.t-tag.next{background:var(--teal-bg);color:var(--teal);border-color:rgba(14,116,144,0.18)}
-.t-score{font-weight:800;color:var(--text)}
-.t-score.win{color:var(--green)}
-.t-score.loss{color:var(--red)}
-.t-score.live{color:var(--red)}
-.t-vs{color:var(--text-2);font-weight:500}
-.t-when{color:var(--text-3);font-size:0.92em}
-.t-dot{color:var(--border-strong);font-size:0.7em;margin:0 0.2em}
-.t-empty{color:var(--text-3);font-style:italic;padding:0 1rem}
-@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:0.35}}
 /* ------- Right column: each card scrolls independently ------- */
 .rcol{display:flex;flex-direction:column;gap:clamp(0.7rem,1.1vw,1.4rem);min-height:0;min-width:0}
 .rcol > .card{display:flex;flex-direction:column;min-height:0;flex:1 1 0}
 .rcol > .card > #learn,
-.rcol > .card > #zmanim{flex:1 1 auto;min-height:0;overflow:hidden}
+.rcol > .card > #zmanim,
 .rcol > .card > #sTimes{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:0.4rem;margin-right:-0.2rem}
 .rcol > .card > #learn::-webkit-scrollbar,
 .rcol > .card > #zmanim::-webkit-scrollbar,
@@ -129,7 +101,7 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .lval{font-size:clamp(0.86rem,1.05vw,1.18rem);color:var(--text)}
 .zcard::before{background:linear-gradient(90deg,#a78bfa,#7c3aed)}
 .zcard .ctitle{color:var(--purple)}
-.zgrid{display:grid;grid-template-columns:1fr 1fr;gap:0.45rem 1.3rem}
+.zgrid{display:grid;grid-template-columns: 50% 50%;gap:0.45rem 1.3rem}
 .zitem{display:flex;justify-content:space-between;align-items:baseline;padding:clamp(0.25rem,0.38vh,0.45rem) 0;border-bottom:1px solid var(--border)}
 .zlbl{font-size:clamp(0.72rem,0.88vw,1rem);color:var(--text-2);font-weight:500}
 .zval{font-size:clamp(0.86rem,1.05vw,1.18rem);color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
@@ -148,24 +120,19 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .hidden{display:none !important}
 .fadein{animation:fi .5s ease-out forwards}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-/* Vertical marquee — always-on continuous scroll for list cards */
-@keyframes marqY{from{transform:translateY(0)}to{transform:translateY(-50%)}}
-.marq-page{padding-bottom:clamp(0.6rem,1.1vw,1.2rem)}
-.marq-track{will-change:transform}
-.marq-track:hover{animation-play-state:paused}
-@media(max-width:1024px){
+/* Phone-only collapse (real phones, ~600px). TV at 1920 viewport never hits this. */
+@media(max-width:700px){
   .topbar{grid-template-columns:1fr;height:auto}
   .tb-video{height:clamp(140px,22vh,200px)}
   .body{grid-template-columns:1fr;height:auto;min-height:60vh}
   html,body{overflow:auto;height:auto}
-  .dashboard{height:auto;min-height:100vh}
-  /* On mobile, page scrolls — cards size to content, no internal scroll */
+  .dashboard{height:auto;min-height:100vh;padding:0.8rem}
+  .clock{font-size:2.4rem}
   .rcol > .card{flex:0 0 auto}
   .rcol > .card > #learn,
   .rcol > .card > #zmanim,
   .rcol > .card > #sTimes{overflow-y:visible;max-height:none}
 }
-@media(max-width:600px){.dashboard{padding:0.8rem}.clock{font-size:2.4rem}}
 </style>
 </head>
 <body>
@@ -196,12 +163,6 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
         <div class="hyref" id="hyRef"></div>
         <div class="hybody" id="hyBody"><span class="loading">Loading today&#39;s teaching&#8230;</span></div>
       </section>
-      <section class="card spcard">
-        <div class="ctitle"><span class="ic">&#127942;</span> Scores &middot; Los Angeles</div>
-        <div class="ticker-frame">
-          <div class="ticker-track" id="scoresTicker"><span class="t-empty loading">Loading scores&#8230;</span></div>
-        </div>
-      </section>
     </div>
     <div class="rcol">
       <section class="card lcard">
@@ -221,11 +182,10 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 </div>
 <script>
 (function(){
-var TZ='America/Los_Angeles',ZIP='90035',REFRESH=3600000,SCORES_REFRESH_LIVE=60000,SCORES_REFRESH_IDLE=300000;
+var TZ='America/Los_Angeles',ZIP='90035',REFRESH=3600000;
 var TEHILLIM={1:'1-9',2:'10-17',3:'18-22',4:'23-28',5:'29-34',6:'35-38',7:'39-43',8:'44-48',9:'49-54',10:'55-59',11:'60-65',12:'66-68',13:'69-71',14:'72-76',15:'77-78',16:'79-82',17:'83-87',18:'88-89',19:'90-96',20:'97-103',21:'104-105',22:'106-107',23:'108-112',24:'113-118',25:'119:1-58',26:'119:59-117',27:'119:118-176',28:'120-134',29:'135-139',30:'140-150'};
 var ALIYAH=['Rishon','Sheni','Shlishi',"Revi'i",'Chamishi','Shishi',"Shevi'i"];
 var hebData=null;
-var scoresTimer=null;
 function g(id){return document.getElementById(id)}
 function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML}
 function fmtTime(iso){try{return new Date(iso).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:TZ})}catch(e){return iso}}
@@ -270,38 +230,13 @@ function autoScroll(elId, speedPxPerSec){
   el.addEventListener('mouseleave',el._asLeave);
   el._asRaf=requestAnimationFrame(step);
 }
-// ---- Continuous vertical marquee — always loops regardless of fit ----
-function makeVerticalMarquee(elId, speedPxPerSec){
-  var el=g(elId);
-  if(!el || !el.innerHTML) return;
-  // Cancel any prior scrollTop animation on this element
-  if(el._asRaf){cancelAnimationFrame(el._asRaf);el._asRaf=null}
-  if(el._asEnter){el.removeEventListener('mouseenter',el._asEnter);el._asEnter=null}
-  if(el._asLeave){el.removeEventListener('mouseleave',el._asLeave);el._asLeave=null}
-  el.scrollTop=0;
-  // Recover source HTML if previously wrapped
-  var existing=el.querySelector('.marq-page');
-  var srcHTML=existing?existing.innerHTML:el.innerHTML;
-  el.style.overflow='hidden';
-  el.innerHTML='<div class="marq-track"><div class="marq-page">'+srcHTML+'</div><div class="marq-page">'+srcHTML+'</div></div>';
-  // Set animation speed based on actual page height
-  requestAnimationFrame(function(){
-    var page=el.querySelector('.marq-page');
-    var track=el.querySelector('.marq-track');
-    if(!page||!track) return;
-    var pageH=page.offsetHeight;
-    if(pageH<10) return;
-    var speed=speedPxPerSec||28;
-    var dur=Math.max(10, pageH/speed);
-    track.style.animation='marqY '+dur+'s linear infinite';
-  });
-}
 function autoScrollAll(){
-  // Slight delay so layout settles after innerHTML changes
+  // Slight delay so layout settles after innerHTML changes.
+  // autoScroll skips animation when content fits — only scrolls when overflowing.
   setTimeout(function(){
-    autoScroll('hyBody', 38);                  // prose: oscillating up/down
-    makeVerticalMarquee('learn', 28);          // list: continuous loop
-    makeVerticalMarquee('zmanim', 28);         // list: continuous loop
+    autoScroll('hyBody', 38);
+    autoScroll('learn', 28);
+    autoScroll('zmanim', 28);
   },220);
 }
 (function(){
@@ -439,78 +374,6 @@ function fetchZmanim(){
     el.innerHTML='<div class="zgrid">'+rows.map(function(r){return '<div class="zitem"><span class="zlbl">'+esc(r.l)+'</span><span class="zval">'+fmtTime(r.v)+'</span></div>'}).join('')+'</div>';
   }).catch(function(){el.innerHTML='<span class="err">Unable to load zmanim</span>'});
 }
-// ---------- Sports live ticker (marquee) ----------
-function teamItems(team, icon, name, classKey){
-  var out = [];
-  if(!team) return out;
-  function nameSpan(){return '<span class="t-name '+classKey+'">'+esc(name)+'</span>'}
-  if(team.live){
-    var g0=team.live;
-    var us=(g0.us&&g0.us.score!=null)?g0.us.score:'-';
-    var them=(g0.them&&g0.them.score!=null)?g0.them.score:'-';
-    var ourLead=Number(us)>Number(them);
-    var oppName=(g0.them&&(g0.them.abbr||g0.them.name))||'TBD';
-    var prefix=g0.home?'vs':'@';
-    var inning=g0.shortDetail||g0.detail||'';
-    out.push('<span class="t-item"><span class="t-icon">'+icon+'</span>'+nameSpan()+
-      '<span class="t-tag live">LIVE</span>'+
-      '<span class="t-score live">'+esc(us)+'&ndash;'+esc(them)+'</span>'+
-      '<span class="t-vs">'+esc(prefix)+' '+esc(oppName)+(inning?' &middot; '+esc(inning):'')+'</span></span>');
-  }
-  function pushGame(g0, label){
-    if(!g0) return;
-    var oppName=(g0.them&&(g0.them.abbr||g0.them.name))||'TBD';
-    var prefix=g0.home?'vs':'@';
-    if(g0.completed){
-      var us=(g0.us&&g0.us.score!=null)?g0.us.score:'-';
-      var them=(g0.them&&g0.them.score!=null)?g0.them.score:'-';
-      var won=g0.us&&g0.us.winner;
-      var tagClass=won?'win':(g0.us?'loss':'');
-      var letter=won?'W':'L';
-      out.push('<span class="t-item"><span class="t-icon">'+icon+'</span>'+nameSpan()+
-        '<span class="t-tag '+tagClass+'">'+letter+'</span>'+
-        '<span class="t-score '+tagClass+'">'+esc(us)+'&ndash;'+esc(them)+'</span>'+
-        '<span class="t-vs">'+esc(prefix)+' '+esc(oppName)+'</span>'+
-        '<span class="t-when">'+esc(fmtDayTime(g0.date))+'</span></span>');
-    } else {
-      out.push('<span class="t-item"><span class="t-icon">'+icon+'</span>'+nameSpan()+
-        '<span class="t-tag next">'+esc(label||'NEXT')+'</span>'+
-        '<span class="t-vs">'+esc(prefix)+' '+esc(oppName)+'</span>'+
-        '<span class="t-when">'+esc(fmtDayTime(g0.date))+'</span></span>');
-    }
-  }
-  if(team.todayEvent && (!team.live || team.live.id!==team.todayEvent.id)){pushGame(team.todayEvent,'TODAY')}
-  if(team.lastFinal && (!team.todayEvent || team.lastFinal.id!==team.todayEvent.id)){pushGame(team.lastFinal,'LAST')}
-  if(team.nextScheduled && (!team.todayEvent || team.nextScheduled.id!==team.todayEvent.id)){pushGame(team.nextScheduled,'NEXT')}
-  return out;
-}
-function buildTickerHtml(d){
-  var items=[].concat(
-    teamItems(d.dodgers,'&#9918;&#65039;','Dodgers','dodgers'),
-    teamItems(d.lakers,'&#127936;','Lakers','lakers')
-  );
-  if(!items.length) return '<span class="t-empty">No games to show</span>';
-  var dot='<span class="t-dot">&bull;</span>';
-  var oneRound=items.join(dot);
-  // Duplicate for seamless loop. CSS animates -50%, second copy fills in.
-  return oneRound + dot + oneRound + dot;
-}
-function fetchScores(){
-  var el=g('scoresTicker');
-  return fetch('/api/scores').then(function(r){return r.json()}).then(function(d){
-    if(d&&d.error){throw new Error(d.error);}
-    el.innerHTML=buildTickerHtml(d);
-    var anyLive=(d.dodgers&&d.dodgers.live)||(d.lakers&&d.lakers.live);
-    scheduleNextScores(anyLive?SCORES_REFRESH_LIVE:SCORES_REFRESH_IDLE);
-  }).catch(function(){
-    el.innerHTML='<span class="t-empty">Scores unavailable</span>';
-    scheduleNextScores(SCORES_REFRESH_IDLE);
-  });
-}
-function scheduleNextScores(ms){
-  if(scoresTimer){clearTimeout(scoresTimer);}
-  scoresTimer=setTimeout(fetchScores,ms);
-}
 function checkShabbosMode(){
   var now=new Date();
   var laD=new Date(now.toLocaleString('en-US',{timeZone:TZ}));
@@ -561,7 +424,7 @@ function loadAll(){
     autoScrollAll();
   });
 }
-loadAll();fetchScores();setInterval(loadAll,REFRESH);
+loadAll();setInterval(loadAll,REFRESH);
 function midnightRefresh(){var now=new Date(),tom=new Date(now);tom.setDate(tom.getDate()+1);tom.setHours(0,0,5,0);setTimeout(function(){loadAll();midnightRefresh()},tom-now)}
 midnightRefresh();
 })();
