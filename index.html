@@ -101,7 +101,7 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .lval{font-size:clamp(0.86rem,1.05vw,1.18rem);color:var(--text)}
 .zcard::before{background:linear-gradient(90deg,#a78bfa,#7c3aed)}
 .zcard .ctitle{color:var(--purple)}
-.zgrid{display:grid;grid-template-columns: 50% 50%;gap:0.45rem 1.3rem}
+.zgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0.45rem 1.3rem}
 .zitem{display:flex;justify-content:space-between;align-items:baseline;padding:clamp(0.25rem,0.38vh,0.45rem) 0;border-bottom:1px solid var(--border)}
 .zlbl{font-size:clamp(0.72rem,0.88vw,1rem);color:var(--text-2);font-weight:500}
 .zval{font-size:clamp(0.86rem,1.05vw,1.18rem);color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
