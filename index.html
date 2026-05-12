@@ -223,31 +223,41 @@ function autoScroll(elId, speedPxPerSec){
   el.addEventListener('mouseleave',el._asLeave);
   el._asRaf=requestAnimationFrame(step);
 }
-// Continuous marquee: wraps content in two duplicate pages so the
-// CSS animation can translate -50% and loop seamlessly with no jump.
+// Continuous marquee — ONLY wraps + animates if content actually overflows the card.
+// If content fits, the card displays normally with no motion.
 function makeVerticalMarquee(elId, speedPxPerSec){
   var el=g(elId);
   if(!el || !el.innerHTML) return;
-  // Cancel any prior scrollTop animation on this element
+  // Cancel any prior animation on this element
   if(el._asRaf){cancelAnimationFrame(el._asRaf);el._asRaf=null}
   if(el._asEnter){el.removeEventListener('mouseenter',el._asEnter);el._asEnter=null}
   if(el._asLeave){el.removeEventListener('mouseleave',el._asLeave);el._asLeave=null}
   el.scrollTop=0;
-  // Recover source HTML if already wrapped (so we re-wrap with fresh content each load)
+  // Unwrap any previous marquee wrapping so we measure RAW content height
   var existing=el.querySelector('.marq-page');
-  var srcHTML=existing?existing.innerHTML:el.innerHTML;
+  if(existing){el.innerHTML=existing.innerHTML;}
   el.style.overflow='hidden';
-  el.innerHTML='<div class="marq-track"><div class="marq-page">'+srcHTML+'</div><div class="marq-page">'+srcHTML+'</div></div>';
-  // Compute duration from actual rendered page height so speed is consistent
+  // Wait one frame so layout settles, then measure
   requestAnimationFrame(function(){
-    var page=el.querySelector('.marq-page');
-    var track=el.querySelector('.marq-track');
-    if(!page||!track) return;
-    var pageH=page.offsetHeight;
-    if(pageH<10) return;
-    var speed=speedPxPerSec||12;       // px/sec
-    var dur=Math.max(25, pageH/speed); // seconds; min 25s for very short content
-    track.style.animation='marqY '+dur+'s linear infinite';
+    var contentH=el.scrollHeight;
+    var boxH=el.clientHeight;
+    if(contentH <= boxH + 6){
+      // Content fits — no marquee needed, leave card static
+      return;
+    }
+    // Content overflows — wrap in two-page track and animate
+    var srcHTML=el.innerHTML;
+    el.innerHTML='<div class="marq-track"><div class="marq-page">'+srcHTML+'</div><div class="marq-page">'+srcHTML+'</div></div>';
+    requestAnimationFrame(function(){
+      var page=el.querySelector('.marq-page');
+      var track=el.querySelector('.marq-track');
+      if(!page||!track) return;
+      var pageH=page.offsetHeight;
+      if(pageH<10) return;
+      var speed=speedPxPerSec||12;       // px/sec
+      var dur=Math.max(25, pageH/speed); // seconds; min 25s for short content
+      track.style.animation='marqY '+dur+'s linear infinite';
+    });
   });
 }
 function autoScrollAll(){
