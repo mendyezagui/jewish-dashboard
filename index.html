@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, user-calable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jewish Dashboard</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%2780%27 font-size=%2780%27>&#10017;</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -18,17 +18,17 @@
   --card-2:#fafaf9;
   --border:#e7e5e4;
   --border-strong:#d6d3d1;
-  --text:#18181b;
-  --text-2:#52525b;
-  --text-3:#a1a1aa;
-  --gold:#b08c00;
-  --gold-strong:#92710a;
+  --text:#0a0a0a;
+  --text-2:#27272a;
+  --text-3:#52525b;
+  --gold:#7a5e08;
+  --gold-strong:#5c4606;
   --gold-bg:#fef9e7;
-  --teal:#0e7490;
+  --teal:#134e4a;
   --teal-bg:#ecfeff;
-  --purple:#7c3aed;
+  --purple:#5b21b6;
   --purple-bg:#f5f3ff;
-  --warm:#c2410c;
+  --warm:#9a3412;
   --warm-bg:#fff7ed;
   --red:#dc2626;
   --red-bg:#fef2f2;
@@ -41,17 +41,17 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 /* CRITICAL: minmax(0,1fr) lets the row shrink so children with overflow:auto can scroll */
 .dashboard{display:grid;grid-template-rows:auto minmax(0,1fr);gap:clamp(0.7rem,1.1vw,1.4rem);height:100vh;padding:clamp(0.9rem,1.7vw,2rem)}
 /* ------- Top bar: clock left, center info, Rebbe video right ------- */
-.topbar{display:grid;grid-template-columns:auto 1fr clamp(220px,22vw,320px);gap:clamp(0.9rem,1.6vw,1.8rem);align-items:stretch;height:clamp(110px,15vh,170px)}
-.tb-clock{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 clamp(0.4rem,0.6vw,0.8rem);min-width:clamp(160px,18vw,260px)}
+.topbar{display:grid;grid-template-columns:auto 1fr clamp(220px,22vw,320px);gap:clamp(0.9rem,1.6vw,1.8rem);align-items:stretch;height:clamp(140px,19vh,220px)}
+.tb-clock{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 clamp(0.4rem,0.6vw,0.8rem);min-width:clamp(200px,22vw,320px)}
 .clock{font-size:clamp(3rem,5.4vw,6.2rem);font-weight:800;line-height:1;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;background:linear-gradient(180deg,#18181b 20%,#52525b 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .clock .ampm{font-size:0.34em;font-weight:600;-webkit-text-fill-color:#a1a1aa;margin-left:0.18em}
-.tb-clock-sub{font-size:clamp(0.78rem,1.05vw,1.18rem);color:var(--text-2);font-weight:500;margin-top:0.15rem;letter-spacing:0.01em}
+.tb-clock-sub{font-size:clamp(1.05rem,1.4vw,1.55rem);color:var(--text-2);font-weight:500;margin-top:0.15rem;letter-spacing:0.01em}
 .tb-center{display:flex;flex-direction:column;justify-content:center;gap:clamp(0.25rem,0.45vh,0.5rem);min-width:0}
-.eng-date{font-size:clamp(1.35rem,2vw,2.3rem);font-weight:600;color:var(--text);letter-spacing:-0.005em}
+.eng-date{font-size:clamp(1.35rem,2.05vw,2.3rem);font-weight:600;color:var(--text);letter-spacing:-0.005em}
 .heb-line{display:flex;align-items:baseline;gap:clamp(0.4rem,0.7vw,0.9rem);flex-wrap:wrap}
 .heb-txt{font-family:'Heebo',sans-serif;font-size:clamp(1.3rem,1.9vw,2.1rem);font-weight:700;color:var(--gold-strong);direction:rtl}
 .heb-sep{color:var(--text-3);font-size:clamp(0.6rem,0.8vw,0.9rem)}
-.heb-en{font-size:clamp(1.15rem,1.65vw,1.85rem);font-weight:500;color:var(--gold);opacity:0.9}
+.heb-en{font-size:clamp(1.15rem,1.65vw,1.85rem);font-weight:600;color:var(--gold)}
 .badges{display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;margin-top:0.05rem}
 .badge{display:inline-block;padding:0.18em 0.7em;border-radius:999px;font-size:clamp(0.65rem,0.82vw,0.92rem);font-weight:600;border:1px solid transparent}
 .badge-gold{background:var(--gold-bg);color:var(--gold-strong);border-color:rgba(176,140,0,0.18)}
@@ -120,8 +120,8 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .hidden{display:none !important}
 .fadein{animation:fi .5s ease-out forwards}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-/* Phone-only collapse (real phones, ~600px). TV at 1920 viewport never hits this. */
-@media(max-width:700px){
+/* Phone-only collapse. TV reports ~960-1920 viewport, so stays two-column. */
+@media(max-width:600px){
   .topbar{grid-template-columns:1fr;height:auto}
   .tb-video{height:clamp(140px,22vh,200px)}
   .body{grid-template-columns:1fr;height:auto;min-height:60vh}
@@ -210,7 +210,7 @@ function autoScroll(elId, speedPxPerSec){
   el.scrollTop=0;
   // No animation if content fits comfortably
   if(el.scrollHeight - el.clientHeight < 6) return;
-  var speed=speedPxPerSec||17; // px/sec — visible from across a room
+  var speed=speedPxPerSec||17; // px/sec — slow, easy to follow from a distance
   var endPause=2000; // ms pause at top/bottom so viewers see start/end
   var dir=1, hovered=false, pausedUntil=performance.now()+700, last=performance.now();
   function step(now){
@@ -234,7 +234,7 @@ function autoScrollAll(){
   // Slight delay so layout settles after innerHTML changes.
   // autoScroll skips animation when content fits — only scrolls when overflowing.
   setTimeout(function(){
-    autoScroll('hyBody', 18);
+    autoScroll('hyBody', 19);
     autoScroll('learn', 14);
     autoScroll('zmanim', 14);
   },220);
@@ -315,9 +315,11 @@ function fetchLearn(){
         items.push({l:'Tanya',v:tv});
       }
       var rm1=data.calendar_items.find(function(i){return i.title&&i.title.en==='Daily Rambam'});
-      if(rm1){var v1=rm1.displayValue?rm1.displayValue.en:(rm1.ref||'');items.push({l:'Rambam (1 ch)',v:v1});}
       var rm3=data.calendar_items.filter(function(i){return i.title&&i.title.en==='Daily Rambam (3 Chapters)'});
-      if(rm3.length){var v3=rm3.map(function(i){return i.displayValue?i.displayValue.en:(i.ref||'')}).filter(Boolean).join('; ');items.push({l:'Rambam (3 ch)',v:v3});}
+      var rmParts=[];
+      if(rm1){var v1=rm1.displayValue?rm1.displayValue.en:(rm1.ref||'');if(v1) rmParts.push('(1 ch) '+v1);}
+      if(rm3.length){var v3=rm3.map(function(i){return i.displayValue?i.displayValue.en:(i.ref||'')}).filter(Boolean).join('; ');if(v3) rmParts.push('(3 ch) '+v3);}
+      if(rmParts.length) items.push({l:'Rambam',v:rmParts.join(' / ')});
       var df=data.calendar_items.find(function(i){return i.title&&i.title.en==='Daf Yomi'});
       if(df)items.push({l:'Daf Yomi',v:df.displayValue?df.displayValue.en:(df.ref||'')});
     }
