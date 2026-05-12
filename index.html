@@ -72,27 +72,15 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .hycard::before{background:linear-gradient(90deg,#d4a017,#b08c00)}
 .hycard .ctitle{color:var(--gold-strong)}
 .hyref{font-size:clamp(0.62rem,0.78vw,0.85rem);color:var(--text-3);font-style:italic;margin-bottom:clamp(0.3rem,0.5vh,0.6rem)}
-.hybody{font-size:clamp(1.05rem,1.32vw,1.55rem);line-height:1.75;color:var(--text);flex:1 1 0;min-height:0;overflow-y:auto;padding-right:0.4rem}
-.hybody::-webkit-scrollbar{width:6px}
-.hybody::-webkit-scrollbar-track{background:transparent}
-.hybody::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
+.hybody{font-size:clamp(1.05rem,1.32vw,1.55rem);line-height:1.75;color:var(--text);flex:1 1 0;min-height:0;overflow:hidden;padding-right:0.4rem}
 .hybody em,.hybody i{color:var(--gold-strong);font-style:italic}
 .hy-he{font-family:'Heebo',sans-serif;font-size:clamp(0.85rem,1.05vw,1.25rem);line-height:1.85;color:var(--text-2);direction:rtl;text-align:right;border-top:1px solid var(--border);margin-top:clamp(0.6rem,0.8vh,1rem);padding-top:clamp(0.6rem,0.8vh,1rem)}
 /* ------- Right column: each card scrolls independently ------- */
 .rcol{display:flex;flex-direction:column;gap:clamp(0.7rem,1.1vw,1.4rem);min-height:0;min-width:0}
 .rcol > .card{display:flex;flex-direction:column;min-height:0;flex:1 1 0}
 .rcol > .card > #learn,
-.rcol > .card > #zmanim,
+.rcol > .card > #zmanim{flex:1 1 auto;min-height:0;overflow:hidden}
 .rcol > .card > #sTimes{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:0.4rem;margin-right:-0.2rem}
-.rcol > .card > #learn::-webkit-scrollbar,
-.rcol > .card > #zmanim::-webkit-scrollbar,
-.rcol > .card > #sTimes::-webkit-scrollbar{width:6px}
-.rcol > .card > #learn::-webkit-scrollbar-track,
-.rcol > .card > #zmanim::-webkit-scrollbar-track,
-.rcol > .card > #sTimes::-webkit-scrollbar-track{background:transparent}
-.rcol > .card > #learn::-webkit-scrollbar-thumb,
-.rcol > .card > #zmanim::-webkit-scrollbar-thumb,
-.rcol > .card > #sTimes::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
 .lcard::before{background:linear-gradient(90deg,#06b6d4,#0e7490)}
 .lcard .ctitle{color:var(--teal)}
 .litem{display:flex;align-items:baseline;gap:0.5rem;padding:clamp(0.34rem,0.5vh,0.6rem) 0;border-bottom:1px solid var(--border)}
@@ -120,6 +108,11 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .hidden{display:none !important}
 .fadein{animation:fi .5s ease-out forwards}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* Continuous vertical marquee: scrolls smoothly, loops seamlessly via duplicated content */
+@keyframes marqY{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+.marq-page{padding-bottom:clamp(1rem,1.6vw,1.8rem)}
+.marq-track{will-change:transform}
+.marq-track:hover{animation-play-state:paused}
 /* Phone-only collapse. TV reports ~960-1920 viewport, so stays two-column. */
 @media(max-width:600px){
   .topbar{grid-template-columns:1fr;height:auto}
@@ -230,13 +223,40 @@ function autoScroll(elId, speedPxPerSec){
   el.addEventListener('mouseleave',el._asLeave);
   el._asRaf=requestAnimationFrame(step);
 }
+// Continuous marquee: wraps content in two duplicate pages so the
+// CSS animation can translate -50% and loop seamlessly with no jump.
+function makeVerticalMarquee(elId, speedPxPerSec){
+  var el=g(elId);
+  if(!el || !el.innerHTML) return;
+  // Cancel any prior scrollTop animation on this element
+  if(el._asRaf){cancelAnimationFrame(el._asRaf);el._asRaf=null}
+  if(el._asEnter){el.removeEventListener('mouseenter',el._asEnter);el._asEnter=null}
+  if(el._asLeave){el.removeEventListener('mouseleave',el._asLeave);el._asLeave=null}
+  el.scrollTop=0;
+  // Recover source HTML if already wrapped (so we re-wrap with fresh content each load)
+  var existing=el.querySelector('.marq-page');
+  var srcHTML=existing?existing.innerHTML:el.innerHTML;
+  el.style.overflow='hidden';
+  el.innerHTML='<div class="marq-track"><div class="marq-page">'+srcHTML+'</div><div class="marq-page">'+srcHTML+'</div></div>';
+  // Compute duration from actual rendered page height so speed is consistent
+  requestAnimationFrame(function(){
+    var page=el.querySelector('.marq-page');
+    var track=el.querySelector('.marq-track');
+    if(!page||!track) return;
+    var pageH=page.offsetHeight;
+    if(pageH<10) return;
+    var speed=speedPxPerSec||12;       // px/sec
+    var dur=Math.max(25, pageH/speed); // seconds; min 25s for very short content
+    track.style.animation='marqY '+dur+'s linear infinite';
+  });
+}
 function autoScrollAll(){
   // Slight delay so layout settles after innerHTML changes.
-  // autoScroll skips animation when content fits — only scrolls when overflowing.
+  // Marquee always animates — smooth, continuous, no jumps at ends.
   setTimeout(function(){
-    autoScroll('hyBody', 19);
-    autoScroll('learn', 14);
-    autoScroll('zmanim', 14);
+    makeVerticalMarquee('hyBody', 14);
+    makeVerticalMarquee('learn', 12);
+    makeVerticalMarquee('zmanim', 12);
   },220);
 }
 (function(){
