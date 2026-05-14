@@ -334,9 +334,6 @@ function fetchLearn(){
   return fetch('https://www.sefaria.org/api/calendars').then(function(r){return r.json()}).then(function(data){
     var items=[];
     if(data.calendar_items){
-      var p=data.calendar_items.find(function(i){return i.title&&i.title.en==='Parashat Hashavua'});
-      if(p){var nm=p.displayValue?p.displayValue.en:(p.ref||'');items.push({l:'Chumash',v:nm+' — '+ALIYAH[dow]})}
-      if(hebData){var th=TEHILLIM[hebData.hd]||TEHILLIM[30];items.push({l:'Tehillim',v:'Psalms '+th})}
       var ty=data.calendar_items.find(function(i){return i.title&&i.title.en==='Tanya Yomi'});
       if(ty){
         var tv='';
