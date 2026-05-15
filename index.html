@@ -155,7 +155,6 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
     <div class="lcol">
       <section class="card hycard">
         <div class="ctitle"><span class="ic">&#10017;</span> Hayom Yom</div>
-        <div class="hyref" id="hyRef"></div>
         <div class="hybody" id="hyBody"><span class="loading">Loading today&#39;s teaching&#8230;</span></div>
       </section>
     </div>
@@ -305,7 +304,6 @@ function fetchHebDate(){
 }
 function fetchHY(){
   if(!hebData)return Promise.resolve();
-  g('hyRef').textContent=hebData.hd+' '+hebData.hm+', '+hebData.hy;
   return fetch('/api/hayomyom?tz='+encodeURIComponent(TZ))
     .then(function(r){return r.json()}).then(function(d){
       var en=d.teaching_en||'';
@@ -376,13 +374,12 @@ function fetchShabbos(){
     if(!isFri&&!isSat&&!candleToday&&!hasHoliday){card.classList.add('hidden');return}
     card.classList.remove('hidden');
     titleEl.textContent=hasHoliday?'Yom Tov Times':'Shabbos Times';
-    var htm='',parsha='';
+    var htm='';
     // Pair each candle lighting with the next event (next candle or havdalah),
     // so a Shabbos shows on one line; multi-day Yom Tov gets one line per day-transition.
     var pairs=[];
     data.items.forEach(function(it){
       if(it.category==='candles' || it.category==='havdalah') pairs.push(it);
-      else if(it.category==='parashat') parsha=it.title||'';
     });
     for(var i=0;i<pairs.length-1;i++){
       var a=pairs[i], b=pairs[i+1];
@@ -393,7 +390,6 @@ function fetchShabbos(){
         '<span class="spair"><span class="slbl">'+bLbl+'</span><span class="stm">'+fmtTime(b.date)+'</span></span>'+
         '</div>';
     }
-    if(parsha)htm+='<div class="sparsha">'+esc(parsha)+'</div>';
     el.innerHTML=htm||'<span class="err">No times available</span>';
   }).catch(function(){card.classList.add('hidden')});
 }
