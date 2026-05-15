@@ -63,7 +63,7 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .tb-video .vimg-caption{position:absolute;bottom:0.55rem;left:0;right:0;text-align:center;color:#fef9e7;font-size:clamp(0.78rem,1vw,1.05rem);font-weight:600;letter-spacing:0.04em;text-shadow:0 2px 8px rgba(0,0,0,0.6);z-index:1}
 /* ------- Body: 2 cols (minmax(0,...) so columns can shrink for overflow) ------- */
 .body{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(0.7rem,1.1vw,1.4rem);min-height:0}
-.card{background:var(--card);border:1px solid var(--border);border-radius:clamp(0.9rem,1.2vw,1.3rem);padding:clamp(0.9rem,1.3vw,1.7rem);box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card{background:var(--card);border:1px solid var(--border);border-radius:clamp(0.9rem,1.2vw,1.3rem);padding:clamp(0.5rem,0.7vh,0.85rem) clamp(0.9rem,1.3vw,1.7rem) clamp(0.7rem,1vw,1.2rem);box-shadow:var(--shadow);position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
 .ctitle{font-size:clamp(0.62rem,0.82vw,0.92rem);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:clamp(0.3rem,0.5vh,0.6rem);display:flex;align-items:center;gap:0.5rem;color:var(--text-2)}
 .ctitle .ic{font-size:clamp(0.85rem,1.05vw,1.2rem)}
