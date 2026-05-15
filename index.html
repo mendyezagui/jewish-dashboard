@@ -65,7 +65,7 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .body{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(0.7rem,1.1vw,1.4rem);min-height:0}
 .card{background:var(--card);border:1px solid var(--border);border-radius:clamp(0.9rem,1.2vw,1.3rem);padding:clamp(0.9rem,1.3vw,1.7rem);box-shadow:var(--shadow);position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.ctitle{font-size:clamp(0.62rem,0.82vw,0.92rem);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:clamp(0.5rem,0.8vh,0.95rem);display:flex;align-items:center;gap:0.5rem;color:var(--text-2)}
+.ctitle{font-size:clamp(0.62rem,0.82vw,0.92rem);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:clamp(0.3rem,0.5vh,0.6rem);display:flex;align-items:center;gap:0.5rem;color:var(--text-2)}
 .ctitle .ic{font-size:clamp(0.85rem,1.05vw,1.2rem)}
 .lcol{display:flex;flex-direction:column;gap:clamp(0.7rem,1.1vw,1.4rem);min-height:0;min-width:0}
 .hycard{flex:1 1 0;min-height:0;display:flex;flex-direction:column;background:linear-gradient(180deg,#fffdf6 0%,#ffffff 70%)}
@@ -96,7 +96,9 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .scard{background:linear-gradient(180deg,#fffaf3 0%,#ffffff 70%);border-color:#fde4cc}
 .scard::before{background:linear-gradient(90deg,#fb923c,#c2410c)}
 .scard .ctitle{color:var(--warm)}
-.sitem{display:flex;justify-content:space-between;align-items:center;padding:clamp(0.28rem,0.44vh,0.55rem) 0}
+.sitem{display:grid;grid-template-columns:1fr 1fr;column-gap:1.2rem;align-items:baseline;padding:clamp(0.28rem,0.44vh,0.55rem) 0}
+.spair{display:flex;align-items:baseline;gap:0.45rem;min-width:0}
+.spair:last-child{justify-content:flex-end}
 .slbl{font-size:clamp(0.86rem,1.05vw,1.18rem);color:var(--text-2)}
 .stm{font-size:clamp(1.05rem,1.3vw,1.55rem);font-weight:700;color:var(--warm);font-variant-numeric:tabular-nums}
 .sparsha{text-align:center;font-size:clamp(0.86rem,1.05vw,1.2rem);color:var(--text-2);margin-top:0.3rem;padding-top:0.4rem;border-top:1px solid #fde4cc}
@@ -375,11 +377,22 @@ function fetchShabbos(){
     card.classList.remove('hidden');
     titleEl.textContent=hasHoliday?'Yom Tov Times':'Shabbos Times';
     var htm='',parsha='';
+    // Pair each candle lighting with the next event (next candle or havdalah),
+    // so a Shabbos shows on one line; multi-day Yom Tov gets one line per day-transition.
+    var pairs=[];
     data.items.forEach(function(it){
-      if(it.category==='candles'){htm+='<div class="sitem"><span class="slbl">Candle Lighting</span><span class="stm">'+fmtTime(it.date)+'</span></div>'}
-      else if(it.category==='havdalah'){htm+='<div class="sitem"><span class="slbl">Havdalah</span><span class="stm">'+fmtTime(it.date)+'</span></div>'}
-      else if(it.category==='parashat'){parsha=it.title||''}
+      if(it.category==='candles' || it.category==='havdalah') pairs.push(it);
+      else if(it.category==='parashat') parsha=it.title||'';
     });
+    for(var i=0;i<pairs.length-1;i++){
+      var a=pairs[i], b=pairs[i+1];
+      var aLbl=a.category==='candles'?'Candle Lighting':'Havdalah';
+      var bLbl=b.category==='candles'?'Candle Lighting':'Havdalah';
+      htm+='<div class="sitem">'+
+        '<span class="spair"><span class="slbl">'+aLbl+'</span><span class="stm">'+fmtTime(a.date)+'</span></span>'+
+        '<span class="spair"><span class="slbl">'+bLbl+'</span><span class="stm">'+fmtTime(b.date)+'</span></span>'+
+        '</div>';
+    }
     if(parsha)htm+='<div class="sparsha">'+esc(parsha)+'</div>';
     el.innerHTML=htm||'<span class="err">No times available</span>';
   }).catch(function(){card.classList.add('hidden')});
