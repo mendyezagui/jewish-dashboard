@@ -140,6 +140,11 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .rambam-sub strong{color:#172554}
 .leaderboard-window{min-height:0;overflow:hidden;position:relative;margin-top:1rem;mask-image:linear-gradient(to bottom,transparent 0,#000 2.5%,#000 96%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 2.5%,#000 96%,transparent 100%)}
 .leaderboard-track{will-change:transform;padding:1rem 0 3rem}
+.special-showcase{display:grid;grid-template-columns:minmax(250px,1.15fr) repeat(2,minmax(240px,1fr));align-items:center;gap:clamp(.7rem,1.2vw,1.4rem);padding:clamp(.75rem,1.3vw,1.25rem);margin-bottom:1rem;border:2px solid rgba(126,34,206,.2);border-radius:1rem;background:linear-gradient(105deg,#fff6c7 0%,rgba(255,255,255,.94) 48%,#f3e8ff 100%);box-shadow:0 12px 32px rgba(49,46,129,.1)}
+.special-label{display:flex;align-items:center;gap:.8rem;color:#172554}.special-label>span{font-size:clamp(1.5rem,2.4vw,2.8rem)}
+.special-label small{display:block;color:#7e22ce;font-size:clamp(.65rem,.85vw,.95rem);font-weight:900;letter-spacing:.14em;text-transform:uppercase}.special-label strong{display:block;font-size:clamp(1.05rem,1.7vw,2rem);line-height:1.05}
+.special-award{display:flex;align-items:center;gap:.8rem;padding:.7rem 1rem;border:1px solid rgba(126,34,206,.14);border-radius:.8rem;background:rgba(255,255,255,.78)}
+.special-award>span{font-size:clamp(1.3rem,2vw,2.4rem)}.special-award strong{display:block;color:#172033;font-size:clamp(.9rem,1.25vw,1.45rem)}.special-award small{display:block;margin-top:.15rem;color:#7e22ce;font-size:clamp(.58rem,.72vw,.8rem);font-weight:850;letter-spacing:.08em;text-transform:uppercase}
 .leaderboard-row{display:grid;grid-template-columns:minmax(64px,.55fr) minmax(260px,2.2fr) minmax(95px,.8fr) minmax(190px,1.35fr) minmax(120px,1fr) minmax(105px,.9fr) minmax(130px,1fr);align-items:center;gap:clamp(.45rem,1vw,1.2rem);min-height:clamp(52px,5.6vh,74px);padding:.45rem clamp(.75rem,1.35vw,1.5rem);border-bottom:1px solid rgba(100,116,139,.18);font-size:clamp(.95rem,1.42vw,1.7rem);font-variant-numeric:tabular-nums}
 .leaderboard-row:nth-child(even){background:rgba(255,255,255,.48)}
 .leaderboard-row.podium{background:linear-gradient(90deg,rgba(251,191,36,.18),rgba(255,255,255,.62));border:1px solid rgba(202,138,4,.24);border-radius:.8rem;margin:.22rem 0}
@@ -153,7 +158,7 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .rambam-foot{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding-top:.75rem;border-top:1px solid rgba(24,34,58,.14);font-size:clamp(.7rem,.95vw,1rem);color:#64748b;font-weight:600}
 .rambam-progress{height:5px;width:min(34vw,520px);background:rgba(23,37,84,.12);border-radius:999px;overflow:hidden}
 .rambam-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#d4a017,#0f766e);border-radius:inherit}
-@media(max-width:900px){.leaderboard-row{grid-template-columns:60px 2fr .8fr 1fr 1fr}.leaderboard-track-name,.leaderboard-missing{display:none}}
+@media(max-width:900px){.special-showcase{grid-template-columns:1fr 1fr}.special-label{grid-column:1/-1}.leaderboard-row{grid-template-columns:60px 2fr .8fr 1fr 1fr}.leaderboard-track-name,.leaderboard-missing{display:none}}
 </style>
 </head>
 <body>
@@ -271,8 +276,12 @@ function moveHTML(dir,n){
 }
 function renderRambam(){
   var track=g('leaderboardTrack');
+  var special=RAMBAM_ROWS.slice(-2);
+  var specialHTML='<section class="special-showcase" aria-label="Special People Participation Award">'+
+    '<div class="special-label"><span aria-hidden="true">✨</span><div><small>Special People</small><strong>Participation Award</strong></div></div>'+
+    special.map(function(r){return '<div class="special-award"><span aria-hidden="true">🏅</span><div><strong>'+esc(r[1])+'</strong><small>Special participant</small></div></div>';}).join('')+'</section>';
   var header='<div class="leaderboard-row leaderboard-header"><span>Rank</span><span>Member</span><span>Move</span><span>Track</span><span>Completed</span><span class="leaderboard-missing">Missing</span><span>Percent</span></div>';
-  track.innerHTML=header+RAMBAM_ROWS.map(function(r){
+  track.innerHTML=specialHTML+header+RAMBAM_ROWS.map(function(r){
     return '<div class="leaderboard-row '+(r[0]<=3?'podium':'')+'">'+
       '<span class="leaderboard-rank">'+r[0]+'</span>'+
       '<span class="leaderboard-name">'+esc(r[1])+'</span>'+moveHTML(r[2],r[3])+
