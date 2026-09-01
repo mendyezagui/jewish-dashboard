@@ -7,7 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%2780%27 font-size=%2780%27>&#10017;</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Heebo:wght@300;400;500;700;800;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -56,7 +56,6 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .badge{display:inline-block;padding:0.18em 0.7em;border-radius:999px;font-size:clamp(0.65rem,0.82vw,0.92rem);font-weight:600;border:1px solid transparent}
 .badge-gold{background:var(--gold-bg);color:var(--gold-strong);border-color:rgba(176,140,0,0.18)}
 .badge-purple{background:var(--purple-bg);color:var(--purple);border-color:rgba(124,58,237,0.16)}
-.badge-blue{background:#eef2ff;color:#312e81;border-color:rgba(99,102,241,0.22)}
 .tb-video{position:relative;border-radius:clamp(0.85rem,1.1vw,1.2rem);overflow:hidden;background:#000;border:1px solid var(--border);box-shadow:var(--shadow)}
 .tb-video iframe{width:100%;height:100%;border:none;display:block}
 .tb-video .vimg{width:100%;height:100%;background:#000 center/cover no-repeat;position:relative}
@@ -155,6 +154,23 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .rambam-progress{height:5px;width:min(34vw,520px);background:rgba(23,37,84,.12);border-radius:999px;overflow:hidden}
 .rambam-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#d4a017,#0f766e);border-radius:inherit}
 @media(max-width:900px){.leaderboard-row{grid-template-columns:60px 2fr .8fr 1fr 1fr}.leaderboard-track-name,.leaderboard-missing{display:none}}
+/* ------- Rabbi Ulman reminder: full-screen landscape TV slide ------- */
+.ulman-screen{position:fixed;inset:0;z-index:60;display:grid;grid-template-columns:minmax(0,56fr) minmax(360px,44fr);overflow:hidden;background:#110e0b;color:#f8f3e8}
+.ulman-screen.hidden{display:none!important}
+.ulman-copy{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:clamp(2rem,4.8vw,6rem) clamp(2rem,4.8vw,6rem);border-right:clamp(5px,.55vw,10px) solid #d5a817}
+.ulman-copy::before{content:'';position:absolute;left:clamp(2rem,4.8vw,6rem);top:clamp(2rem,5vh,5.5rem);width:clamp(90px,11vw,210px);height:clamp(7px,.7vw,13px);background:#d5a817;transform:skewX(-18deg)}
+.ulman-kicker{font-family:'Oswald','Arial Narrow',sans-serif;font-size:clamp(1.15rem,2vw,2.5rem);font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#d5a817;margin-bottom:clamp(1.2rem,2.2vh,2.4rem)}
+.ulman-title{font-family:'Oswald','Arial Narrow',sans-serif;font-size:clamp(4.5rem,9.2vw,11rem);font-weight:700;line-height:.86;letter-spacing:-.045em;text-transform:uppercase;color:#f8f3e8;text-shadow:0 .08em 0 rgba(0,0,0,.28)}
+.ulman-title span{display:block;color:#d5a817}
+.ulman-rhyme{margin-top:clamp(1.5rem,3vh,3rem);padding-left:clamp(1rem,1.6vw,2rem);border-left:clamp(5px,.45vw,9px) solid #d5a817;font-family:'Oswald','Arial Narrow',sans-serif;font-size:clamp(1.5rem,2.55vw,3.3rem);font-weight:600;line-height:1.25;letter-spacing:.018em;text-transform:uppercase;color:#f8f3e8}
+.ulman-rhyme strong{color:#d5a817}
+.ulman-footer{position:absolute;left:clamp(2rem,4.8vw,6rem);bottom:clamp(1.3rem,3vh,3rem);font-size:clamp(.8rem,1.22vw,1.5rem);font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#bcb3a5}
+.ulman-photo{position:relative;overflow:hidden;background:#35271f}
+.ulman-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 38%;display:block;filter:contrast(1.06) saturate(.88) sepia(.08)}
+.ulman-photo::after{content:'';position:absolute;inset:0;border:clamp(14px,1.8vw,34px) solid rgba(17,14,11,.55);pointer-events:none}
+.ulman-nameplate{position:absolute;z-index:2;left:clamp(1.5rem,3vw,4rem);right:clamp(1.5rem,3vw,4rem);bottom:clamp(1.5rem,3vw,4rem);padding:clamp(.8rem,1.3vw,1.5rem);background:rgba(17,14,11,.9);border:2px solid #d5a817;text-align:center;font-family:'Oswald','Arial Narrow',sans-serif;font-size:clamp(1.05rem,1.8vw,2.2rem);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff}
+.ulman-progress{position:absolute;z-index:3;left:0;bottom:0;height:clamp(6px,.55vw,10px);width:0;background:#d5a817}
+@media(max-width:760px){.ulman-screen{grid-template-columns:1fr}.ulman-photo{position:absolute;inset:0;opacity:.27}.ulman-copy{border-right:0}.ulman-title{font-size:clamp(4rem,16vw,7rem)}.ulman-rhyme{font-size:clamp(1.25rem,5vw,2rem)}.ulman-nameplate{display:none}}
 </style>
 </head>
 <body>
@@ -207,7 +223,7 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
       <div class="rambam-kicker">Rambam Daily Learning</div>
       <h1 class="rambam-title">30-Day Leaderboard</h1>
     </div>
-    <div class="rambam-sub" id="rambamSnapshot"><strong>Jul 15 - Aug 13, 2026</strong><br>Movement since Friday, Aug 7<br>Database snapshot Aug 16, 2026 at 8:13 PM PDT<br>31 members &middot; shown every 15 minutes</div>
+    <div class="rambam-sub" id="rambamSnapshot"><strong>Jul 15 - Aug 13, 2026</strong><br>Movement since Friday, Aug 7<br>Database snapshot Aug 16, 2026 at 8:13 PM PDT<br>31 members &middot; shown every 20 minutes</div>
   </header>
   <div class="leaderboard-window" id="leaderboardWindow">
     <div class="leaderboard-row leaderboard-header"><span>Rank</span><span>Member</span><span>Move</span><span>Track</span><span>Completed</span><span class="leaderboard-missing">Missing</span><span>Percent</span></div>
@@ -219,10 +235,23 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
     <span>Returning to the Jewish Dashboard&hellip;</span>
   </footer>
 </section>
+<section class="ulman-screen hidden" id="ulmanScreen" aria-label="Rabbi Ulman synagogue decorum reminder">
+  <div class="ulman-copy">
+    <div class="ulman-kicker">Rabbi Ulman Says</div>
+    <h1 class="ulman-title">Let Silence <span>Lead.</span></h1>
+    <div class="ulman-rhyme">When Kaddish is said,<br>when the Torah is read,<br>when the Rabbi speaks&mdash;<br><strong>let silence lead.</strong></div>
+    <div class="ulman-footer">Kaddish &bull; Leining &bull; The Rabbi&rsquo;s Speech</div>
+  </div>
+  <div class="ulman-photo">
+    <img src="rabbi-ulman.jpg" alt="Rabbi Ulman seated in front of a wall of sefarim">
+    <div class="ulman-nameplate">Listen. Respect. Be Inspired.</div>
+  </div>
+  <div class="ulman-progress" id="ulmanProgress" aria-hidden="true"></div>
+</section>
 <script>
 (function(){
 var TZ='America/Los_Angeles',ZIP='90035',REFRESH=3600000;
-var DASHBOARD_MS=840000,RAMBAM_MS=60000;
+var FIRST_ULMAN_DELAY=570000,RAMBAM_DELAY=1110000,CYCLE_MS=1200000,RAMBAM_MS=60000,ULMAN_MS=30000;
 var RAMBAM_ROWS=[
   [1,'Eli Rice','up',1,'3 chapters/day',30,0,100.0],
   [2,'Isaac Rosenfeld','up',9,'1 chapter/day',30,0,100.0],
@@ -299,7 +328,14 @@ function startRambamScroll(){
   }
   requestAnimationFrame(frame);
 }
-function showRambam(){g('rambamScreen').classList.remove('hidden');startRambamScroll();setTimeout(function(){location.reload()},RAMBAM_MS)}
+function startUlmanProgress(){
+  var bar=g('ulmanProgress'),start=performance.now();
+  function frame(now){var elapsed=Math.min(ULMAN_MS,now-start);bar.style.width=(elapsed/ULMAN_MS*100)+'%';if(elapsed<ULMAN_MS)requestAnimationFrame(frame)}
+  requestAnimationFrame(frame);
+}
+function showDashboard(){g('rambamScreen').classList.add('hidden');g('ulmanScreen').classList.add('hidden')}
+function showUlman(onDone){g('rambamScreen').classList.add('hidden');g('ulmanScreen').classList.remove('hidden');g('ulmanProgress').style.width='0';startUlmanProgress();setTimeout(function(){showDashboard();if(onDone)onDone()},ULMAN_MS)}
+function showRambam(onDone){g('ulmanScreen').classList.add('hidden');g('rambamScreen').classList.remove('hidden');g('leaderboardTrack').style.transform='translateY(0)';g('rambamProgress').style.width='0';startRambamScroll();setTimeout(function(){showDashboard();if(onDone)onDone()},RAMBAM_MS)}
 function loadRambamDatabase(){
   return fetch('https://rambam-leaderboard.mendy-ez.chatgpt.site/api/leaderboard',{cache:'no-store'})
     .then(function(response){if(!response.ok)throw new Error('database unavailable');return response.json()})
@@ -311,15 +347,22 @@ function loadRambamDatabase(){
         var start=new Date(data.run.windowStart+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
         var end=new Date(data.run.windowEnd+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
         var completed=new Date(data.run.completedAt).toLocaleString('en-US',{timeZone:TZ,month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'});
-        g('rambamSnapshot').innerHTML='<strong>'+start+' - '+end+'</strong><br>Movement since Friday, Aug 7<br>Database snapshot '+completed+'<br>'+RAMBAM_ROWS.length+' members &middot; shown every 15 minutes';
+        g('rambamSnapshot').innerHTML='<strong>'+start+' - '+end+'</strong><br>Movement since Friday, Aug 7<br>Database snapshot '+completed+'<br>'+RAMBAM_ROWS.length+' members &middot; shown every 20 minutes';
       }
     }).catch(function(){return null});
 }
-function startFiveMinuteRotation(){
+function startScreenRotation(){
   loadRambamDatabase().then(renderRambam);
   var params=new URLSearchParams(location.search);
-  if(params.get('view')==='rambam')showRambam();
-  else setTimeout(showRambam,DASHBOARD_MS);
+  if(params.get('view')==='rambam'){g('rambamScreen').classList.remove('hidden');startRambamScroll();return}
+  if(params.get('view')==='ulman'){g('ulmanScreen').classList.remove('hidden');startUlmanProgress();return}
+  function cycle(){
+    showDashboard();
+    setTimeout(function(){showUlman()},FIRST_ULMAN_DELAY);
+    setTimeout(function(){showRambam(function(){showUlman()})},RAMBAM_DELAY);
+    setTimeout(cycle,CYCLE_MS);
+  }
+  cycle();
 }
 function tick(){
   var now=new Date();
@@ -412,21 +455,6 @@ function autoScrollAll(){
   window.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(autoScrollAll,300)});
 })();
 function omerDay(mo,d){if(mo==='Nisan'&&d>=16)return d-15;if(mo==='Iyyar')return 15+d;if(mo==='Sivan'&&d<=5)return 44+d;return null}
-// Three chapters of Tehillim a day from 1 Elul through Yom Kippur, in order
-// (1 Elul -> 1-3, 2 Elul -> 4-6, ...), continuing through the Ten Days of Repentance.
-// Elul is always 29 days, so with Tishrei 1-9 that is 38 x 3 = 114 chapters by Erev
-// Yom Kippur -- leaving the last 36 for Yom Kippur itself, completing the book.
-function tehillimDay(mo,d){
-  var m=String(mo||'').toLowerCase(),idx=null;
-  if(/^elul/.test(m)&&d>=1&&d<=29)idx=d;
-  else if(/^tishre?i/.test(m)){
-    if(d===10)return 'Tehillim 115\u2013150';
-    if(d>=1&&d<=9)idx=29+d;
-  }
-  if(idx===null)return null;
-  var first=3*(idx-1)+1;
-  return 'Tehillim '+first+'\u2013'+(first+2);
-}
 function fetchHebDate(){
   var now=new Date(),ds=now.toLocaleDateString('en-CA',{timeZone:TZ});
   return fetch('https://www.hebcal.com/converter?cfg=json&date='+ds+'&g2h=1&strict=1')
@@ -451,8 +479,6 @@ function fetchHebDate(){
         if(wk||dy)os+=' ('+[wk,dy].filter(Boolean).join(', ')+')';
         badges+='<span class="badge badge-purple">'+esc(os)+'</span>';
       }
-      var teh=tehillimDay(d.hm,d.hd);
-      if(teh)badges+='<span class="badge badge-blue">'+esc(teh)+'</span>';
       g('badges').innerHTML=badges;return d;
     }).catch(function(e){console.error('Heb date err:',e);g('hebEn').textContent='Unable to load Hebrew date'});
 }
@@ -637,7 +663,7 @@ document.addEventListener('visibilitychange',function(){
   if(document.visibilityState==='visible' && _wakeLock===null) requestWakeLock();
 });
 requestWakeLock();
-startFiveMinuteRotation();
+startScreenRotation();
 })();
 </script>
 </body>
