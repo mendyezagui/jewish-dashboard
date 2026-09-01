@@ -56,6 +56,7 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .badge{display:inline-block;padding:0.18em 0.7em;border-radius:999px;font-size:clamp(0.65rem,0.82vw,0.92rem);font-weight:600;border:1px solid transparent}
 .badge-gold{background:var(--gold-bg);color:var(--gold-strong);border-color:rgba(176,140,0,0.18)}
 .badge-purple{background:var(--purple-bg);color:var(--purple);border-color:rgba(124,58,237,0.16)}
+.badge-blue{background:#eef2ff;color:#312e81;border-color:rgba(99,102,241,0.22)}
 .tb-video{position:relative;border-radius:clamp(0.85rem,1.1vw,1.2rem);overflow:hidden;background:#000;border:1px solid var(--border);box-shadow:var(--shadow)}
 .tb-video iframe{width:100%;height:100%;border:none;display:block}
 .tb-video .vimg{width:100%;height:100%;background:#000 center/cover no-repeat;position:relative}
@@ -455,6 +456,21 @@ function autoScrollAll(){
   window.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(autoScrollAll,300)});
 })();
 function omerDay(mo,d){if(mo==='Nisan'&&d>=16)return d-15;if(mo==='Iyyar')return 15+d;if(mo==='Sivan'&&d<=5)return 44+d;return null}
+// Three chapters of Tehillim a day from 1 Elul through Yom Kippur, in order
+// (1 Elul -> 1-3, 2 Elul -> 4-6, ...), continuing through the Ten Days of Repentance.
+// Elul is always 29 days, so with Tishrei 1-9 that is 38 x 3 = 114 chapters by Erev
+// Yom Kippur -- leaving the last 36 for Yom Kippur itself, completing the book.
+function tehillimDay(mo,d){
+  var m=String(mo||'').toLowerCase(),idx=null;
+  if(/^elul/.test(m)&&d>=1&&d<=29)idx=d;
+  else if(/^tishre?i/.test(m)){
+    if(d===10)return 'Tehillim 115\u2013150';
+    if(d>=1&&d<=9)idx=29+d;
+  }
+  if(idx===null)return null;
+  var first=3*(idx-1)+1;
+  return 'Tehillim '+first+'\u2013'+(first+2);
+}
 function fetchHebDate(){
   var now=new Date(),ds=now.toLocaleDateString('en-CA',{timeZone:TZ});
   return fetch('https://www.hebcal.com/converter?cfg=json&date='+ds+'&g2h=1&strict=1')
@@ -479,6 +495,8 @@ function fetchHebDate(){
         if(wk||dy)os+=' ('+[wk,dy].filter(Boolean).join(', ')+')';
         badges+='<span class="badge badge-purple">'+esc(os)+'</span>';
       }
+      var teh=tehillimDay(d.hm,d.hd);
+      if(teh)badges+='<span class="badge badge-blue">'+esc(teh)+'</span>';
       g('badges').innerHTML=badges;return d;
     }).catch(function(e){console.error('Heb date err:',e);g('hebEn').textContent='Unable to load Hebrew date'});
 }
