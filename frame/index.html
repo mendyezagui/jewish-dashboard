@@ -9,7 +9,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%2780%27 font-size=%2780%27>&#128337;</text></svg>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400&family=Inter:wght@200;300;500&display=swap" rel="stylesheet" />
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden;background:#0d0b09;
@@ -36,19 +36,32 @@ html,body{height:100%;overflow:hidden;background:#0d0b09;
 
 .date{margin-top:clamp(.5rem,1.1vh,1.1rem);font-size:clamp(.95rem,1.85vw,3rem);
   font-weight:300;letter-spacing:.2em;text-transform:uppercase;color:#ece3d2}
+.hebdate{margin-top:clamp(.2rem,.5vh,.55rem);font-family:'Heebo',sans-serif;direction:rtl;text-align:left;
+  font-size:clamp(.95rem,1.75vw,2.8rem);font-weight:300;color:#d8c9a8;
+  /* empty until the Hebrew date resolves, so nothing jumps on load */
+  min-height:1em}
 
 /* Fades the whole overlay in once the clock has a real time to show. */
 .plate{opacity:0;transition:opacity 1.6s ease-out,transform 90s linear}
 .plate.on{opacity:1}
+/* Two pixels of silent, looping video. Many TV browsers only suppress the
+   screensaver while something is actually playing -- the Wake Lock API alone is
+   ignored on plenty of them. Invisible, but it counts as playback. */
+.awake{position:fixed;left:0;bottom:0;width:2px;height:2px;opacity:.01;z-index:-1;pointer-events:none}
 @media(prefers-reduced-motion:reduce){.art,.plate{transition:opacity 1.6s ease-out}}
 </style>
 </head>
 <body>
 <img class="art" id="art" src="farbrengen.jpg" alt="" decoding="async" />
 <div class="scrim"></div>
+<video class="awake" id="awake" muted loop playsinline autoplay preload="auto" aria-hidden="true" tabindex="-1">
+  <source src="awake.mp4" type="video/mp4" />
+  <source src="awake.webm" type="video/webm" />
+</video>
 <div class="plate" id="plate">
   <div class="time"><span id="hhmm">&nbsp;</span><span class="ampm" id="ampm"></span></div>
   <div class="date" id="date"></div>
+  <div class="hebdate" id="hebdate" lang="he"></div>
 </div>
 <script>
 (function(){
@@ -57,6 +70,57 @@ var TZ=new URLSearchParams(location.search).get('tz')||undefined;
 function fmt(opt){return new Intl.DateTimeFormat('en-US',TZ?Object.assign({timeZone:TZ},opt):opt)}
 var g=function(id){return document.getElementById(id)};
 
+// The Jewish day turns at nightfall, so from sunset on we show tomorrow's Hebrew
+// date. Sunset comes from hebcal once a day for the ZIP below; if it can't be
+// reached the date simply turns at midnight instead of being missing.
+var ZIP=new URLSearchParams(location.search).get('zip')||'90035';
+var sunset=null,sunsetFor='',zipTz=null;
+// The Hebrew date is worked out in the ZIP's own timezone, the same one the
+// sunset belongs to. Anchoring both to one place is what keeps the rollover from
+// landing a day out when the screen itself is set to a different timezone.
+function hebTz(){return TZ||zipTz||undefined}
+function civilDay(d,tz){
+  var o=tz?{timeZone:tz}:{};
+  return new Intl.DateTimeFormat('en-CA',o).format(d);
+}
+function loadSunset(){
+  var day=civilDay(new Date(),hebTz());
+  if(sunsetFor===day)return;
+  sunsetFor=day;
+  fetch('https://www.hebcal.com/zmanim?cfg=json&zip='+ZIP+'&date='+day)
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d&&d.location&&d.location.tzid)zipTz=d.location.tzid;
+      if(d&&d.times&&d.times.sunset){sunset=new Date(d.times.sunset);paint()}
+    })
+    .catch(function(){sunsetFor=''}); // clear so a later tick retries
+}
+// Hebrew numerals. Intl renders the Hebrew date with Latin digits ("19 5786"),
+// so the day and year are converted here and Intl's own month wording is kept.
+var GEM=[[400,'\u05ea'],[300,'\u05e9'],[200,'\u05e8'],[100,'\u05e7'],[90,'\u05e6'],[80,'\u05e4'],
+         [70,'\u05e2'],[60,'\u05e1'],[50,'\u05e0'],[40,'\u05de'],[30,'\u05dc'],[20,'\u05db'],
+         [10,'\u05d9'],[9,'\u05d8'],[8,'\u05d7'],[7,'\u05d6'],[6,'\u05d5'],[5,'\u05d4'],
+         [4,'\u05d3'],[3,'\u05d2'],[2,'\u05d1'],[1,'\u05d0']];
+function gematria(n){
+  var r=n%1000,s=''; // the year drops its thousands: 5786 -> תשפ״ו
+  while(r>0){
+    if(r===15){s+='\u05d8\u05d5';break}   // 15 and 16 are written טו / טז,
+    if(r===16){s+='\u05d8\u05d6';break}   // never with the Divine Name
+    for(var i=0;i<GEM.length;i++){if(GEM[i][0]<=r){s+=GEM[i][1];r-=GEM[i][0];break}}
+  }
+  return s.length===1?s+'\u05f3':s.slice(0,-1)+'\u05f4'+s.slice(-1);
+}
+function hebrewDate(now){
+  var d=(sunset&&now>=sunset)?new Date(now.getTime()+86400000):now;
+  try{
+    var o={day:'numeric',month:'long',year:'numeric'},tz=hebTz();
+    if(tz)o.timeZone=tz;
+    return new Intl.DateTimeFormat('he-u-ca-hebrew',o).formatToParts(d).map(function(pt){
+      return (pt.type==='day'||pt.type==='year')?gematria(+pt.value):pt.value;
+    }).join('');
+  }catch(e){return ''}
+}
+
 function paint(){
   var now=new Date();
   var t=fmt({hour:'numeric',minute:'2-digit',hour12:true}).format(now); // "9:33 AM"
@@ -64,10 +128,12 @@ function paint(){
   g('hhmm').textContent=parts[0];
   g('ampm').textContent=parts[1]||'';
   g('date').textContent=fmt({weekday:'long',month:'long',day:'numeric'}).format(now);
+  g('hebdate').textContent=hebrewDate(now);
   g('plate').classList.add('on');
 }
 // Tick exactly on the minute rather than drifting off a fixed interval.
 function schedule(){
+  loadSunset();
   paint();
   var now=new Date();
   setTimeout(schedule,(60-now.getSeconds())*1000-now.getMilliseconds()+50);
@@ -87,7 +153,7 @@ function drift(){
 }
 setInterval(drift,180000); // every 3 minutes
 
-// Keep the panel awake, and re-request it if the TV ever suspends the page.
+// Keep the panel awake two ways, since TVs honour one or the other.
 var lock=null;
 function wake(){
   if(!('wakeLock' in navigator))return;
@@ -95,10 +161,15 @@ function wake(){
     lock=l;l.addEventListener('release',function(){lock=null});
   }).catch(function(){});
 }
+function keepPlaying(){
+  var v=g('awake');
+  if(v&&v.paused){var q=v.play();if(q&&q.catch)q.catch(function(){})}
+}
 document.addEventListener('visibilitychange',function(){
-  if(document.visibilityState==='visible'){if(lock===null)wake();paint()}
+  if(document.visibilityState==='visible'){if(lock===null)wake();keepPlaying();paint()}
 });
-wake();
+setInterval(keepPlaying,30000); // resume if the TV ever pauses it
+wake();keepPlaying();
 
 // A tap or click anywhere goes full screen (browsers only allow it from a gesture).
 document.addEventListener('click',function(){
