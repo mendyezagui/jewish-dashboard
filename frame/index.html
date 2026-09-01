@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Frame</title>
+<meta name="theme-color" content="#0d0b09" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%2780%27 font-size=%2780%27>&#128337;</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;500&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:#0d0b09;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  -webkit-font-smoothing:antialiased;cursor:none}
+
+/* The art fills the panel. 16:9 source on a 16:9 screen, so cover crops nothing. */
+.art{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;
+  /* Pixel-shift: a slow, imperceptible drift so nothing burns into the panel. */
+  transition:transform 90s linear;will-change:transform;transform:scale(1.012)}
+
+/* A whisper of shade at the bottom so the time reads over any part of the picture. */
+.scrim{position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(78% 62% at 0% 100%,rgba(8,6,5,.80) 0%,rgba(8,6,5,.55) 26%,rgba(8,6,5,.22) 50%,rgba(8,6,5,.05) 72%,transparent 88%)}
+
+.plate{position:fixed;left:clamp(2.2rem,4.2vw,6.5rem);bottom:clamp(1.8rem,3.6vh,4.5rem);
+  color:#f6f1e6;text-shadow:0 .04em .5em rgba(0,0,0,.55),0 .01em .08em rgba(0,0,0,.4);
+  transition:transform 90s linear;will-change:transform}
+
+.time{display:flex;align-items:baseline;gap:.16em;font-size:clamp(3.6rem,10.5vw,18rem);
+  font-weight:200;line-height:.86;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
+.ampm{font-size:.2em;font-weight:500;letter-spacing:.16em;color:#e4d9c4;
+  transform:translateY(-.35em);text-transform:uppercase}
+
+.date{margin-top:clamp(.5rem,1.1vh,1.1rem);font-size:clamp(.95rem,1.85vw,3rem);
+  font-weight:300;letter-spacing:.2em;text-transform:uppercase;color:#ece3d2}
+
+/* Fades the whole overlay in once the clock has a real time to show. */
+.plate{opacity:0;transition:opacity 1.6s ease-out,transform 90s linear}
+.plate.on{opacity:1}
+@media(prefers-reduced-motion:reduce){.art,.plate{transition:opacity 1.6s ease-out}}
+</style>
+</head>
+<body>
+<img class="art" id="art" src="farbrengen.jpg" alt="" decoding="async" />
+<div class="scrim"></div>
+<div class="plate" id="plate">
+  <div class="time"><span id="hhmm">&nbsp;</span><span class="ampm" id="ampm"></span></div>
+  <div class="date" id="date"></div>
+</div>
+<script>
+(function(){
+// Device local time by default; ?tz=America/New_York to pin it elsewhere.
+var TZ=new URLSearchParams(location.search).get('tz')||undefined;
+function fmt(opt){return new Intl.DateTimeFormat('en-US',TZ?Object.assign({timeZone:TZ},opt):opt)}
+var g=function(id){return document.getElementById(id)};
+
+function paint(){
+  var now=new Date();
+  var t=fmt({hour:'numeric',minute:'2-digit',hour12:true}).format(now); // "9:33 AM"
+  var parts=t.split(' ');
+  g('hhmm').textContent=parts[0];
+  g('ampm').textContent=parts[1]||'';
+  g('date').textContent=fmt({weekday:'long',month:'long',day:'numeric'}).format(now);
+  g('plate').classList.add('on');
+}
+// Tick exactly on the minute rather than drifting off a fixed interval.
+function schedule(){
+  paint();
+  var now=new Date();
+  setTimeout(schedule,(60-now.getSeconds())*1000-now.getMilliseconds()+50);
+}
+schedule();
+
+// Pixel-shift. Every few minutes the picture and the clock inch to a new spot
+// (over a 90s transition, so the eye never catches it) -- the same trick the
+// Frame's own art mode uses to keep a still image from marking the panel.
+var step=0;
+function drift(){
+  step++;
+  var a=step*0.7;                       // walks slowly around an ellipse
+  var dx=Math.cos(a),dy=Math.sin(a*1.3);
+  g('art').style.transform='scale(1.012) translate('+(dx*0.35).toFixed(3)+'%,'+(dy*0.35).toFixed(3)+'%)';
+  g('plate').style.transform='translate('+(dx*0.6).toFixed(3)+'vw,'+(dy*0.5).toFixed(3)+'vh)';
+}
+setInterval(drift,180000); // every 3 minutes
+
+// Keep the panel awake, and re-request it if the TV ever suspends the page.
+var lock=null;
+function wake(){
+  if(!('wakeLock' in navigator))return;
+  navigator.wakeLock.request('screen').then(function(l){
+    lock=l;l.addEventListener('release',function(){lock=null});
+  }).catch(function(){});
+}
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'){if(lock===null)wake();paint()}
+});
+wake();
+
+// A tap or click anywhere goes full screen (browsers only allow it from a gesture).
+document.addEventListener('click',function(){
+  if(document.fullscreenElement)return;
+  var el=document.documentElement;
+  (el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el);
+});
+})();
+</script>
+</body>
+</html>
