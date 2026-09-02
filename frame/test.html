@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Frame image test</title>
+<style>
+body{margin:0;background:#222;color:#fff;font-family:sans-serif}
+#info{padding:6px 10px;font-size:14px;background:#000;color:#0f0;word-break:break-all}
+.grid{width:100%}
+.cell{position:relative;float:left;width:33.3%;height:280px;border:2px solid #444;overflow:hidden;background:#111}
+.lbl{position:absolute;top:0;left:0;z-index:9;background:#c00;color:#fff;font-size:26px;font-weight:bold;padding:2px 10px}
+.cap{position:absolute;bottom:0;left:0;z-index:9;background:rgba(0,0,0,.75);font-size:13px;padding:2px 6px}
+.fill{position:absolute;top:0;left:0;width:100%;height:100%}
+.cover{background-image:url(farbrengen.jpg);background-position:center;background-repeat:no-repeat;background-size:cover}
+.natural{background-image:url(farbrengen.jpg);background-position:center;background-repeat:no-repeat}
+.xform{-webkit-transform:scale(1.01);transform:scale(1.01)}
+</style>
+</head>
+<body>
+<div id="info">collecting…</div>
+<div class="grid">
+
+<div class="cell"><span class="lbl">1</span><span class="cap">img, no CSS at all</span>
+  <img src="farbrengen.jpg" height="270"></div>
+
+<div class="cell"><span class="lbl">2</span><span class="cap">img width=100%</span>
+  <img src="farbrengen.jpg" style="width:100%"></div>
+
+<div class="cell"><span class="lbl">3</span><span class="cap">img absolute 100%x100% (what /frame does)</span>
+  <img class="fill" src="farbrengen.jpg"></div>
+
+<div class="cell"><span class="lbl">4</span><span class="cap">div background-size:cover</span>
+  <div class="fill cover"></div></div>
+
+<div class="cell"><span class="lbl">5</span><span class="cap">div background, natural size</span>
+  <div class="fill natural"></div></div>
+
+<div class="cell"><span class="lbl">6</span><span class="cap">img + transform:scale (the old way)</span>
+  <img class="fill xform" src="farbrengen.jpg"></div>
+
+<div class="cell"><span class="lbl">7</span><span class="cap">small.jpg — 960x540</span>
+  <img class="fill" src="small.jpg"></div>
+
+<div class="cell"><span class="lbl">8</span><span class="cap">test.png — 1280x720 PNG</span>
+  <img class="fill" src="test.png"></div>
+
+<div class="cell"><span class="lbl">9</span><span class="cap">inline SVG (no image file)</span>
+  <svg class="fill" viewBox="0 0 100 60" preserveAspectRatio="none"><rect width="100" height="60" fill="#2a7"/><text x="50" y="34" font-size="12" text-anchor="middle" fill="#fff">SVG OK</text></svg></div>
+
+</div>
+<script>
+(function(){
+  var i=document.getElementById('info');
+  var im=new Image();
+  im.onload=function(){show('decoded '+im.width+'x'+im.height)};
+  im.onerror=function(){show('IMAGE FAILED TO LOAD')};
+  im.src='farbrengen.jpg';
+  function show(state){
+    i.textContent='screen '+screen.width+'x'+screen.height
+      +' | window '+window.innerWidth+'x'+window.innerHeight
+      +' | dpr '+(window.devicePixelRatio||1)
+      +' | '+state
+      +' | '+navigator.userAgent;
+  }
+  show('loading…');
+})();
+</script>
+</body>
+</html>
