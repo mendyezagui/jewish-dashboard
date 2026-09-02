@@ -1,15 +1,15 @@
 {
   "name": "Frame Clock",
   "short_name": "Frame",
-  "start_url": ".",
-  "scope": ".",
+  "start_url": "/frame/",
+  "scope": "/frame/",
   "display": "fullscreen",
   "orientation": "landscape",
   "background_color": "#0d0b09",
   "theme_color": "#0d0b09",
   "icons": [
     {
-      "src": "icon-512.jpg",
+      "src": "/frame/icon-512.jpg",
       "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "any"

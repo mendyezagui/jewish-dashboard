@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Frame</title>
 <meta name="theme-color" content="#0d0b09" />
-<link rel="manifest" href="manifest.webmanifest" />
+<link rel="manifest" href="/frame/manifest.webmanifest" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%2780%27 font-size=%2780%27>&#128337;</text></svg>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -54,7 +54,7 @@ html,body{height:100%;overflow:hidden;background:#0d0b09;position:relative;
 </style>
 </head>
 <body>
-<img class="art" id="art" src="farbrengen.jpg" alt="" />
+<img class="art" id="art" src="/frame/farbrengen.jpg" alt="" />
 <div class="scrim"></div>
 <div class="plate" id="plate">
   <div class="time"><span id="hhmm">&nbsp;</span><span class="ampm" id="ampm"></span></div>
@@ -183,7 +183,7 @@ wake();
     n.textContent='farbrengen.jpg did not load';
     document.body.appendChild(n);
   };
-  probe.src='farbrengen.jpg';
+  probe.src='/frame/farbrengen.jpg';
 })();
 
 // A tap or click anywhere goes full screen (browsers only allow it from a gesture).
