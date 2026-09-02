@@ -12,37 +12,31 @@
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400&family=Inter:wght@200;300;500&display=swap" rel="stylesheet" />
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;overflow:hidden;background:#0d0b09;
+html,body{height:100%;overflow:hidden;background:#0d0b09;position:relative;
   font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   -webkit-font-smoothing:antialiased;cursor:none}
 
-/* The art fills the panel. 16:9 source on a 16:9 screen, so cover crops nothing.
-   Painted as a background rather than an <img> with object-fit: background-size has
-   been supported far longer, and older TV browsers ship without object-fit. */
-.art{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;
-  background-color:#0d0b09;
-  background-image:url(farbrengen.jpg);
-  background-position:center center;
-  background-repeat:no-repeat;
-  background-size:cover;
-  /* Pixel-shift: a slow, imperceptible drift so nothing burns into the panel. */
-  -webkit-transition:-webkit-transform 90s linear;transition:transform 90s linear;
-  -webkit-transform:scale(1.012);transform:scale(1.012)}
+/* The art fills the panel. The source is exactly 16:9 and so is the screen, so a
+   plain stretched <img> is pixel-identical to object-fit:cover -- and needs nothing
+   newer than 1998. No transform here: on old TV WebKit a fixed or transformed layer
+   can composite to blank, which is exactly how the picture went missing.
+   102% with a -1% offset leaves slack for the pixel-shift to move into. */
+.art{position:absolute;top:-1%;left:-1%;width:102%;height:102%;display:block;border:0;
+  background-color:#0d0b09}
 
 /* A whisper of shade at the bottom so the time reads over any part of the picture. */
-.scrim{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;
+.scrim{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;
   /* Plain gradient first; a browser that cannot parse the radial keeps this one. */
   background:linear-gradient(to top,rgba(8,6,5,.72) 0%,rgba(8,6,5,.30) 30%,transparent 55%);
   background:radial-gradient(78% 62% at 0% 100%,rgba(8,6,5,.80) 0%,rgba(8,6,5,.55) 26%,rgba(8,6,5,.22) 50%,rgba(8,6,5,.05) 72%,transparent 88%)}
 
-.plate{position:fixed;left:clamp(2.2rem,4.2vw,6.5rem);bottom:clamp(1.8rem,3.6vh,4.5rem);
-  color:#f6f1e6;text-shadow:0 .04em .5em rgba(0,0,0,.55),0 .01em .08em rgba(0,0,0,.4);
-  transition:transform 90s linear;will-change:transform}
+.plate{position:absolute;left:clamp(2.2rem,4.2vw,6.5rem);bottom:clamp(1.8rem,3.6vh,4.5rem);
+  color:#f6f1e6;text-shadow:0 .04em .5em rgba(0,0,0,.55),0 .01em .08em rgba(0,0,0,.4)}
 
 .time{display:flex;align-items:baseline;gap:.16em;font-size:clamp(3.6rem,10.5vw,18rem);
   font-weight:200;line-height:.86;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
 .ampm{font-size:.2em;font-weight:500;letter-spacing:.16em;color:#e4d9c4;
-  transform:translateY(-.35em);text-transform:uppercase}
+  position:relative;top:-.35em;text-transform:uppercase}
 
 .date{margin-top:clamp(.5rem,1.1vh,1.1rem);font-size:clamp(.95rem,1.85vw,3rem);
   font-weight:300;letter-spacing:.2em;text-transform:uppercase;color:#ece3d2}
@@ -52,7 +46,7 @@ html,body{height:100%;overflow:hidden;background:#0d0b09;
   min-height:1em}
 
 /* Fades the whole overlay in once the clock has a real time to show. */
-.plate{opacity:0;transition:opacity 1.6s ease-out,transform 90s linear}
+.plate{opacity:0;transition:opacity 1.6s ease-out}
 .plate.on{opacity:1}
 /* Two pixels of silent, looping video. Many TV browsers only suppress the
    screensaver while something is actually playing -- the Wake Lock API alone is
@@ -64,7 +58,7 @@ html,body{height:100%;overflow:hidden;background:#0d0b09;
 </style>
 </head>
 <body>
-<div class="art" id="art" role="img" aria-label="Farbrengen"></div>
+<img class="art" id="art" src="farbrengen.jpg" alt="" />
 <div class="scrim"></div>
 <video class="awake" id="awake" muted loop playsinline autoplay preload="auto" aria-hidden="true" tabindex="-1">
   <source src="awake.mp4" type="video/mp4" />
@@ -160,10 +154,11 @@ function drift(){
   step++;
   var a=step*0.7;                       // walks slowly around an ellipse
   var dx=Math.cos(a),dy=Math.sin(a*1.3);
-  var a1='scale(1.012) translate('+(dx*0.35).toFixed(3)+'%,'+(dy*0.35).toFixed(3)+'%)';
-  var a2='translate('+(dx*0.6).toFixed(3)+'vw,'+(dy*0.5).toFixed(3)+'vh)';
-  g('art').style.transform=a1;g('art').style.webkitTransform=a1;
-  g('plate').style.transform=a2;g('plate').style.webkitTransform=a2;
+  // Margins, not transforms -- nothing gets promoted to its own layer.
+  g('art').style.marginLeft=(dx*5).toFixed(0)+'px';
+  g('art').style.marginTop=(dy*5).toFixed(0)+'px';
+  g('plate').style.marginLeft=(dx*9).toFixed(0)+'px';
+  g('plate').style.marginBottom=(dy*7).toFixed(0)+'px';
 }
 setInterval(drift,180000); // every 3 minutes
 
