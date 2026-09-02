@@ -16,13 +16,23 @@ html,body{height:100%;overflow:hidden;background:#0d0b09;
   font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   -webkit-font-smoothing:antialiased;cursor:none}
 
-/* The art fills the panel. 16:9 source on a 16:9 screen, so cover crops nothing. */
-.art{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;
+/* The art fills the panel. 16:9 source on a 16:9 screen, so cover crops nothing.
+   Painted as a background rather than an <img> with object-fit: background-size has
+   been supported far longer, and older TV browsers ship without object-fit. */
+.art{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;
+  background-color:#0d0b09;
+  background-image:url(farbrengen.jpg);
+  background-position:center center;
+  background-repeat:no-repeat;
+  background-size:cover;
   /* Pixel-shift: a slow, imperceptible drift so nothing burns into the panel. */
-  transition:transform 90s linear;will-change:transform;transform:scale(1.012)}
+  -webkit-transition:-webkit-transform 90s linear;transition:transform 90s linear;
+  -webkit-transform:scale(1.012);transform:scale(1.012)}
 
 /* A whisper of shade at the bottom so the time reads over any part of the picture. */
-.scrim{position:fixed;inset:0;pointer-events:none;
+.scrim{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;
+  /* Plain gradient first; a browser that cannot parse the radial keeps this one. */
+  background:linear-gradient(to top,rgba(8,6,5,.72) 0%,rgba(8,6,5,.30) 30%,transparent 55%);
   background:radial-gradient(78% 62% at 0% 100%,rgba(8,6,5,.80) 0%,rgba(8,6,5,.55) 26%,rgba(8,6,5,.22) 50%,rgba(8,6,5,.05) 72%,transparent 88%)}
 
 .plate{position:fixed;left:clamp(2.2rem,4.2vw,6.5rem);bottom:clamp(1.8rem,3.6vh,4.5rem);
@@ -47,12 +57,14 @@ html,body{height:100%;overflow:hidden;background:#0d0b09;
 /* Two pixels of silent, looping video. Many TV browsers only suppress the
    screensaver while something is actually playing -- the Wake Lock API alone is
    ignored on plenty of them. Invisible, but it counts as playback. */
+.artfail{position:fixed;top:1.2rem;left:1.2rem;padding:.4rem .8rem;background:rgba(140,20,20,.85);
+  color:#fff;font-size:1rem;letter-spacing:.05em;border-radius:.3rem}
 .awake{position:fixed;left:0;bottom:0;width:2px;height:2px;opacity:.01;z-index:-1;pointer-events:none}
 @media(prefers-reduced-motion:reduce){.art,.plate{transition:opacity 1.6s ease-out}}
 </style>
 </head>
 <body>
-<img class="art" id="art" src="farbrengen.jpg" alt="" decoding="async" />
+<div class="art" id="art" role="img" aria-label="Farbrengen"></div>
 <div class="scrim"></div>
 <video class="awake" id="awake" muted loop playsinline autoplay preload="auto" aria-hidden="true" tabindex="-1">
   <source src="awake.mp4" type="video/mp4" />
@@ -148,8 +160,10 @@ function drift(){
   step++;
   var a=step*0.7;                       // walks slowly around an ellipse
   var dx=Math.cos(a),dy=Math.sin(a*1.3);
-  g('art').style.transform='scale(1.012) translate('+(dx*0.35).toFixed(3)+'%,'+(dy*0.35).toFixed(3)+'%)';
-  g('plate').style.transform='translate('+(dx*0.6).toFixed(3)+'vw,'+(dy*0.5).toFixed(3)+'vh)';
+  var a1='scale(1.012) translate('+(dx*0.35).toFixed(3)+'%,'+(dy*0.35).toFixed(3)+'%)';
+  var a2='translate('+(dx*0.6).toFixed(3)+'vw,'+(dy*0.5).toFixed(3)+'vh)';
+  g('art').style.transform=a1;g('art').style.webkitTransform=a1;
+  g('plate').style.transform=a2;g('plate').style.webkitTransform=a2;
 }
 setInterval(drift,180000); // every 3 minutes
 
@@ -166,7 +180,19 @@ function keepPlaying(){
   if(v&&v.paused){var q=v.play();if(q&&q.catch)q.catch(function(){})}
 }
 document.addEventListener('visibilitychange',function(){
-  if(document.visibilityState==='visible'){if(lock===null)wake();keepPlaying();paint()}
+  if(document.visibilityState==='visible'){if(lock===null)wake();keepPlaying();
+
+// If the picture itself will not load, say so rather than showing a black panel.
+(function(){
+  var probe=new Image();
+  probe.onerror=function(){
+    var n=document.createElement('div');
+    n.className='artfail';
+    n.textContent='farbrengen.jpg did not load';
+    document.body.appendChild(n);
+  };
+  probe.src='farbrengen.jpg';
+})();paint()}
 });
 setInterval(keepPlaying,30000); // resume if the TV ever pauses it
 wake();keepPlaying();
