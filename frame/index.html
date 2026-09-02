@@ -48,22 +48,14 @@ html,body{height:100%;overflow:hidden;background:#0d0b09;position:relative;
 /* Fades the whole overlay in once the clock has a real time to show. */
 .plate{opacity:0;transition:opacity 1.6s ease-out}
 .plate.on{opacity:1}
-/* Two pixels of silent, looping video. Many TV browsers only suppress the
-   screensaver while something is actually playing -- the Wake Lock API alone is
-   ignored on plenty of them. Invisible, but it counts as playback. */
 .artfail{position:fixed;top:1.2rem;left:1.2rem;padding:.4rem .8rem;background:rgba(140,20,20,.85);
   color:#fff;font-size:1rem;letter-spacing:.05em;border-radius:.3rem}
-.awake{position:fixed;left:0;bottom:0;width:2px;height:2px;opacity:.01;z-index:-1;pointer-events:none}
 @media(prefers-reduced-motion:reduce){.art,.plate{transition:opacity 1.6s ease-out}}
 </style>
 </head>
 <body>
 <img class="art" id="art" src="farbrengen.jpg" alt="" />
 <div class="scrim"></div>
-<video class="awake" id="awake" muted loop playsinline autoplay preload="auto" aria-hidden="true" tabindex="-1">
-  <source src="awake.mp4" type="video/mp4" />
-  <source src="awake.webm" type="video/webm" />
-</video>
 <div class="plate" id="plate">
   <div class="time"><span id="hhmm">&nbsp;</span><span class="ampm" id="ampm"></span></div>
   <div class="date" id="date"></div>
@@ -162,7 +154,12 @@ function drift(){
 }
 setInterval(drift,180000); // every 3 minutes
 
-// Keep the panel awake two ways, since TVs honour one or the other.
+// Keep the panel awake. A silent looping <video> used to sit here as a second
+// line of defence for TV browsers that ignore the Wake Lock API. It is gone: it
+// was what blanked the picture. Samsung composites video onto a hardware plane
+// behind the page and punches a transparent hole through to show it, so a video
+// at z-index:-1 turned everything behind the clock black. This browser reports
+// Chrome 120 and honours the wake lock on its own.
 var lock=null;
 function wake(){
   if(!('wakeLock' in navigator))return;
@@ -170,14 +167,14 @@ function wake(){
     lock=l;l.addEventListener('release',function(){lock=null});
   }).catch(function(){});
 }
-function keepPlaying(){
-  var v=g('awake');
-  if(v&&v.paused){var q=v.play();if(q&&q.catch)q.catch(function(){})}
-}
 document.addEventListener('visibilitychange',function(){
-  if(document.visibilityState==='visible'){if(lock===null)wake();keepPlaying();
+  if(document.visibilityState==='visible'){if(lock===null)wake();paint()}
+});
+wake();
 
-// If the picture itself will not load, say so rather than showing a black panel.
+// If the art cannot be fetched, say so instead of showing a black panel.
+// (This probe was previously spliced into the visibilitychange handler by a bad
+// edit, so it never ran on load -- which is why no warning ever appeared.)
 (function(){
   var probe=new Image();
   probe.onerror=function(){
@@ -187,10 +184,7 @@ document.addEventListener('visibilitychange',function(){
     document.body.appendChild(n);
   };
   probe.src='farbrengen.jpg';
-})();paint()}
-});
-setInterval(keepPlaying,30000); // resume if the TV ever pauses it
-wake();keepPlaying();
+})();
 
 // A tap or click anywhere goes full screen (browsers only allow it from a gesture).
 document.addEventListener('click',function(){
