@@ -377,6 +377,21 @@ function loadRambamDatabase(){
       }
     }).catch(function(){return null});
 }
+// The page used to reload itself each time the leaderboard finished, which is how
+// a deploy reached the screen. The rotation rewrite dropped that, so the TV kept
+// running whatever it had loaded and no publish ever showed up. Once a cycle, ask
+// the server whether this file has changed, and reload only when it has.
+var buildTag=null;
+function checkForUpdate(){
+  fetch(location.pathname,{method:'HEAD',cache:'no-store'})
+    .then(function(r){
+      var tag=r.headers.get('etag')||r.headers.get('last-modified');
+      if(!tag)return;
+      if(buildTag&&tag!==buildTag){location.reload();return}
+      buildTag=tag;
+    }).catch(function(){});
+}
+
 function startScreenRotation(){
   hideMissingScan();
   loadRambamDatabase().then(renderRambam);
@@ -385,6 +400,7 @@ function startScreenRotation(){
   if(params.get('view')==='ulman'||params.get('view')==='letter'){g('ulmanScreen').classList.remove('hidden');startUlmanProgress();return}
   function cycle(){
     showDashboard();
+    checkForUpdate();
     setTimeout(function(){showUlman()},FIRST_ULMAN_DELAY);
     setTimeout(function(){showRambam()},RAMBAM_DELAY);
     setTimeout(cycle,CYCLE_MS);
