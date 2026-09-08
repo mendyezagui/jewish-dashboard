@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hebrew voice check</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:16px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f7f2e7;color:#23262e;padding:18px 16px 60px;max-width:720px;margin:0 auto}
+h1{font-size:1.35rem;margin-bottom:.2rem}
+.sub{color:#6d6656;font-size:.9rem;margin-bottom:1.1rem}
+.panel{background:#fffdf7;border:1px solid rgba(43,58,128,.15);border-radius:14px;padding:14px;margin-bottom:14px}
+.verse{font-family:'Frank Ruhl Libre',serif;direction:rtl;text-align:right;font-size:1.5rem;line-height:1.9;margin:.3rem 0 .1rem}
+.verse small{display:block;font-size:.72rem;color:#6d6656;direction:ltr;text-align:left;margin-top:.3rem}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+button{font:inherit;font-weight:600;padding:11px 15px;border-radius:10px;border:1px solid #2b3a80;background:#2b3a80;color:#fff;cursor:pointer;min-height:46px}
+button.alt{background:#fff;color:#2b3a80}
+button:disabled{opacity:.45}
+label.chk{display:flex;align-items:center;gap:8px;font-size:.92rem;padding:6px 0}
+.vlist{margin-top:6px}
+.v{border-top:1px solid rgba(0,0,0,.08);padding:12px 0}
+.v:first-child{border-top:0}
+.vname{font-weight:700}
+.vmeta{font-size:.8rem;color:#6d6656;margin-bottom:8px}
+.he{background:#eef2ff;border:1px solid #c7d0f5;border-radius:10px;padding:10px;margin-bottom:10px}
+.warn{background:#fff4f4;border:1px solid #f0c9c9;border-radius:10px;padding:12px;font-size:.92rem}
+.ok{background:#f0fdf4;border:1px solid #bbe7c9;border-radius:10px;padding:12px;font-size:.92rem}
+code{background:rgba(0,0,0,.06);padding:1px 5px;border-radius:4px;font-size:.85em}
+.sl{display:flex;align-items:center;gap:10px;font-size:.88rem;margin-top:8px}
+input[type=range]{flex:1}
+</style>
+</head>
+<body>
+<h1>Hebrew voice check</h1>
+<div class="sub">Open this on the device you'd actually read on. It lists that device's Hebrew voices and reads a verse aloud, so we know what we're working with before building anything.</div>
+
+<div class="panel">
+  <div class="verse" id="sample1">אַשְׁרֵי הָאִישׁ אֲשֶׁר לֹא הָלַךְ בַּעֲצַת רְשָׁעִים<small>Tehillim 1:1 — tests how the voice handles nikkud</small></div>
+  <div class="verse" id="sample2">מִזְמוֹר לְדָוִד ה׳ רֹעִי לֹא אֶחְסָר<small>Tehillim 23:1 — contains the Shem, so it tests the substitution below</small></div>
+  <label class="chk"><input type="checkbox" id="subShem" checked> Say <b>&nbsp;ה׳&nbsp;</b> as "Hashem" rather than pronouncing the Name</label>
+  <label class="chk"><input type="checkbox" id="stripNikkud"> Strip the nikkud before speaking (some engines read better without)</label>
+  <div class="sl">Speed <input type="range" id="rate" min="0.5" max="1.4" step="0.05" value="0.85"><span id="rateVal">0.85</span></div>
+</div>
+
+<div id="status"></div>
+<div class="vlist" id="voices"></div>
+
+<div class="panel" style="margin-top:16px">
+  <b>What to listen for</b>
+  <div class="sub" style="margin:.4rem 0 0">Are the vowels right? Does it run words together? Is it too fast or robotic to follow along with? Tell me which voice name sounded best (or that none did) and I'll build from there.</div>
+</div>
+
+<script>
+(function(){
+  var settled=false;
+  var g=function(id){return document.getElementById(id)};
+  var NIKKUD=/[֑-ׇ]/g;               // cantillation + vowel points
+  var SHEM=/יהוה|ה׳|ה'/g;  // יהוה, ה׳, ה'
+
+  function prep(t){
+    if(g('subShem').checked) t=t.replace(SHEM,'הַשֵׁם');   // הַשֵׁם
+    if(g('stripNikkud').checked) t=t.replace(NIKKUD,'');
+    return t;
+  }
+  function textOf(id){
+    var n=g(id).cloneNode(true); var s=n.querySelector('small'); if(s)s.remove();
+    return n.textContent.trim();
+  }
+  function say(text,voice){
+    try{speechSynthesis.cancel()}catch(e){}
+    var u=new SpeechSynthesisUtterance(prep(text));
+    if(voice){u.voice=voice;u.lang=voice.lang}else{u.lang='he-IL'}
+    u.rate=parseFloat(g('rate').value)||0.85;
+    speechSynthesis.speak(u);
+  }
+  g('rate').addEventListener('input',function(){g('rateVal').textContent=g('rate').value});
+
+  function render(){
+    var all=[];
+    try{all=speechSynthesis.getVoices()||[]}catch(e){}
+    var heb=all.filter(function(v){return /^he|iw/i.test(v.lang)});
+    var st=g('status'), list=g('voices');
+    list.innerHTML='';
+
+    if(!('speechSynthesis' in window)){
+      st.innerHTML='<div class="warn"><b>This browser has no speech support at all.</b> Try Safari on iPhone/iPad, or Chrome on Android.</div>';
+      return;
+    }
+    if(!all.length){
+      st.innerHTML=settled
+        ? '<div class="warn"><b>This device reports no speech voices at all.</b> Nothing is installed for the browser to use. On iPhone/iPad try Safari; on desktop Chrome you may need to install a system voice first.</div>'
+        : '<div class="warn">No voices reported yet — some browsers load them a moment late. Give it a second.</div>';
+      return;
+    }
+    if(!heb.length){
+      st.innerHTML='<div class="warn"><b>No Hebrew voice on this device.</b> It found '+all.length+' voices, none Hebrew.'+
+        '<br><br>On iPhone/iPad: Settings → Accessibility → Spoken Content → Voices → Hebrew (Carmit).'+
+        '<br>On Android: install the Hebrew pack in Google Text-to-Speech.'+
+        '<br><br>You can still press the button below — some browsers will fall back to a system Hebrew engine even when they do not list one.</div>'+
+        '<div class="he" style="margin-top:12px"><div class="vname">Try anyway (no voice chosen)</div>'+
+        '<div class="vmeta">asks the browser for he-IL and hopes</div>'+
+        '<div class="row"><button data-i="-1" data-s="sample1">Read 1:1</button>'+
+        '<button class="alt" data-i="-1" data-s="sample2">Read 23:1</button></div></div>';
+    } else {
+      st.innerHTML='<div class="ok"><b>'+heb.length+' Hebrew voice'+(heb.length>1?'s':'')+' found</b> out of '+all.length+' total. Tap to hear each one.</div>';
+    }
+
+    heb.forEach(function(v,i){
+      var d=document.createElement('div');
+      d.className='he';
+      d.innerHTML='<div class="vname">'+v.name+'</div><div class="vmeta">'+v.lang+(v.localService?' · on-device':' · network')+(v.default?' · default':'')+'</div>'+
+        '<div class="row"><button data-i="'+i+'" data-s="sample1">Read 1:1</button>'+
+        '<button class="alt" data-i="'+i+'" data-s="sample2">Read 23:1</button></div>';
+      g('voices').appendChild(d);
+    });
+
+    // Everything else, in case a non-Hebrew voice handles it acceptably.
+    if(all.length){
+      var other=document.createElement('div');
+      other.className='panel';
+      other.innerHTML='<b>All '+all.length+' voices on this device</b><div class="sub" style="margin-top:.3rem">'+
+        all.map(function(v){return v.lang+' — '+v.name}).join('<br>')+'</div>';
+      g('voices').appendChild(other);
+    }
+
+    hebVoices=heb;   // the one click handler below reads this
+  }
+
+  // Attached once. render() runs again every time the browser reports new voices,
+  // so a listener registered inside it would stack up and speak twice per tap.
+  var hebVoices=[];
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-s]'); if(!b)return;
+    var i=parseInt(b.getAttribute('data-i'),10);
+    say(textOf(b.getAttribute('data-s')), i>=0?hebVoices[i]:null);
+  });
+
+  render();
+  if('speechSynthesis' in window){
+    speechSynthesis.onvoiceschanged=render;   // Chrome loads them late
+    setTimeout(render,600);
+    setTimeout(function(){settled=true;render()},2500);
+  }
+})();
+</script>
+</body>
+</html>
