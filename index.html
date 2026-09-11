@@ -155,28 +155,40 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .rambam-progress{height:5px;width:min(34vw,520px);background:rgba(23,37,84,.12);border-radius:999px;overflow:hidden}
 .rambam-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#d4a017,#0f766e);border-radius:inherit}
 @media(max-width:900px){.leaderboard-row{grid-template-columns:60px 2fr .8fr 1fr 1fr}.leaderboard-track-name,.leaderboard-missing{display:none}}
-/* ------- Rabbi Ulman's letter: full-screen landscape TV slide ------- */
-.ulman-screen{position:fixed;inset:0;z-index:60;display:grid;grid-template-columns:minmax(0,54fr) minmax(0,46fr);overflow:hidden;background:#110e0b;color:#f8f3e8}
+/* ------- Rabbi Ulman's slide: the maamar, or the Days of Awe message ------- */
+.ulman-screen{position:fixed;inset:0;z-index:60;overflow:hidden;background:#110e0b;color:#f8f3e8}
 .ulman-screen.hidden{display:none!important}
+.ulman-screen.mode-maamar .letter-yamim,.ulman-screen.mode-yamim .letter-maamar{display:none}
+.letter-maamar{display:grid;grid-template-columns:minmax(0,54fr) minmax(0,46fr);height:100%}
 .ulman-copy{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:clamp(1.6rem,3.4vw,4.2rem) clamp(1.8rem,3.6vw,4.6rem);border-right:clamp(4px,.45vw,8px) solid #d5a817}
-.ulman-kicker{font-family:'Oswald','Arial Narrow',sans-serif;font-size:clamp(.8rem,1.25vw,1.55rem);font-weight:600;line-height:1.45;letter-spacing:.10em;text-transform:uppercase;color:#d5a817;margin-bottom:clamp(1rem,2vh,2rem)}
+.ulman-kicker{font-family:'Oswald','Arial Narrow',sans-serif;font-size:clamp(.8rem,1.25vw,1.55rem);font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#d5a817;margin-bottom:clamp(.9rem,1.8vh,1.8rem)}
 .ulman-quote{font-family:'Oswald','Arial Narrow',sans-serif;font-size:clamp(2.1rem,3.9vw,4.9rem);font-weight:700;line-height:1.02;letter-spacing:-.02em;text-transform:uppercase;color:#f8f3e8;text-shadow:0 .06em 0 rgba(0,0,0,.28)}
 .ulman-quote span{color:#d5a817}
-.ulman-attrib{margin-top:clamp(.8rem,1.7vh,1.7rem);padding-left:clamp(.7rem,1.1vw,1.4rem);border-left:clamp(4px,.35vw,7px) solid #d5a817;font-size:clamp(.8rem,1.15vw,1.45rem);line-height:1.5;color:#cfc4b1}
-.ulman-attrib b{display:block;color:#f8f3e8;font-weight:700;letter-spacing:.02em}
+.ulman-gloss{margin-top:clamp(.7rem,1.5vh,1.5rem);font-size:clamp(.95rem,1.5vw,1.95rem);line-height:1.4;color:#e4d9c4}
+.ulman-attrib{margin-top:clamp(.8rem,1.7vh,1.7rem);padding-left:clamp(.7rem,1.1vw,1.4rem);border-left:clamp(4px,.35vw,7px) solid #d5a817;font-size:clamp(.75rem,1.05vw,1.3rem);line-height:1.5;color:#cfc4b1}
+.ulman-attrib b{display:block;color:#f8f3e8;font-weight:700}
 .ulman-bracha{margin-top:auto;padding-top:clamp(1rem,2vh,2rem);border-top:1px solid rgba(213,168,23,.35)}
+.ulman-bracha.hidden{display:none}
 .ulman-bracha-he{font-family:'Heebo',sans-serif;direction:rtl;text-align:left;font-size:clamp(1.15rem,2.05vw,2.6rem);font-weight:700;color:#d5a817;line-height:1.3}
 .ulman-bracha-en{margin-top:.3rem;font-size:clamp(.75rem,1.08vw,1.35rem);color:#cfc4b1;letter-spacing:.03em}
-/* Right side: the passage itself */
 .ulman-source{position:relative;display:flex;flex-direction:column;justify-content:center;gap:clamp(.7rem,1.5vh,1.5rem);padding:clamp(1.6rem,3vw,3.8rem) clamp(1.5rem,2.8vw,3.4rem);background:#171310;overflow:hidden}
 .ulman-srclbl{font-family:'Oswald','Arial Narrow',sans-serif;font-size:clamp(.7rem,1.02vw,1.25rem);font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#8d8272}
-.ulman-heb{font-family:'Heebo',sans-serif;direction:rtl;text-align:right;font-size:clamp(.95rem,1.55vw,2rem);line-height:1.95;font-weight:400;color:#efe7d6}
+.ulman-heb{font-family:'Heebo',sans-serif;direction:rtl;text-align:right;font-size:clamp(.95rem,1.55vw,2rem);line-height:1.95;color:#efe7d6}
 .ulman-heb mark{background:rgba(213,168,23,.26);color:#ffdf85;padding:.06em .16em;border-radius:.15em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .ulman-scan{display:block;width:100%;max-height:34vh;object-fit:contain;background:#fff;border:2px solid rgba(213,168,23,.5)}
-.ulman-en{font-size:clamp(.72rem,1.08vw,1.36rem);line-height:1.62;color:#b9ae9c;border-top:1px solid rgba(255,255,255,.1);padding-top:clamp(.6rem,1.2vh,1.2rem)}
+.ulman-en{font-size:clamp(.74rem,1.1vw,1.4rem);line-height:1.62;color:#b9ae9c;border-top:1px solid rgba(255,255,255,.1);padding-top:clamp(.6rem,1.2vh,1.2rem)}
 .ulman-en b{color:#e6dcc7;font-weight:600}
+/* The Ten Days message: one centred panel, nothing to read but the point */
+.letter-yamim{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:clamp(1.6rem,4vw,5rem);gap:clamp(.8rem,1.8vh,1.8rem);background:radial-gradient(120% 90% at 50% 0%,#1d1712 0%,#110e0b 70%)}
+.yamim-he{font-family:'Heebo',sans-serif;direction:rtl;font-size:clamp(1.5rem,3.2vw,4rem);font-weight:700;color:#d5a817;line-height:1.35}
+.yamim-lines{font-family:'Oswald','Arial Narrow',sans-serif;font-size:clamp(2.3rem,5.4vw,7rem);font-weight:700;line-height:1.02;letter-spacing:-.02em;text-transform:uppercase;color:#f8f3e8;text-shadow:0 .06em 0 rgba(0,0,0,.3)}
+.yamim-lines span{color:#d5a817}
+.yamim-ask{font-size:clamp(.95rem,1.5vw,1.9rem);color:#cfc4b1;letter-spacing:.04em}
+.yamim-bracha{margin-top:clamp(.6rem,1.4vh,1.4rem);padding-top:clamp(.8rem,1.6vh,1.6rem);border-top:1px solid rgba(213,168,23,.35);width:min(70%,900px)}
+.yamim-bracha-he{font-family:'Heebo',sans-serif;direction:rtl;font-size:clamp(1.25rem,2.3vw,2.9rem);font-weight:700;color:#d5a817}
+.yamim-bracha-en{margin-top:.25rem;font-size:clamp(.78rem,1.1vw,1.4rem);color:#a99e8c;letter-spacing:.04em}
 .ulman-progress{position:absolute;z-index:3;left:0;bottom:0;height:clamp(5px,.5vw,9px);width:0;background:#d5a817}
-@media(max-width:900px){.ulman-screen{grid-template-columns:1fr;grid-template-rows:auto 1fr}.ulman-copy{border-right:0;border-bottom:4px solid #d5a817}.ulman-quote{font-size:clamp(1.8rem,7vw,3rem)}}
+@media(max-width:900px){.letter-maamar{grid-template-columns:1fr;grid-template-rows:auto 1fr}.ulman-copy{border-right:0;border-bottom:4px solid #d5a817}.ulman-quote{font-size:clamp(1.8rem,7vw,3rem)}}
 </style>
 </head>
 <body>
@@ -241,31 +253,43 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
     <span>Returning to the Jewish Dashboard&hellip;</span>
   </footer>
 </section>
-<section class="ulman-screen hidden" id="ulmanScreen" aria-label="A letter Rabbi Ulman asked to share">
-  <div class="ulman-copy">
-    <div class="ulman-kicker">Rabbi Ulman asks that we share this maamar of the Previous Rebbe regarding talking during the Torah reading</div>
-    <h1 class="ulman-quote">Drives the <span>King</span><br>out of His palace.</h1>
-    <div class="ulman-attrib">
-      <b>The Previous Rebbe</b>
-      on hearing the Torah reading &middot; Sefer HaMaamarim 5697, p.&nbsp;264
+<section class="ulman-screen hidden mode-maamar" id="ulmanScreen" aria-label="A message Rabbi Ulman asked to share">
+  <div class="letter-maamar">
+    <div class="ulman-copy">
+      <div class="ulman-kicker">Rabbi Ulman asked us to share this</div>
+      <h1 class="ulman-quote">Drives the <span>King</span><br>out of His palace.</h1>
+      <div class="ulman-gloss">The King is in the room &mdash; not somewhere in the sky.</div>
+      <div class="ulman-attrib">
+        <b>The Previous Rebbe</b>
+        on talking during the Torah reading &middot; Sefer HaMaamarim 5697, p.&nbsp;264
+      </div>
+      <div class="ulman-bracha" id="maamarBracha">
+        <div class="ulman-bracha-he">&#1499;&#1514;&#1497;&#1489;&#1492; &#1493;&#1495;&#1514;&#1497;&#1502;&#1492; &#1496;&#1493;&#1489;&#1492;</div>
+        <div class="ulman-bracha-en">Wishing you a kesivah vachasimah tovah</div>
+      </div>
     </div>
-    <div class="ulman-bracha">
-      <div class="ulman-bracha-he">&#1499;&#1514;&#1497;&#1489;&#1492; &#1493;&#1495;&#1514;&#1497;&#1502;&#1492; &#1496;&#1493;&#1489;&#1492;</div>
-      <div class="ulman-bracha-en">Wishing you a kesivah vachasimah tovah &mdash; a good and sweet year</div>
+    <div class="ulman-source">
+      <div class="ulman-srclbl">From the maamar</div>
+      <img class="ulman-scan" id="ulmanScan" src="letter.jpg" alt="" />
+      <div class="ulman-heb" id="ulmanHeb">&#1513;&#1510;&#1512;&#1497;&#1498; &#1500;&#1513;&#1502;&#1493;&#1506; &#1502;&#1514;&#1493;&#1498; &#1492;&#1505;&#1508;&#1512; &#1513;&#1489;&#1497;&#1491;&#1493; &#1493;&#1500;&#1513;&#1502;&#1493;&#1506; &#1499;&#1500; &#1514;&#1497;&#1489;&#1492; &#1493;&#1514;&#1497;&#1489;&#1492;, &#1493;&#1499;&#1497;&#1491;&#1493;&#1506; &#1490;&#1493;&#1491;&#1500; &#1506;&#1493;&#1510;&#1501; &#1492;&#1506;&#1493;&#1504;&#1513; &#1489;&#1494;&#1492; &#1493;&#1489;&#1489;&#1488; &#1500;&#1492;&#1489;&#1500;&#1514;&#1497; &#1504;&#1494;&#1492;&#1512;&#1497;&#1501; &#1489;&#1494;&#1492;, &#1493;&#1499;&#1502;&#1489;&#1493;&#1488;&#1512; &#1489;&#1505;&#1508;&#1512;&#1497;&#1501; &#1491;&#1513;&#1502;&#1497;&#1506;&#1514; &#1511;&#1512;&#1497;&#1488;&#1514; &#1492;&#1514;&#1493;&#1512;&#1492; &#1489;&#1491;&#1497;&#1493;&#1511; &#1504;&#1493;&#1490;&#1506; &#1489;&#1489;&#1504;&#1497; &#1495;&#1497;&#1497; &#1493;&#1502;&#1494;&#1493;&#1504;&#1488;, <mark>&#1493;&#1492;&#1502;&#1494;&#1500;&#1494;&#1500; &#1489;&#1513;&#1502;&#1497;&#1506;&#1514; &#1511;&#1512;&#1497;&#1488;&#1514; &#1492;&#1514;&#1493;&#1512;&#1492; &#1492;&#1493;&#1488; &#1499;&#1506;&#1494; &#1508;&#1504;&#1497;&#1501; &#1492;&#1502;&#1490;&#1512;&#1513; &#1488;&#1514; &#1492;&#1502;&#1500;&#1498; &#1502;&#1492;&#1497;&#1499;&#1500;&#1493;</mark>, &#1493;&#1492;&#1502;&#1491;&#1489;&#1512; &#1506;&#1501; &#1494;&#1493;&#1500;&#1514;&#1493; &#1492;&#1493;&#1488; &#1502;&#1495;&#1496;&#1497;&#1488; &#1488;&#1514; &#1492;&#1512;&#1489;&#1497;&#1501;, &#1493;&#1502;&#1512;&#1489;&#1492; &#1495;&#1524;&#1493; &#1502;&#1514;&#1497;&#1501; &#1493;&#1506;&#1504;&#1497;&#1493;&#1514; &#1489;&#1497;&#1513;&#1512;&#1488;&#1500;.</div>
+      <div class="ulman-en">
+        One must listen from the sefer in his own hand, and hear every single word.
+        <b>One who treats it lightly is like a brazen man who drives the King out of His
+        palace</b> &mdash; and one who talks with his fellow causes the many to sin.
+      </div>
     </div>
   </div>
-  <div class="ulman-source">
-    <div class="ulman-srclbl">From the maamar</div>
-    <img class="ulman-scan" id="ulmanScan" src="letter.jpg" alt="" />
-    <div class="ulman-heb" id="ulmanHeb">&#1513;&#1510;&#1512;&#1497;&#1498; &#1500;&#1513;&#1502;&#1493;&#1506; &#1502;&#1514;&#1493;&#1498; &#1492;&#1505;&#1508;&#1512; &#1513;&#1489;&#1497;&#1491;&#1493; &#1493;&#1500;&#1513;&#1502;&#1493;&#1506; &#1499;&#1500; &#1514;&#1497;&#1489;&#1492; &#1493;&#1514;&#1497;&#1489;&#1492;, &#1493;&#1499;&#1497;&#1491;&#1493;&#1506; &#1490;&#1493;&#1491;&#1500; &#1506;&#1493;&#1510;&#1501; &#1492;&#1506;&#1493;&#1504;&#1513; &#1489;&#1494;&#1492; &#1493;&#1489;&#1489;&#1488; &#1500;&#1492;&#1489;&#1500;&#1514;&#1497; &#1504;&#1494;&#1492;&#1512;&#1497;&#1501; &#1489;&#1494;&#1492;, &#1493;&#1499;&#1502;&#1489;&#1493;&#1488;&#1512; &#1489;&#1505;&#1508;&#1512;&#1497;&#1501; &#1491;&#1513;&#1502;&#1497;&#1506;&#1514; &#1511;&#1512;&#1497;&#1488;&#1514; &#1492;&#1514;&#1493;&#1512;&#1492; &#1489;&#1491;&#1497;&#1493;&#1511; &#1504;&#1493;&#1490;&#1506; &#1489;&#1489;&#1504;&#1497; &#1495;&#1497;&#1497; &#1493;&#1502;&#1494;&#1493;&#1504;&#1488;, <mark>&#1493;&#1492;&#1502;&#1494;&#1500;&#1494;&#1500; &#1489;&#1513;&#1502;&#1497;&#1506;&#1514; &#1511;&#1512;&#1497;&#1488;&#1514; &#1492;&#1514;&#1493;&#1512;&#1492; &#1492;&#1493;&#1488; &#1499;&#1506;&#1494; &#1508;&#1504;&#1497;&#1501; &#1492;&#1502;&#1490;&#1512;&#1513; &#1488;&#1514; &#1492;&#1502;&#1500;&#1498; &#1502;&#1492;&#1497;&#1499;&#1500;&#1493;</mark>, &#1493;&#1492;&#1502;&#1491;&#1489;&#1512; &#1506;&#1501; &#1494;&#1493;&#1500;&#1514;&#1493; &#1492;&#1493;&#1488; &#1502;&#1495;&#1496;&#1497;&#1488; &#1488;&#1514; &#1492;&#1512;&#1489;&#1497;&#1501;, &#1493;&#1502;&#1512;&#1489;&#1492; &#1495;&#1524;&#1493; &#1502;&#1514;&#1497;&#1501; &#1493;&#1506;&#1504;&#1497;&#1493;&#1514; &#1489;&#1497;&#1513;&#1512;&#1488;&#1500;.</div>
-    <div class="ulman-en">
-      One must listen from the sefer in his own hand, and hear every single word. The
-      seforim explain that hearing the Torah reading precisely bears on children, life
-      and sustenance. <b>One who treats it lightly is like a brazen man who drives the
-      King out of His palace</b> &mdash; and one who talks with his fellow causes the many
-      to sin, and increases, God forbid, death and poverty in Israel.
+
+  <div class="letter-yamim">
+    <div class="yamim-he">&#1493;&#1456;&#1488;&#1464;&#1492;&#1463;&#1489;&#1456;&#1514;&#1468;&#1464; &#1500;&#1456;&#1512;&#1461;&#1506;&#1458;&#1498;&#1464; &#1499;&#1468;&#1464;&#1502;&#1493;&#1465;&#1498;&#1464;</div>
+    <div class="yamim-lines">Love yourself.<br>Love your friend.<br><span>Hear every word,<br>start to end.</span></div>
+    <div class="yamim-ask">No talking during Kaddish or the Torah reading</div>
+    <div class="yamim-bracha">
+      <div class="yamim-bracha-he">&#1499;&#1514;&#1497;&#1489;&#1492; &#1493;&#1495;&#1514;&#1497;&#1502;&#1492; &#1496;&#1493;&#1489;&#1492;</div>
+      <div class="yamim-bracha-en">A good and sweet year to every one of us</div>
     </div>
   </div>
+
   <div class="ulman-progress" id="ulmanProgress" aria-hidden="true"></div>
 </section>
 <script>
@@ -354,13 +378,36 @@ function hideMissingScan(){
   img.addEventListener('error',function(){img.style.display='none'});
   if(img.complete&&!img.naturalWidth)img.style.display='none';
 }
+// Which of the two messages belongs on screen. From Rosh Hashanah through Yom
+// Kippur the sharp one comes down: people are being judged already. The Jewish day
+// turns at nightfall, so the switch follows sunset rather than waiting for midnight.
+function letterMode(){
+  if(!hebData)return 'maamar';
+  var day=hebData.hd, mon=String(hebData.hm||'');
+  // Only roll on a sunset that belongs to today. Yesterday's is still in memory
+  // between midnight and the first zmanim refresh, and it is always in the past.
+  var now=new Date(),civil=function(d){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ}).format(d)};
+  if(todaySunset&&civil(todaySunset)===civil(now)&&now>=todaySunset){
+    day+=1;
+    if(/^elul/i.test(mon)&&day>29){mon='Tishrei';day=1}
+  }
+  return (/^tishre?i/i.test(mon)&&day>=1&&day<=10)?'yamim':'maamar';
+}
+function applyLetterMode(){
+  var sec=g('ulmanScreen'),mode=letterMode();
+  sec.classList.toggle('mode-yamim',mode==='yamim');
+  sec.classList.toggle('mode-maamar',mode!=='yamim');
+  // Kesivah vachasimah tovah only reads right through Yom Kippur.
+  var inSeason=/^elul/i.test(String(hebData&&hebData.hm))||mode==='yamim';
+  g('maamarBracha').classList.toggle('hidden',!inSeason);
+}
 function startUlmanProgress(){
   var bar=g('ulmanProgress'),start=performance.now();
   function frame(now){var elapsed=Math.min(ULMAN_MS,now-start);bar.style.width=(elapsed/ULMAN_MS*100)+'%';if(elapsed<ULMAN_MS)requestAnimationFrame(frame)}
   requestAnimationFrame(frame);
 }
 function showDashboard(){g('rambamScreen').classList.add('hidden');g('ulmanScreen').classList.add('hidden')}
-function showUlman(onDone){g('rambamScreen').classList.add('hidden');g('ulmanScreen').classList.remove('hidden');g('ulmanProgress').style.width='0';startUlmanProgress();setTimeout(function(){showDashboard();if(onDone)onDone()},ULMAN_MS)}
+function showUlman(onDone){applyLetterMode();g('rambamScreen').classList.add('hidden');g('ulmanScreen').classList.remove('hidden');g('ulmanProgress').style.width='0';startUlmanProgress();setTimeout(function(){showDashboard();if(onDone)onDone()},ULMAN_MS)}
 function showRambam(onDone){g('ulmanScreen').classList.add('hidden');g('rambamScreen').classList.remove('hidden');g('leaderboardTrack').style.transform='translateY(0)';g('rambamProgress').style.width='0';startRambamScroll();setTimeout(function(){showDashboard();if(onDone)onDone()},RAMBAM_MS)}
 function loadRambamDatabase(){
   return fetch('https://rambam-leaderboard.mendy-ez.chatgpt.site/api/leaderboard',{cache:'no-store'})
@@ -397,7 +444,11 @@ function startScreenRotation(){
   loadRambamDatabase().then(renderRambam);
   var params=new URLSearchParams(location.search);
   if(params.get('view')==='rambam'){g('rambamScreen').classList.remove('hidden');startRambamScroll();return}
-  if(params.get('view')==='ulman'||params.get('view')==='letter'){g('ulmanScreen').classList.remove('hidden');startUlmanProgress();return}
+  if(params.get('view')==='ulman'||params.get('view')==='letter'||params.get('view')==='yamim'||params.get('view')==='maamar'){
+    applyLetterMode();
+    var f=params.get('view');
+    if(f==='yamim'||f==='maamar'){g('ulmanScreen').classList.toggle('mode-yamim',f==='yamim');g('ulmanScreen').classList.toggle('mode-maamar',f==='maamar')}
+    g('ulmanScreen').classList.remove('hidden');startUlmanProgress();return}
   function cycle(){
     showDashboard();
     checkForUpdate();
@@ -595,6 +646,7 @@ function fetchLearn(){
   }).catch(function(){el.innerHTML='<span class="err">Unable to load daily learning</span>'});
 }
 var shabbosTimes={candleLighting:null,havdalah:null};
+var todaySunset=null;
 function fetchShabbos(){
   var card=g('sCard'),el=g('sTimes'),titleEl=g('sTitle');
   var now=new Date(),todayStr=now.toLocaleDateString('en-CA',{timeZone:TZ});
@@ -637,6 +689,7 @@ function fetchZmanim(){
   var el=g('zmanim');
   return fetch('https://www.hebcal.com/zmanim?cfg=json&zip='+ZIP).then(function(r){return r.json()}).then(function(d){
     var t=d.times||{};
+    if(t.sunset)todaySunset=new Date(t.sunset);
     var rows=[
       {l:'Alos',v:t.alotHaShachar},
       {l:'Hanetz',v:t.sunrise},
@@ -702,6 +755,7 @@ function loadAll(){
     return Promise.all([fetchHY(),fetchLearn(),fetchZmanim(),fetchShabbos()]);
   }).then(function(){
     checkShabbosMode();
+    applyLetterMode();   // the date and sunset it reads have only just arrived
     autoScrollAll();
   });
 }
