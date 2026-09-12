@@ -281,7 +281,7 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 <script>
 (function(){
 var TZ='America/Los_Angeles',ZIP='90035',REFRESH=3600000;
-var FIRST_ULMAN_DELAY=570000,RAMBAM_DELAY=1110000,CYCLE_MS=1200000,RAMBAM_MS=60000,ULMAN_MS=60000;
+var FIRST_ULMAN_DELAY=570000,RAMBAM_DELAY=1110000,CYCLE_MS=1200000,RAMBAM_MS=60000,ULMAN_MS=60000,ULMAN_HALF=30000;
 var RAMBAM_ROWS=[
   [1,'Eli Rice','up',1,'3 chapters/day',30,0,100.0],
   [2,'Isaac Rosenfeld','up',9,'1 chapter/day',30,0,100.0],
@@ -373,13 +373,15 @@ function letterMode(){
   }
   return (/^tishre?i/i.test(mon)&&day>=1&&day<=10)?'yamim':'maamar';
 }
-function applyLetterMode(){
+function setLetterPanel(mode){
   var sec=g('ulmanScreen'); if(!sec)return;
-  var mode=letterMode();
   sec.classList.toggle('mode-yamim',mode==='yamim');
   sec.classList.toggle('mode-maamar',mode!=='yamim');
-  // Kesivah vachasimah tovah only reads right through Yom Kippur.
-  var inSeason=/^elul/i.test(String(hebData&&hebData.hm))||mode==='yamim';
+}
+// Kesivah vachasimah tovah only reads right from Elul through Yom Kippur.
+function applyLetterMode(){
+  if(!g('maamarBracha'))return;
+  var inSeason=/^elul/i.test(String(hebData&&hebData.hm))||letterMode()==='yamim';
   g('maamarBracha').classList.toggle('hidden',!inSeason);
 }
 function startUlmanProgress(){
@@ -388,7 +390,17 @@ function startUlmanProgress(){
   requestAnimationFrame(frame);
 }
 function showDashboard(){g('rambamScreen').classList.add('hidden');g('ulmanScreen').classList.add('hidden')}
-function showUlman(onDone){applyLetterMode();g('rambamScreen').classList.add('hidden');g('ulmanScreen').classList.remove('hidden');g('ulmanProgress').style.width='0';startUlmanProgress();setTimeout(function(){showDashboard();if(onDone)onDone()},ULMAN_MS)}
+// The slide is two beats of thirty seconds: the bracha first, then the reason.
+function showUlman(onDone){
+  applyLetterMode();
+  g('rambamScreen').classList.add('hidden');
+  setLetterPanel('yamim');
+  g('ulmanScreen').classList.remove('hidden');
+  g('ulmanProgress').style.width='0';
+  startUlmanProgress();
+  var flip=setTimeout(function(){setLetterPanel('maamar')},ULMAN_HALF);
+  setTimeout(function(){clearTimeout(flip);showDashboard();if(onDone)onDone()},ULMAN_MS);
+}
 function showRambam(onDone){g('ulmanScreen').classList.add('hidden');g('rambamScreen').classList.remove('hidden');g('leaderboardTrack').style.transform='translateY(0)';g('rambamProgress').style.width='0';startRambamScroll();setTimeout(function(){showDashboard();if(onDone)onDone()},RAMBAM_MS)}
 function loadRambamDatabase(){
   return fetch('https://rambam-leaderboard.mendy-ez.chatgpt.site/api/leaderboard',{cache:'no-store'})
@@ -424,11 +436,16 @@ function startScreenRotation(){
   loadRambamDatabase().then(renderRambam);
   var params=new URLSearchParams(location.search);
   if(params.get('view')==='rambam'){g('rambamScreen').classList.remove('hidden');startRambamScroll();return}
-  if(params.get('view')==='ulman'||params.get('view')==='letter'||params.get('view')==='yamim'||params.get('view')==='maamar'){
+  var f=params.get('view');
+  if(f==='ulman'||f==='letter'||f==='yamim'||f==='maamar'){
     applyLetterMode();
-    var f=params.get('view');
-    if(f==='yamim'||f==='maamar'){g('ulmanScreen').classList.toggle('mode-yamim',f==='yamim');g('ulmanScreen').classList.toggle('mode-maamar',f==='maamar')}
-    g('ulmanScreen').classList.remove('hidden');startUlmanProgress();return}
+    if(f==='yamim'||f==='maamar'){
+      setLetterPanel(f);
+      g('ulmanScreen').classList.remove('hidden');startUlmanProgress();return;
+    }
+    (function loop(){showUlman(loop)})();   // both beats, on repeat
+    return;
+  }
   function cycle(){
     showDashboard();
     checkForUpdate();
