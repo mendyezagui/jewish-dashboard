@@ -281,7 +281,8 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 <script>
 (function(){
 var TZ='America/Los_Angeles',ZIP='90035',REFRESH=3600000;
-var FIRST_ULMAN_DELAY=570000,RAMBAM_DELAY=1110000,CYCLE_MS=1200000,RAMBAM_MS=60000,ULMAN_MS=60000,ULMAN_HALF=30000;
+var FIRST_ULMAN_DELAY=570000,RAMBAM_DELAY=1050000,CYCLE_MS=1200000,ULMAN_MS=60000,ULMAN_HALF=30000;
+var RAMBAM_PASS=60000,RAMBAM_PASSES=2,RAMBAM_MS=RAMBAM_PASS*RAMBAM_PASSES;
 var RAMBAM_ROWS=[
   [1,'Eli Rice','up',1,'3 chapters/day',30,0,100.0],
   [2,'Isaac Rosenfeld','up',9,'1 chapter/day',30,0,100.0],
@@ -348,10 +349,14 @@ function rankReason(r){
 }
 function startRambamScroll(){
   var win=g('leaderboardWindow'),track=g('leaderboardTrack'),progress=g('rambamProgress');
-  var start=performance.now(),topPause=5000,bottomPause=5000,travel=RAMBAM_MS-topPause-bottomPause;
+  // One pass is a full run down the list. Timing inside a pass is unchanged, so the
+  // names go by at the same speed as before -- there are just RAMBAM_PASSES of them,
+  // snapping back to the top in between.
+  var start=performance.now(),topPause=5000,bottomPause=5000,travel=RAMBAM_PASS-topPause-bottomPause;
   function frame(now){
     var elapsed=Math.min(RAMBAM_MS,now-start),max=Math.max(0,track.scrollHeight-win.clientHeight);
-    var p=elapsed<=topPause?0:elapsed>=topPause+travel?1:(elapsed-topPause)/travel;
+    var t=elapsed>=RAMBAM_MS?RAMBAM_PASS:elapsed%RAMBAM_PASS;
+    var p=t<=topPause?0:t>=topPause+travel?1:(t-topPause)/travel;
     track.style.transform='translateY('+(-max*p)+'px)';
     progress.style.width=(elapsed/RAMBAM_MS*100)+'%';
     if(elapsed<RAMBAM_MS)requestAnimationFrame(frame);
