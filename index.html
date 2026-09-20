@@ -132,29 +132,52 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
   .rcol > .card > #sTimes{overflow-y:visible;max-height:none}
 }
 /* ------- Rambam leaderboard rotation: full-screen TV takeover ------- */
-.rambam-screen{position:fixed;inset:0;z-index:50;background:radial-gradient(ellipse at 50% -15%,#fffdf3 0%,#f4f1e6 58%,#ece8da 100%);color:#18223a;display:grid;grid-template-rows:auto minmax(0,1fr) auto;padding:clamp(1rem,2vw,2.2rem);overflow:hidden}
+.rambam-screen{position:fixed;inset:0;z-index:50;background:#f7f9fc;color:#11182c;display:grid;grid-template-rows:auto minmax(0,1fr) auto;padding:clamp(1rem,2vw,2.2rem);overflow:hidden;
+  font-feature-settings:'tnum' 1}
 .rambam-screen.hidden{display:none!important}
-.rambam-head{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;padding:0.2rem 0 1.15rem;border-bottom:2px solid rgba(24,34,58,.14)}
-.rambam-kicker{font-size:clamp(.75rem,1vw,1.1rem);font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#8a6709;margin-bottom:.35rem}
-.rambam-title{font-size:clamp(2.1rem,4vw,4.7rem);font-weight:900;line-height:.95;letter-spacing:-.04em;color:#172554}
-.rambam-sub{font-size:clamp(.85rem,1.25vw,1.4rem);font-weight:600;color:#64748b;text-align:right;line-height:1.4}
-.rambam-sub strong{color:#172554}
-.leaderboard-window{min-height:0;overflow:hidden;position:relative;margin-top:1rem;mask-image:linear-gradient(to bottom,transparent 0,#000 2.5%,#000 96%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 2.5%,#000 96%,transparent 100%)}
-.leaderboard-track{will-change:transform;padding:1rem 0 3rem}
-.leaderboard-row{display:grid;grid-template-columns:minmax(64px,.55fr) minmax(320px,2.5fr) minmax(95px,.8fr) minmax(190px,1.35fr) minmax(120px,1fr) minmax(105px,.9fr) minmax(130px,1fr);align-items:center;gap:clamp(.45rem,1vw,1.2rem);min-height:clamp(68px,7.4vh,96px);padding:.45rem clamp(.75rem,1.35vw,1.5rem);border-bottom:1px solid rgba(100,116,139,.18);font-size:clamp(.95rem,1.42vw,1.7rem);font-variant-numeric:tabular-nums}
-.leaderboard-row:nth-child(even){background:rgba(255,255,255,.48)}
-.leaderboard-row.podium{background:linear-gradient(90deg,rgba(251,191,36,.18),rgba(255,255,255,.62));border:1px solid rgba(202,138,4,.24);border-radius:.8rem;margin:.22rem 0}
-.leaderboard-header{position:relative;z-index:3;min-height:clamp(42px,4.5vh,58px);background:#172554!important;color:white;border:0;border-radius:.7rem;font-size:clamp(.68rem,.92vw,1rem);font-weight:800;letter-spacing:.06em;text-transform:uppercase}
-.leaderboard-rank{font-weight:900;color:#8a6709;text-align:center}
-.leaderboard-name{min-width:0}.leaderboard-name strong{display:block;font-weight:800;color:#172033;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.leaderboard-name small{display:block;margin-top:.22rem;color:#64748b;font-size:clamp(.58rem,.76vw,.86rem);font-weight:600;line-height:1.25;white-space:normal}
-.leaderboard-track-name{color:#64748b;font-weight:600}
-.leaderboard-number{text-align:center;font-weight:750}
-.leaderboard-percent{text-align:right;font-weight:900;color:#0f766e}
-.move{font-weight:900;text-align:center}.move.up{color:#15803d}.move.down{color:#dc2626}.move.new{color:#2563eb}.move.same{color:#94a3b8}
-.rambam-foot{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding-top:.75rem;border-top:1px solid rgba(24,34,58,.14);font-size:clamp(.7rem,.95vw,1rem);color:#64748b;font-weight:600}
-.rambam-progress{height:5px;width:min(34vw,520px);background:rgba(23,37,84,.12);border-radius:999px;overflow:hidden}
-.rambam-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#d4a017,#0f766e);border-radius:inherit}
-@media(max-width:900px){.leaderboard-row{grid-template-columns:60px 2fr .8fr 1fr 1fr}.leaderboard-track-name,.leaderboard-missing{display:none}}
+.rambam-head{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;padding:.2rem 0 1.1rem;border-bottom:1px solid #dce3ef}
+.rambam-kicker{font-size:clamp(.7rem,.95vw,1.05rem);font-weight:750;letter-spacing:.14em;text-transform:uppercase;color:#2563eb;margin-bottom:.35rem}
+.rambam-title{font-size:clamp(2.1rem,4vw,4.7rem);font-weight:800;line-height:.95;letter-spacing:-.035em;color:#172554}
+.rambam-sub{font-size:clamp(.82rem,1.18vw,1.32rem);font-weight:500;color:#667085;text-align:right;line-height:1.5}
+.rambam-sub strong{color:#172554;font-weight:750}
+.leaderboard-window{min-height:0;overflow:hidden;position:relative;margin-top:1rem;
+  background:#fff;border:1px solid rgba(23,37,84,.11);border-radius:6px;box-shadow:0 10px 30px rgba(24,39,75,.08);
+  display:grid;grid-template-rows:auto minmax(0,1fr)}
+.lb-head,.lb-row{display:grid;
+  grid-template-columns:minmax(118px,.85fr) minmax(250px,2.1fr) minmax(88px,.62fr) minmax(150px,1.05fr) minmax(140px,1fr) minmax(70px,.48fr) minmax(80px,.54fr) minmax(160px,1.18fr);
+  align-items:center;gap:clamp(.4rem,.9vw,1.1rem);padding:0 clamp(.8rem,1.4vw,1.6rem)}
+.lb-head{background:#172554;color:#fff;letter-spacing:.08em;text-transform:uppercase;
+  padding-top:clamp(.5rem,1vh,.85rem);padding-bottom:clamp(.5rem,1vh,.85rem);
+  font-size:clamp(.6rem,.8vw,.9rem);font-weight:750;position:relative;z-index:3}
+.leaderboard-track{will-change:transform;padding-bottom:3rem}
+.lb-row{min-height:clamp(62px,6.9vh,92px);border-bottom:1px solid #eef2f8;
+  font-size:clamp(.92rem,1.35vw,1.62rem);font-variant-numeric:tabular-nums}
+.lb-row:nth-child(even){background:#fbfcfe}
+.lb-row.top{background:linear-gradient(90deg,rgba(244,185,66,.16),rgba(255,255,255,0) 62%)}
+.lb-rank{display:flex;align-items:center;gap:.4em;font-weight:800;color:#172554}
+.lb-rank .trophy{font-size:1.05em;line-height:1}
+.lb-tie{font-size:.52em;font-weight:800;letter-spacing:.08em;color:#667085;background:#eef2f8;border-radius:3px;padding:.18em .45em}
+.lb-member{min-width:0}
+.lb-member strong{display:block;font-weight:700;color:#11182c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-member small{display:block;margin-top:.2rem;color:#667085;font-size:clamp(.55rem,.73vw,.84rem);font-weight:500;line-height:1.3;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-move{font-weight:800;font-size:.86em}
+.lb-move.up{color:#16803d}.lb-move.down{color:#dc2626}.lb-move.new{color:#2563eb}.lb-move.same{color:#98a2b3}
+.lb-track{color:#667085;font-weight:500;font-size:.9em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-streak{color:#b45309;font-weight:800;font-size:.82em;white-space:nowrap}
+.lb-streak .lbl{color:#98a2b3;font-weight:650;letter-spacing:.04em;text-transform:uppercase;font-size:.82em;margin-right:.3em}
+.lb-streak.none{color:#cbd2dd}
+.lb-num{text-align:center;font-weight:700}
+.lb-miss{color:#667085}
+.lb-done{display:flex;align-items:center;gap:.55em;justify-content:flex-end;padding-right:.2em}
+.lb-bar{flex:1 1 auto;height:6px;max-width:7.5em;background:#eef2f8;border-radius:999px;overflow:hidden}
+.lb-bar i{display:block;height:100%;background:#2563eb;border-radius:inherit}
+.lb-bar i.full{background:#16803d}
+.lb-pct{font-weight:800;color:#172554;min-width:3.1em;text-align:right}
+.rambam-foot{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding-top:.75rem;border-top:1px solid #dce3ef;font-size:clamp(.7rem,.95vw,1rem);color:#667085;font-weight:500}
+.rambam-progress{height:5px;width:min(34vw,520px);background:#e6ebf4;border-radius:999px;overflow:hidden}
+.rambam-progress span{display:block;height:100%;width:0;background:#2563eb;border-radius:inherit}
+@media(max-width:900px){.lb-head,.lb-row{grid-template-columns:70px 1.8fr .7fr .8fr 1fr}.lb-track,.lb-streak,.lb-miss{display:none}}
 /* ------- Rabbi Ulman's slide: the maamar, or the Days of Awe message ------- */
 .ulman-screen{position:fixed;inset:0;z-index:60;overflow:hidden;background:#110e0b;color:#f8f3e8}
 .ulman-screen.hidden{display:none!important}
@@ -234,13 +257,13 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 <section class="rambam-screen hidden" id="rambamScreen" aria-label="Rambam 30-day leaderboard">
   <header class="rambam-head">
     <div>
-      <div class="rambam-kicker">Rambam Daily Learning</div>
+      <div class="rambam-kicker">WhatsApp learning accountability</div>
       <h1 class="rambam-title">30-Day Leaderboard</h1>
     </div>
-    <div class="rambam-sub" id="rambamSnapshot"><strong>Jul 15 - Aug 13, 2026</strong><br>Movement since Friday, Aug 7<br>Database snapshot Aug 16, 2026 at 8:13 PM PDT<br>31 members &middot; shown every 20 minutes</div>
+    <div class="rambam-sub" id="rambamSnapshot"><strong>Loading standings&hellip;</strong></div>
   </header>
   <div class="leaderboard-window" id="leaderboardWindow">
-    <div class="leaderboard-row leaderboard-header"><span>Rank</span><span>Member</span><span>Move</span><span>Track</span><span>Completed</span><span class="leaderboard-missing">Missing</span><span>Percent</span></div>
+    <div class="lb-head" aria-hidden="true"><span>Award / Rank</span><span>Member</span><span>Move</span><span>Track</span><span>On-time streak</span><span>Done</span><span>Missing</span><span>Completion</span></div>
     <div class="leaderboard-track" id="leaderboardTrack"></div>
   </div>
   <footer class="rambam-foot">
@@ -329,23 +352,53 @@ function moveHTML(dir,n){
   if(dir==='new')return '<span class="move new">NEW</span>';
   return '<span class="move same">-</span>';
 }
+// The seed rows are arrays; the feed sends objects. Everything downstream uses objects.
+var RAMBAM_LEADERS=RAMBAM_ROWS.map(function(r){
+  return {rank:r[0],member:r[1],direction:r[2],movement:r[3],track:r[4],
+          completed:r[5],missing:r[6],percent:Number(r[7]),
+          streakDays:0,streakWeeks:0,streakRemainderDays:0,tied:0};
+});
+
+function lbMove(dir,n){
+  if(dir==='up')return '<span class="lb-move up">&#9650; '+n+'</span>';
+  if(dir==='down')return '<span class="lb-move down">&#9660; '+n+'</span>';
+  if(dir==='new')return '<span class="lb-move new">NEW</span>';
+  return '<span class="lb-move same">&mdash;</span>';
+}
+// Weeks read better than a day count once someone is past seven.
+function lbStreak(L){
+  var w=L.streakWeeks||0,d=(w?L.streakRemainderDays:L.streakDays)||0;
+  if(!w&&!d)return '<span class="lb-streak none">&mdash;</span>';
+  var t=(w?w+'w':'')+(w&&d?' ':'')+(d?d+'d':'');
+  return '<span class="lb-streak" title="'+(L.streakDays||0)+' consecutive on-time days; Shabbos excluded">'+
+         '<span class="lbl">Streak</span>&#128293; '+t+'</span>';
+}
+function pct(n){n=Number(n)||0;return n.toFixed(n%1?1:0)}
 function renderRambam(){
   var track=g('leaderboardTrack');
-  track.innerHTML=RAMBAM_ROWS.map(function(r){
-    return '<div class="leaderboard-row '+(r[0]<=3?'podium':'')+'">'+
-      '<span class="leaderboard-rank">'+r[0]+'</span>'+
-      '<span class="leaderboard-name"><strong>'+esc(r[1])+'</strong><small>'+esc(rankReason(r))+'</small></span>'+moveHTML(r[2],r[3])+
-      '<span class="leaderboard-track-name">'+esc(r[4])+'</span>'+
-      '<span class="leaderboard-number">'+r[5]+'</span>'+
-      '<span class="leaderboard-number leaderboard-missing">'+r[6]+'</span>'+
-      '<span class="leaderboard-percent">'+r[7].toFixed(r[7]%1?1:0)+'%</span></div>';
+  track.innerHTML=RAMBAM_LEADERS.map(function(L){
+    var p=Number(L.percent)||0;
+    return '<article class="lb-row'+(L.rank<=3?' top':'')+'">'+
+      '<span class="lb-rank">'+(L.rank===1?'<span class="trophy">&#127942;</span>':'')+L.rank+
+        (L.tied?'<span class="lb-tie">TIE</span>':'')+'</span>'+
+      '<span class="lb-member"><strong>'+esc(L.member)+'</strong><small>'+esc(rankReason(L))+'</small></span>'+
+      lbMove(L.direction,L.movement)+
+      '<span class="lb-track">'+esc(L.track||'')+'</span>'+
+      lbStreak(L)+
+      '<span class="lb-num">'+L.completed+'</span>'+
+      '<span class="lb-num lb-miss">'+L.missing+'</span>'+
+      '<span class="lb-done"><span class="lb-bar"><i class="'+(p>=100?'full':'')+'" style="width:'+Math.max(0,Math.min(100,p))+'%"></i></span>'+
+        '<b class="lb-pct">'+pct(p)+'%</b></span>'+
+      '</article>';
   }).join('');
 }
-function rankReason(r){
-  var eligible=r[5]+r[6],same=RAMBAM_ROWS.filter(function(x){return x[7]===r[7]}),exact=same.filter(function(x){return x[5]===r[5]}).length>1;
-  var move=r[2]==='up'?'Up '+r[3]+' after added credits.':r[2]==='down'?'Down '+r[3]+' as others gained.':'Rank unchanged.';
-  var tie=exact?'Exact ties use name A-Z.':same.length>1?'Same %: more completed days ranks first.':r[7]===100?'Perfect score ranks first.':'Ranked by completion %.';
-  return (r[5]+'/'+eligible+' days ('+r[7].toFixed(r[7]%1?1:0)+'%). '+tie+' '+move).slice(0,150);
+function rankReason(L){
+  var eligible=(L.completed||0)+(L.missing||0);
+  var move=L.direction==='up'?'Up '+L.movement+'.':L.direction==='down'?'Down '+L.movement+'.':
+           L.direction==='new'?'New this window.':'Rank unchanged.';
+  var tie=L.tied?'Tied score; longer on-time streak first, then the 3-chapter track.':
+          Number(L.percent)===100?'Perfect score.':'Ranked by completion.';
+  return (L.completed+'/'+eligible+' days ('+pct(L.percent)+'%). '+tie+' '+move).slice(0,150);
 }
 function startRambamScroll(){
   var win=g('leaderboardWindow'),track=g('leaderboardTrack'),progress=g('rambamProgress');
@@ -411,17 +464,29 @@ function loadRambamDatabase(){
   return fetch('https://rambam-leaderboard.mendy-ez.chatgpt.site/api/leaderboard',{cache:'no-store'})
     .then(function(response){if(!response.ok)throw new Error('database unavailable');return response.json()})
     .then(function(data){
-      if(data.leaders&&data.leaders.length){
-        RAMBAM_ROWS=data.leaders.map(function(r){return [r.rank,r.member,r.direction,r.movement,r.track,r.completed,r.missing,Number(r.percent)]});
-      }
+      if(data.leaders&&data.leaders.length)RAMBAM_LEADERS=data.leaders;
       if(data.run){
-        var start=new Date(data.run.windowStart+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
-        var end=new Date(data.run.windowEnd+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-        var completed=new Date(data.run.completedAt).toLocaleString('en-US',{timeZone:TZ,month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'});
-        g('rambamSnapshot').innerHTML='<strong>'+start+' - '+end+'</strong><br>Movement since Friday, Aug 7<br>Database snapshot '+completed+'<br>'+RAMBAM_ROWS.length+' members &middot; shown every 20 minutes';
+        var run=data.run,day=function(d){return new Date(d+'T12:00:00')};
+        var start=day(run.windowStart),end=day(run.windowEnd);
+        var fmt=function(d,y){return d.toLocaleDateString('en-US',y?{month:'short',day:'numeric',year:'numeric'}:{month:'short',day:'numeric'})};
+        // The year restarted on 12 Sep 2026 and the window grows to 30 days from there.
+        var span=Math.min(30,Math.round((end-start)/86400000)+1);
+        var snap=new Date(run.completedAt).toLocaleString('en-US',
+          {timeZone:TZ,month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'});
+        // The comparison date comes from the feed. It used to be hardcoded, and went stale.
+        var prev=(RAMBAM_LEADERS[0]||{}).previousFridayDate;
+        var since=prev?'Movement since Friday, '+fmt(day(prev)):'';
+        g('rambamSnapshot').innerHTML=
+          '<strong>'+fmt(start)+' &ndash; '+fmt(end,1)+'</strong> &middot; day '+span+' of 30'+
+          (since?'<br>'+since:'')+
+          '<br>Snapshot '+snap+
+          '<br>'+RAMBAM_LEADERS.length+' members'+
+          (run.runSubmissions?' &middot; '+run.runSubmissions+' submissions':'')+
+          ' &middot; shown every 20 minutes';
       }
     }).catch(function(){return null});
 }
+
 // The page used to reload itself each time the leaderboard finished, which is how
 // a deploy reached the screen. The rotation rewrite dropped that, so the TV kept
 // running whatever it had loaded and no publish ever showed up. Once a cycle, ask
