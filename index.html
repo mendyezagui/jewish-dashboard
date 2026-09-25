@@ -105,6 +105,28 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .slbl{font-size:clamp(0.86rem,1.05vw,1.18rem);color:var(--text-2)}
 .stm{font-size:clamp(1.05rem,1.3vw,1.55rem);font-weight:700;color:var(--warm);font-variant-numeric:tabular-nums}
 .sparsha{text-align:center;font-size:clamp(0.86rem,1.05vw,1.2rem);color:var(--text-2);margin-top:0.3rem;padding-top:0.4rem;border-top:1px solid #fde4cc}
+/* ------- Fantasy ticker: opt-in strip along the bottom (?ticker=1) ------- */
+.ftick{position:fixed;left:0;right:0;bottom:0;z-index:70;height:clamp(34px,4.6vh,62px);
+  background:#0f1a36;color:#eaf0ff;display:flex;align-items:center;overflow:hidden;
+  border-top:2px solid #d4a017;box-shadow:0 -6px 18px rgba(0,0,0,.18)}
+.ftick.hidden{display:none!important}
+.ftick-tag{flex:0 0 auto;align-self:stretch;display:flex;align-items:center;gap:.5em;
+  padding:0 clamp(.7rem,1.2vw,1.4rem);background:#d4a017;color:#231a00;
+  font-size:clamp(.62rem,.86vw,.98rem);font-weight:800;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.ftick-win{flex:1 1 auto;min-width:0;overflow:hidden;position:relative}
+.ftick-run{display:inline-block;white-space:nowrap;will-change:transform;
+  animation:ftickmarq var(--ftick-dur,60s) linear infinite}
+.ftick-run:hover{animation-play-state:paused}
+@keyframes ftickmarq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ftick-game{display:inline-flex;align-items:baseline;gap:.45em;
+  margin:0 clamp(1rem,2.2vw,2.6rem);font-size:clamp(.78rem,1.08vw,1.25rem);font-variant-numeric:tabular-nums}
+.ftick-game b{font-weight:700;color:#fff}
+.ftick-game .pts{font-weight:800;color:#ffd979}
+.ftick-game .lead{color:#7ee0a5}
+.ftick-game .vs{color:#8fa0c8;font-size:.85em;margin:0 .1em}
+.ftick-idle{color:#a8b6d8;font-size:clamp(.75rem,1.02vw,1.18rem);margin-left:1.5rem}
+/* the cards must not hide behind the strip */
+body.has-ftick .dashboard{padding-bottom:calc(clamp(34px,4.6vh,62px) + clamp(0.9rem,1.7vw,2rem))}
 .loading{color:var(--text-3);font-style:italic;animation:pulse 1.5s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
 .err{color:var(--text-3);font-style:italic}
@@ -253,6 +275,10 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
       </section>
     </div>
   </div>
+</div>
+<div class="ftick hidden" id="ftick" aria-label="Fantasy football scores">
+  <div class="ftick-tag" id="ftickTag">&#127944; League</div>
+  <div class="ftick-win"><div class="ftick-run" id="ftickRun"></div></div>
 </div>
 <section class="rambam-screen hidden" id="rambamScreen" aria-label="Rambam 30-day leaderboard">
   <header class="rambam-head">
@@ -447,10 +473,11 @@ function startUlmanProgress(){
   function frame(now){var elapsed=Math.min(ULMAN_MS,now-start);bar.style.width=(elapsed/ULMAN_MS*100)+'%';if(elapsed<ULMAN_MS)requestAnimationFrame(frame)}
   requestAnimationFrame(frame);
 }
-function showDashboard(){g('rambamScreen').classList.add('hidden');g('ulmanScreen').classList.add('hidden')}
+function showDashboard(){g('rambamScreen').classList.add('hidden');g('ulmanScreen').classList.add('hidden');if(FTICK_ON)ftickRender(ftickLast)}
 // The slide is two beats of thirty seconds: the bracha first, then the reason.
 function showUlman(onDone){
   applyLetterMode();
+  if(FTICK_ON)g('ftick').classList.add('hidden');
   g('rambamScreen').classList.add('hidden');
   setLetterPanel('yamim');
   g('ulmanScreen').classList.remove('hidden');
@@ -459,7 +486,7 @@ function showUlman(onDone){
   var flip=setTimeout(function(){setLetterPanel('maamar')},ULMAN_HALF);
   setTimeout(function(){clearTimeout(flip);showDashboard();if(onDone)onDone()},ULMAN_MS);
 }
-function showRambam(onDone){g('ulmanScreen').classList.add('hidden');g('rambamScreen').classList.remove('hidden');g('leaderboardTrack').style.transform='translateY(0)';g('rambamProgress').style.width='0';startRambamScroll();setTimeout(function(){showDashboard();if(onDone)onDone()},RAMBAM_MS)}
+function showRambam(onDone){if(FTICK_ON)g('ftick').classList.add('hidden');g('ulmanScreen').classList.add('hidden');g('rambamScreen').classList.remove('hidden');g('leaderboardTrack').style.transform='translateY(0)';g('rambamProgress').style.width='0';startRambamScroll();setTimeout(function(){showDashboard();if(onDone)onDone()},RAMBAM_MS)}
 function loadRambamDatabase(){
   return fetch('https://rambam-leaderboard.mendy-ez.chatgpt.site/api/leaderboard',{cache:'no-store'})
     .then(function(response){if(!response.ok)throw new Error('database unavailable');return response.json()})
@@ -500,6 +527,97 @@ function checkForUpdate(){
       if(buildTag&&tag!==buildTag){location.reload();return}
       buildTag=tag;
     }).catch(function(){});
+}
+
+
+// ---- Fantasy ticker (opt-in with ?ticker=1) ----------------------------------
+// Sleeper's API is public and CORS-open, so this reads the league straight from
+// the browser. The matchups endpoint carries s-maxage=60, so polling faster than
+// a minute returns the same cached bytes; we poll at 60s and only repaint when
+// the payload actually differs. Outside game windows nothing changes for days,
+// so we do not poll at all then.
+var SLEEPER_LEAGUE='1399682601484095488';
+var FTICK_ON=/(^|&)ticker=(1|on)(&|$)/.test(location.search.slice(1));
+var ftickTeams={},ftickWeek=null,ftickHash='',ftickDays=[],ftickTimer=0;
+
+function ftickFetch(u){return fetch(u,{cache:'no-store'}).then(function(r){
+  if(!r.ok)throw new Error('sleeper '+r.status);return r.text()})}
+
+function ftickSetup(){
+  if(!FTICK_ON)return;
+  document.body.classList.add('has-ftick');
+  Promise.all([
+    ftickFetch('https://api.sleeper.app/v1/state/nfl'),
+    ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE),
+    ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE+'/users'),
+    ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE+'/rosters'),
+    ftickFetch('https://api.sleeper.app/schedule/nfl/regular/'+(new Date().getFullYear()))
+  ]).then(function(res){
+    var state=JSON.parse(res[0]),league=JSON.parse(res[1]),users=JSON.parse(res[2]),
+        rosters=JSON.parse(res[3]),sched=JSON.parse(res[4]);
+    ftickWeek=state.display_week||state.week||1;
+    var byUser={};
+    users.forEach(function(u){byUser[u.user_id]=(u.metadata&&u.metadata.team_name)||u.display_name||'—'});
+    rosters.forEach(function(r){ftickTeams[r.roster_id]=byUser[r.owner_id]||('Team '+r.roster_id)});
+    ftickDays=sched.filter(function(gm){return gm.week===ftickWeek}).map(function(gm){return gm.date}).sort();
+    g('ftickTag').innerHTML='&#127944; '+esc((league.name||'League').trim())+' &middot; Wk '+ftickWeek;
+    ftickPoll(true);
+  }).catch(function(){ftickRender(null)});
+}
+
+// Games run Thursday, Sunday and Monday. Only poll on a day this week has a game.
+function ftickGameDayToday(){
+  var today=new Date().toLocaleDateString('en-CA',{timeZone:TZ});
+  return ftickDays.indexOf(today)>=0;
+}
+// Never on Shabbos, whatever the schedule says.
+function ftickShabbos(){
+  var now=new Date();
+  if(shabbosTimes.candleLighting&&shabbosTimes.havdalah)
+    return now>=new Date(shabbosTimes.candleLighting)&&now<=new Date(shabbosTimes.havdalah);
+  return new Date().toLocaleDateString('en-US',{weekday:'long',timeZone:TZ})==='Saturday';
+}
+
+function ftickPoll(force){
+  if(!FTICK_ON||ftickWeek==null)return;
+  if(!force&&!ftickGameDayToday()){ftickRender(ftickLast);return}
+  ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE+'/matchups/'+ftickWeek)
+    .then(function(txt){
+      var h=String(txt.length)+':'+txt.slice(0,64)+txt.slice(-64);
+      if(h===ftickHash)return;              // nothing moved: no repaint at all
+      ftickHash=h;
+      ftickLast=JSON.parse(txt);
+      ftickRender(ftickLast);
+    }).catch(function(){});
+}
+var ftickLast=null;
+
+function ftickRender(data){
+  var el=g('ftick'),run=g('ftickRun');
+  if(!el)return;
+  if(!FTICK_ON||ftickShabbos()){el.classList.add('hidden');return}
+  el.classList.remove('hidden');
+  var html='';
+  if(data&&data.length){
+    var pairs={};
+    data.forEach(function(m){(pairs[m.matchup_id]=pairs[m.matchup_id]||[]).push(m)});
+    Object.keys(pairs).forEach(function(k){
+      var p=pairs[k]; if(p.length<2)return;
+      var a=p[0],b=p[1],pa=Number(a.points||0),pb=Number(b.points||0);
+      html+='<span class="ftick-game"><b>'+esc(ftickTeams[a.roster_id]||'—')+'</b>'+
+        '<span class="pts'+(pa>pb?' lead':'')+'">'+pa.toFixed(1)+'</span>'+
+        '<span class="vs">&ndash;</span>'+
+        '<span class="pts'+(pb>pa?' lead':'')+'">'+pb.toFixed(1)+'</span>'+
+        '<b>'+esc(ftickTeams[b.roster_id]||'—')+'</b></span>';
+    });
+  }
+  if(!html){
+    var next=ftickDays.filter(function(d){return d>=new Date().toLocaleDateString('en-CA',{timeZone:TZ})})[0];
+    var when=next?new Date(next+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}):'soon';
+    html='<span class="ftick-idle">No games running &middot; next kickoff '+esc(when)+'</span>';
+  }
+  run.innerHTML=html+html;                                  // duplicated for a seamless loop
+  run.style.setProperty('--ftick-dur',Math.max(24,Math.round(run.scrollWidth/2/95))+'s');
 }
 
 function startScreenRotation(){
@@ -844,6 +962,8 @@ document.addEventListener('visibilitychange',function(){
   if(document.visibilityState==='visible' && _wakeLock===null) requestWakeLock();
 });
 requestWakeLock();
+ftickSetup();
+setInterval(function(){ftickPoll(false)},60000);
 startScreenRotation();
 })();
 </script>
