@@ -538,7 +538,7 @@ function checkForUpdate(){
 // so we do not poll at all then.
 var SLEEPER_LEAGUE='1399682601484095488';
 var FTICK_ON=/(^|&)ticker=(1|on)(&|$)/.test(location.search.slice(1));
-var ftickTeams={},ftickWeek=null,ftickHash='',ftickDays=[],ftickTimer=0;
+var ftickTeams={},ftickWeek=null,ftickHash='';
 
 function ftickFetch(u){return fetch(u,{cache:'no-store'}).then(function(r){
   if(!r.ok)throw new Error('sleeper '+r.status);return r.text()})}
@@ -550,37 +550,33 @@ function ftickSetup(){
     ftickFetch('https://api.sleeper.app/v1/state/nfl'),
     ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE),
     ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE+'/users'),
-    ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE+'/rosters'),
-    ftickFetch('https://api.sleeper.app/schedule/nfl/regular/'+(new Date().getFullYear()))
+    ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE+'/rosters')
   ]).then(function(res){
     var state=JSON.parse(res[0]),league=JSON.parse(res[1]),users=JSON.parse(res[2]),
-        rosters=JSON.parse(res[3]),sched=JSON.parse(res[4]);
+        rosters=JSON.parse(res[3]);
     ftickWeek=state.display_week||state.week||1;
     var byUser={};
     users.forEach(function(u){byUser[u.user_id]=(u.metadata&&u.metadata.team_name)||u.display_name||'—'});
     rosters.forEach(function(r){ftickTeams[r.roster_id]=byUser[r.owner_id]||('Team '+r.roster_id)});
-    ftickDays=sched.filter(function(gm){return gm.week===ftickWeek}).map(function(gm){return gm.date}).sort();
     g('ftickTag').innerHTML='&#127944; '+esc((league.name||'League').trim())+' &middot; Wk '+ftickWeek;
     ftickPoll(true);
   }).catch(function(){ftickRender(null)});
 }
 
-// Games run Thursday, Sunday and Monday. Only poll on a day this week has a game.
-function ftickGameDayToday(){
-  var today=new Date().toLocaleDateString('en-CA',{timeZone:TZ});
-  return ftickDays.indexOf(today)>=0;
-}
-// Never on Shabbos, whatever the schedule says.
-function ftickShabbos(){
+// The strip is up on Sundays only, 9am to 8pm Los Angeles time, and never
+// otherwise. That covers the whole slate from before the early games to after the
+// night game, and it cannot land on Shabbos, so no separate guard is needed.
+var FTICK_FROM=9,FTICK_TO=20;
+function ftickWindow(){
   var now=new Date();
-  if(shabbosTimes.candleLighting&&shabbosTimes.havdalah)
-    return now>=new Date(shabbosTimes.candleLighting)&&now<=new Date(shabbosTimes.havdalah);
-  return new Date().toLocaleDateString('en-US',{weekday:'long',timeZone:TZ})==='Saturday';
+  var day=now.toLocaleDateString('en-US',{weekday:'long',timeZone:TZ});
+  var hour=parseInt(new Intl.DateTimeFormat('en-US',{hour:'numeric',hourCycle:'h23',timeZone:TZ}).format(now),10)%24;
+  return day==='Sunday'&&hour>=FTICK_FROM&&hour<FTICK_TO;
 }
 
 function ftickPoll(force){
   if(!FTICK_ON||ftickWeek==null)return;
-  if(!force&&!ftickGameDayToday()){ftickRender(ftickLast);return}
+  if(!ftickWindow()){ftickRender(null);return}
   ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE+'/matchups/'+ftickWeek)
     .then(function(txt){
       var h=String(txt.length)+':'+txt.slice(0,64)+txt.slice(-64);
@@ -595,7 +591,7 @@ var ftickLast=null;
 function ftickRender(data){
   var el=g('ftick'),run=g('ftickRun');
   if(!el)return;
-  if(!FTICK_ON||ftickShabbos()){el.classList.add('hidden');return}
+  if(!FTICK_ON||!ftickWindow()){el.classList.add('hidden');return}
   el.classList.remove('hidden');
   var html='';
   if(data&&data.length){
@@ -611,11 +607,7 @@ function ftickRender(data){
         '<b>'+esc(ftickTeams[b.roster_id]||'—')+'</b></span>';
     });
   }
-  if(!html){
-    var next=ftickDays.filter(function(d){return d>=new Date().toLocaleDateString('en-CA',{timeZone:TZ})})[0];
-    var when=next?new Date(next+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}):'soon';
-    html='<span class="ftick-idle">No games running &middot; next kickoff '+esc(when)+'</span>';
-  }
+  if(!html)html='<span class="ftick-idle">Week '+ftickWeek+' &middot; waiting for kickoff</span>';
   run.innerHTML=html+html;                                  // duplicated for a seamless loop
   run.style.setProperty('--ftick-dur',Math.max(24,Math.round(run.scrollWidth/2/95))+'s');
 }
@@ -963,7 +955,7 @@ document.addEventListener('visibilitychange',function(){
 });
 requestWakeLock();
 ftickSetup();
-setInterval(function(){ftickPoll(false)},60000);
+setInterval(function(){ftickPoll(false)},60000);  // the window is re-checked on every tick
 startScreenRotation();
 })();
 </script>
