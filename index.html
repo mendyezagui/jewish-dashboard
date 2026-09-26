@@ -280,11 +280,12 @@ body.has-ftick .dashboard{padding-bottom:calc(clamp(34px,4.6vh,62px) + clamp(0.9
   <div class="ftick-tag" id="ftickTag">&#127944; League</div>
   <div class="ftick-win"><div class="ftick-run" id="ftickRun"></div></div>
 </div>
-<section class="rambam-screen hidden" id="rambamScreen" aria-label="Rambam 30-day leaderboard">
+<section class="rambam-screen hidden" id="rambamScreen" aria-label="Rambam new-year leaderboard">
   <header class="rambam-head">
     <div>
       <div class="rambam-kicker">WhatsApp learning accountability</div>
-      <h1 class="rambam-title">30-Day Leaderboard</h1>
+      <h1 class="rambam-title">New-Year Leaderboard</h1>
+      <div id="rambamChapters" style="font-size:clamp(1.3rem,2vw,2.4rem);font-weight:800;margin-top:.6rem">561 chapters learned</div>
     </div>
     <div class="rambam-sub" id="rambamSnapshot"><strong>Loading standings&hellip;</strong></div>
   </header>
@@ -332,39 +333,6 @@ body.has-ftick .dashboard{padding-bottom:calc(clamp(34px,4.6vh,62px) + clamp(0.9
 var TZ='America/Los_Angeles',ZIP='90035',REFRESH=3600000;
 var FIRST_ULMAN_DELAY=570000,RAMBAM_DELAY=1050000,CYCLE_MS=1200000,ULMAN_MS=60000,ULMAN_HALF=30000;
 var RAMBAM_PASS=60000,RAMBAM_PASSES=2,RAMBAM_MS=RAMBAM_PASS*RAMBAM_PASSES;
-var RAMBAM_ROWS=[
-  [1,'Eli Rice','up',1,'3 chapters/day',30,0,100.0],
-  [2,'Isaac Rosenfeld','up',9,'1 chapter/day',30,0,100.0],
-  [3,'Shmuli Thaler','same',0,'1 chapter/day',30,0,100.0],
-  [4,'Eli Broner','up',4,'1 chapter/day',24,0,100.0],
-  [5,'Michael Hakimi','up',2,'1 chapter/day',29,1,96.7],
-  [6,'Miki','same',0,'1 chapter/day',28,2,93.3],
-  [7,'Eli Portnoy','down',6,'1 chapter/day',26,4,86.7],
-  [8,'Pesach Davidoff USA','up',6,'1 chapter/day',26,4,86.7],
-  [9,'Shmulik Naparstek','up',3,'3 chapters/day',26,4,86.7],
-  [10,'Aaaron Meir Munitz','up',8,'1 chapter/day',24,6,80.0],
-  [11,'Alex Gertel','down',1,'1 chapter/day',24,6,80.0],
-  [12,'David Homami','up',4,'3 chapters/day',24,6,80.0],
-  [13,'Mendel Inglis','down',8,'1 chapter/day',24,6,80.0],
-  [14,'Ariel Hess','down',10,'1 chapter/day',23,7,76.7],
-  [15,'Aryeh Siegel','same',0,'1 chapter/day',23,7,76.7],
-  [16,'Mendy Ezagui','down',3,'1 chapter/day',21,9,70.0],
-  [17,'Yudi Lewis','down',8,'1 chapter/day',21,9,70.0],
-  [18,'Levi Teleshevsky','up',1,'1 chapter/day',20,10,66.7],
-  [19,'Shlomo Stark','up',2,'1 chapter/day',19,11,63.3],
-  [20,'Mendy Baitelman','same',0,'3 chapters/day',17,13,56.7],
-  [21,'Rabbi Chein','down',4,'1 chapter/day',14,16,46.7],
-  [22,'Menachem Wilhelm','same',0,'1 chapter/day',13,17,43.3],
-  [23,'Ari Weiss','same',0,'1 chapter/day',3,27,10.0],
-  [24,'Benny Amrami','same',0,'1 chapter/day',1,29,3.3],
-  [25,'Dovid Lieder Library Shul','up',1,'1 chapter/day',1,29,3.3],
-  [26,'Eldad Yonesi','up',1,'1 chapter/day',1,29,3.3],
-  [27,'Dovid Feld','up',1,'1 chapter/day',0,30,0.0],
-  [28,'Jacobson','down',3,'1 chapter/day',0,30,0.0],
-  [29,'Joseph Percia','new',0,'1 chapter/day',0,3,0.0],
-  [30,'Nochum Labkowski','new',0,'1 chapter/day',0,3,0.0],
-  [31,'Shlomo Pinhas','same',0,'1 chapter/day',0,30,0.0]
-];
 var TEHILLIM={1:'1-9',2:'10-17',3:'18-22',4:'23-28',5:'29-34',6:'35-38',7:'39-43',8:'44-48',9:'49-54',10:'55-59',11:'60-65',12:'66-68',13:'69-71',14:'72-76',15:'77-78',16:'79-82',17:'83-87',18:'88-89',19:'90-96',20:'97-103',21:'104-105',22:'106-107',23:'108-112',24:'113-118',25:'119:1-58',26:'119:59-117',27:'119:118-176',28:'120-134',29:'135-139',30:'140-150'};
 var ALIYAH=['Rishon','Sheni','Shlishi',"Revi'i",'Chamishi','Shishi',"Shevi'i"];
 var hebData=null;
@@ -378,12 +346,8 @@ function moveHTML(dir,n){
   if(dir==='new')return '<span class="move new">NEW</span>';
   return '<span class="move same">-</span>';
 }
-// The seed rows are arrays; the feed sends objects. Everything downstream uses objects.
-var RAMBAM_LEADERS=RAMBAM_ROWS.map(function(r){
-  return {rank:r[0],member:r[1],direction:r[2],movement:r[3],track:r[4],
-          completed:r[5],missing:r[6],percent:Number(r[7]),
-          streakDays:0,streakWeeks:0,streakRemainderDays:0,tied:0};
-});
+// Verified run 71 fallback; refreshed from the shared live leaderboard API.
+var RAMBAM_LEADERS=[{"rank":1,"member":"YM Munitz","direction":"same","movement":0,"track":"15 chapters/day","completed":14,"missing":0,"percent":100,"lastSubmissionAt":"2026-09-25T08:42:02","eligible":14,"weekCompleted":7,"weekEligible":7,"previousFridayDate":"2026-09-18","previousFridayRank":1,"weekEndingFriday":"2026-09-25","streakDays":14,"streakWeeks":2,"streakRemainderDays":0,"tied":1},{"rank":1,"member":"Eli Rice","direction":"same","movement":0,"track":"3 chapters/day","completed":14,"missing":0,"percent":100,"lastSubmissionAt":"2026-09-25T18:09:00","eligible":14,"weekCompleted":7,"weekEligible":7,"previousFridayDate":"2026-09-18","previousFridayRank":1,"weekEndingFriday":"2026-09-25","streakDays":14,"streakWeeks":2,"streakRemainderDays":0,"tied":1},{"rank":1,"member":"Shmulik Naparstek","direction":"same","movement":0,"track":"3 chapters/day","completed":14,"missing":0,"percent":100,"lastSubmissionAt":"2026-09-25T12:51:04","eligible":14,"weekCompleted":7,"weekEligible":7,"previousFridayDate":"2026-09-18","previousFridayRank":1,"weekEndingFriday":"2026-09-25","streakDays":14,"streakWeeks":2,"streakRemainderDays":0,"tied":1},{"rank":1,"member":"Alex Gertel","direction":"same","movement":0,"track":"1 chapter/day","completed":14,"missing":0,"percent":100,"lastSubmissionAt":"2026-09-25T12:47:42","eligible":14,"weekCompleted":7,"weekEligible":7,"previousFridayDate":"2026-09-18","previousFridayRank":1,"weekEndingFriday":"2026-09-25","streakDays":14,"streakWeeks":2,"streakRemainderDays":0,"tied":1},{"rank":1,"member":"Eli Broner","direction":"same","movement":0,"track":"1 chapter/day","completed":14,"missing":0,"percent":100,"lastSubmissionAt":"2026-09-25T17:37:00","eligible":14,"weekCompleted":7,"weekEligible":7,"previousFridayDate":"2026-09-18","previousFridayRank":1,"weekEndingFriday":"2026-09-25","streakDays":14,"streakWeeks":2,"streakRemainderDays":0,"tied":1},{"rank":1,"member":"Joseph Percia","direction":"same","movement":0,"track":"1 chapter/day","completed":14,"missing":0,"percent":100,"lastSubmissionAt":"2026-09-25T08:45:43","eligible":14,"weekCompleted":7,"weekEligible":7,"previousFridayDate":"2026-09-18","previousFridayRank":1,"weekEndingFriday":"2026-09-25","streakDays":14,"streakWeeks":2,"streakRemainderDays":0,"tied":1},{"rank":1,"member":"Menachem Wilhelm","direction":"up","movement":25,"track":"1 chapter/day","completed":14,"missing":0,"percent":100,"lastSubmissionAt":"2026-09-25T11:06:18","eligible":14,"weekCompleted":7,"weekEligible":7,"previousFridayDate":"2026-09-18","previousFridayRank":26,"weekEndingFriday":"2026-09-25","streakDays":14,"streakWeeks":2,"streakRemainderDays":0,"tied":1},{"rank":1,"member":"Nochum Labkowski LA","direction":"same","movement":0,"track":"1 chapter/day","completed":14,"missing":0,"percent":100,"lastSubmissionAt":"2026-09-25T18:19:00","eligible":14,"weekCompleted":7,"weekEligible":7,"previousFridayDate":"2026-09-18","previousFridayRank":1,"weekEndingFriday":"2026-09-25","streakDays":14,"streakWeeks":2,"streakRemainderDays":0,"tied":1},{"rank":9,"member":"Ariel Hess","direction":"up","movement":4,"track":"1 chapter/day","completed":13,"missing":0,"percent":100,"lastSubmissionAt":"2026-09-24T23:17:12","eligible":13,"weekCompleted":6,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":13,"weekEndingFriday":"2026-09-25","streakDays":13,"streakWeeks":1,"streakRemainderDays":6,"tied":1},{"rank":9,"member":"Eli Portnoy","direction":"down","movement":8,"track":"1 chapter/day","completed":13,"missing":0,"percent":100,"lastSubmissionAt":"2026-09-24T14:48:07","eligible":13,"weekCompleted":6,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":1,"weekEndingFriday":"2026-09-25","streakDays":13,"streakWeeks":1,"streakRemainderDays":6,"tied":1},{"rank":9,"member":"Shmuli Thaler","direction":"down","movement":8,"track":"1 chapter/day","completed":13,"missing":0,"percent":100,"lastSubmissionAt":"2026-09-24T11:18:03","eligible":13,"weekCompleted":6,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":1,"weekEndingFriday":"2026-09-25","streakDays":13,"streakWeeks":1,"streakRemainderDays":6,"tied":1},{"rank":12,"member":"David Homami","direction":"up","movement":1,"track":"3 chapters/day","completed":13,"missing":1,"percent":92.9,"lastSubmissionAt":"2026-09-25T18:04:00","eligible":14,"weekCompleted":6,"weekEligible":7,"previousFridayDate":"2026-09-18","previousFridayRank":13,"weekEndingFriday":"2026-09-25","streakDays":1,"streakWeeks":0,"streakRemainderDays":1,"tied":0},{"rank":13,"member":"Yudi Lewis","direction":"down","movement":12,"track":"1 chapter/day","completed":12,"missing":1,"percent":92.3,"lastSubmissionAt":"2026-09-24T05:39:26","eligible":13,"weekCompleted":5,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":1,"weekEndingFriday":"2026-09-25","streakDays":2,"streakWeeks":0,"streakRemainderDays":2,"tied":1},{"rank":13,"member":"Memem Schmukler","direction":"same","movement":0,"track":"1 chapter/day","completed":12,"missing":1,"percent":92.3,"lastSubmissionAt":"2026-09-23T21:51:26","eligible":13,"weekCompleted":5,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":13,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":1},{"rank":13,"member":"Miki","direction":"same","movement":0,"track":"1 chapter/day","completed":12,"missing":1,"percent":92.3,"lastSubmissionAt":"2026-09-23T17:46:16","eligible":13,"weekCompleted":5,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":13,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":1},{"rank":16,"member":"Mendy Ezagui","direction":"up","movement":2,"track":"1 chapter/day","completed":11,"missing":2,"percent":84.6,"lastSubmissionAt":"2026-09-24T06:02:02","eligible":13,"weekCompleted":5,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":18,"weekEndingFriday":"2026-09-25","streakDays":4,"streakWeeks":0,"streakRemainderDays":4,"tied":1},{"rank":16,"member":"Aaaizak","direction":"down","movement":3,"track":"1 chapter/day","completed":11,"missing":2,"percent":84.6,"lastSubmissionAt":"2026-09-24T19:23:23","eligible":13,"weekCompleted":5,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":13,"weekEndingFriday":"2026-09-25","streakDays":1,"streakWeeks":0,"streakRemainderDays":1,"tied":1},{"rank":18,"member":"Michael Hakimi","direction":"down","movement":17,"track":"1 chapter/day","completed":10,"missing":3,"percent":76.9,"lastSubmissionAt":"2026-09-24T19:49:48","eligible":13,"weekCompleted":3,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":1,"weekEndingFriday":"2026-09-25","streakDays":3,"streakWeeks":0,"streakRemainderDays":3,"tied":0},{"rank":19,"member":"Benny Amrami","direction":"up","movement":1,"track":"1 chapter/day","completed":9,"missing":4,"percent":69.2,"lastSubmissionAt":"2026-09-20T13:20:51","eligible":13,"weekCompleted":2,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":20,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":0},{"rank":20,"member":"Aryeh Siegel","direction":"down","movement":2,"track":"1 chapter/day","completed":7,"missing":6,"percent":53.8,"lastSubmissionAt":"2026-09-23T15:01:58","eligible":13,"weekCompleted":2,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":18,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":1},{"rank":20,"member":"Shlomo Stark","direction":"down","movement":19,"track":"1 chapter/day","completed":7,"missing":6,"percent":53.8,"lastSubmissionAt":"2026-09-18T14:15:10-07:00","eligible":13,"weekCompleted":0,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":1,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":1},{"rank":22,"member":"Levi Teleshevsky","direction":"down","movement":2,"track":"1 chapter/day","completed":6,"missing":7,"percent":46.2,"lastSubmissionAt":"2026-09-22T23:03:00","eligible":13,"weekCompleted":2,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":20,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":0},{"rank":23,"member":"Mendy Baitelman","direction":"down","movement":3,"track":"3 chapters/day","completed":5,"missing":8,"percent":38.5,"lastSubmissionAt":"2026-09-19T20:01:44","eligible":13,"weekCompleted":1,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":20,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":0},{"rank":24,"member":"Dovid Feld","direction":"down","movement":1,"track":"1 chapter/day","completed":3,"missing":10,"percent":23.1,"lastSubmissionAt":"2026-09-18T17:49:00-07:00","eligible":13,"weekCompleted":0,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":23,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":0},{"rank":25,"member":"Ari Weiss","direction":"down","movement":1,"track":"1 chapter/day","completed":1,"missing":12,"percent":7.7,"lastSubmissionAt":"2026-09-15T17:01:08-07:00","eligible":13,"weekCompleted":0,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":24,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":1},{"rank":25,"member":"Mendel Inglis","direction":"up","movement":1,"track":"1 chapter/day","completed":1,"missing":12,"percent":7.7,"lastSubmissionAt":"2026-09-20T13:14:12","eligible":13,"weekCompleted":1,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":26,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":1},{"rank":25,"member":"Pesach Davidoff USA","direction":"up","movement":1,"track":"1 chapter/day","completed":1,"missing":12,"percent":7.7,"lastSubmissionAt":"2026-09-20T00:08:43","eligible":13,"weekCompleted":1,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":26,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":1},{"rank":25,"member":"Rabbi Chein","direction":"down","movement":1,"track":"1 chapter/day","completed":1,"missing":12,"percent":7.7,"lastSubmissionAt":"2026-09-15T11:48:49-07:00","eligible":13,"weekCompleted":0,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":24,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":1},{"rank":29,"member":"Dovid Lieder Library Shul","direction":"down","movement":3,"track":"1 chapter/day","completed":0,"missing":13,"percent":0,"lastSubmissionAt":null,"eligible":13,"weekCompleted":0,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":26,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":1},{"rank":29,"member":"Eldad Yonesi","direction":"down","movement":3,"track":"1 chapter/day","completed":0,"missing":13,"percent":0,"lastSubmissionAt":null,"eligible":13,"weekCompleted":0,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":26,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":1},{"rank":29,"member":"Jacobson","direction":"down","movement":3,"track":"1 chapter/day","completed":0,"missing":13,"percent":0,"lastSubmissionAt":null,"eligible":13,"weekCompleted":0,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":26,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":1},{"rank":29,"member":"Peretz","direction":"down","movement":3,"track":"1 chapter/day","completed":0,"missing":13,"percent":0,"lastSubmissionAt":null,"eligible":13,"weekCompleted":0,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":26,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":1},{"rank":29,"member":"Tully Fishman","direction":"down","movement":3,"track":"1 chapter/day","completed":0,"missing":13,"percent":0,"lastSubmissionAt":null,"eligible":13,"weekCompleted":0,"weekEligible":6,"previousFridayDate":"2026-09-18","previousFridayRank":26,"weekEndingFriday":"2026-09-25","streakDays":0,"streakWeeks":0,"streakRemainderDays":0,"tied":1}];
 
 function lbMove(dir,n){
   if(dir==='up')return '<span class="lb-move up">&#9650; '+n+'</span>';
@@ -396,11 +360,13 @@ function lbStreak(L){
   var w=L.streakWeeks||0,d=(w?L.streakRemainderDays:L.streakDays)||0;
   if(!w&&!d)return '<span class="lb-streak none">&mdash;</span>';
   var t=(w?w+'w':'')+(w&&d?' ':'')+(d?d+'d':'');
-  return '<span class="lb-streak" title="'+(L.streakDays||0)+' consecutive on-time days; Shabbos excluded">'+
+  return '<span class="lb-streak" title="'+(L.streakDays||0)+' consecutive credited learning days; unreported today excluded">'+
          '<span class="lbl">Streak</span>&#128293; '+t+'</span>';
 }
 function pct(n){n=Number(n)||0;return n.toFixed(n%1?1:0)}
 function renderRambam(){
+  var chapters=RAMBAM_LEADERS.reduce(function(sum,L){return sum+L.completed*(parseInt(L.track,10)||1)},0);
+  g('rambamChapters').textContent=chapters+' chapters learned';
   var track=g('leaderboardTrack');
   track.innerHTML=RAMBAM_LEADERS.map(function(L){
     var p=Number(L.percent)||0;
@@ -422,7 +388,7 @@ function rankReason(L){
   var eligible=(L.completed||0)+(L.missing||0);
   var move=L.direction==='up'?'Up '+L.movement+'.':L.direction==='down'?'Down '+L.movement+'.':
            L.direction==='new'?'New this window.':'Rank unchanged.';
-  var tie=L.tied?'Tied score; longer on-time streak first, then the 3-chapter track.':
+  var tie=L.tied?'Tied score; longer completion streak first, then chapters per day.':
           Number(L.percent)===100?'Perfect score.':'Ranked by completion.';
   return (L.completed+'/'+eligible+' days ('+pct(L.percent)+'%). '+tie+' '+move).slice(0,150);
 }
@@ -504,11 +470,10 @@ function loadRambamDatabase(){
         var prev=(RAMBAM_LEADERS[0]||{}).previousFridayDate;
         var since=prev?'Movement since Friday, '+fmt(day(prev)):'';
         g('rambamSnapshot').innerHTML=
-          '<strong>'+fmt(start)+' &ndash; '+fmt(end,1)+'</strong> &middot; day '+span+' of 30'+
+          '<strong>'+fmt(start)+' &ndash; '+fmt(end,1)+'</strong>'+
           (since?'<br>'+since:'')+
           '<br>Snapshot '+snap+
           '<br>'+RAMBAM_LEADERS.length+' members'+
-          (run.runSubmissions?' &middot; '+run.runSubmissions+' submissions':'')+
           ' &middot; shown every 20 minutes';
       }
     }).catch(function(){return null});
@@ -618,6 +583,7 @@ function ftickRender(data){
 
 function startScreenRotation(){
   loadRambamDatabase().then(renderRambam);
+  setInterval(function(){loadRambamDatabase().then(renderRambam)},60000);
   var params=new URLSearchParams(location.search);
   if(params.get('view')==='rambam'){g('rambamScreen').classList.remove('hidden');startRambamScroll();return}
   var f=params.get('view');
