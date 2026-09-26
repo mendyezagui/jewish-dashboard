@@ -537,7 +537,7 @@ function checkForUpdate(){
 // the payload actually differs. Outside game windows nothing changes for days,
 // so we do not poll at all then.
 var SLEEPER_LEAGUE='1399682601484095488';
-var FTICK_ON=/(^|&)ticker=(1|on)(&|$)/.test(location.search.slice(1));
+var FTICK_ON=!/(^|&)ticker=(0|off)(&|$)/.test(location.search.slice(1));
 var ftickTeams={},ftickWeek=null,ftickHash='';
 
 function ftickFetch(u){return fetch(u,{cache:'no-store'}).then(function(r){
@@ -545,7 +545,6 @@ function ftickFetch(u){return fetch(u,{cache:'no-store'}).then(function(r){
 
 function ftickSetup(){
   if(!FTICK_ON)return;
-  document.body.classList.add('has-ftick');
   Promise.all([
     ftickFetch('https://api.sleeper.app/v1/state/nfl'),
     ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE),
@@ -591,8 +590,13 @@ var ftickLast=null;
 function ftickRender(data){
   var el=g('ftick'),run=g('ftickRun');
   if(!el)return;
-  if(!FTICK_ON||!ftickWindow()){el.classList.add('hidden');return}
+  if(!FTICK_ON||!ftickWindow()){
+    el.classList.add('hidden');
+    document.body.classList.remove('has-ftick');   // no empty gap when it is down
+    return;
+  }
   el.classList.remove('hidden');
+  document.body.classList.add('has-ftick');
   var html='';
   if(data&&data.length){
     var pairs={};
