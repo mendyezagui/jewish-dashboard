@@ -439,7 +439,7 @@ function startUlmanProgress(){
   function frame(now){var elapsed=Math.min(ULMAN_MS,now-start);bar.style.width=(elapsed/ULMAN_MS*100)+'%';if(elapsed<ULMAN_MS)requestAnimationFrame(frame)}
   requestAnimationFrame(frame);
 }
-function showDashboard(){g('rambamScreen').classList.add('hidden');g('ulmanScreen').classList.add('hidden');if(FTICK_ON)ftickRender(ftickLast)}
+function showDashboard(){g('rambamScreen').classList.add('hidden');g('ulmanScreen').classList.add('hidden');if(FTICK_ON)ftickRender()}
 // The slide is two beats of thirty seconds: the bracha first, then the reason.
 function showUlman(onDone){
   applyLetterMode();
@@ -495,90 +495,231 @@ function checkForUpdate(){
 }
 
 
-// ---- Fantasy ticker (opt-in with ?ticker=1) ----------------------------------
-// Sleeper's API is public and CORS-open, so this reads the league straight from
-// the browser. The matchups endpoint carries s-maxage=60, so polling faster than
-// a minute returns the same cached bytes; we poll at 60s and only repaint when
-// the payload actually differs. Outside game windows nothing changes for days,
-// so we do not poll at all then.
+// ---- Sunday Sleeper ticker ----------------------------------------------------
 var SLEEPER_LEAGUE='1399682601484095488';
 var FTICK_ON=!/(^|&)ticker=(0|off)(&|$)/.test(location.search.slice(1));
-var ftickTeams={},ftickWeek=null,ftickHash='';
-
-function ftickFetch(u){return fetch(u,{cache:'no-store'}).then(function(r){
-  if(!r.ok)throw new Error('sleeper '+r.status);return r.text()})}
-
+var FTICK_FROM=9,FTICK_TO=20,ftickBlocked=true;
+var ftickTeams={},ftickWeek=null,ftickSeason=null,ftickLast=null,ftickScores=null;
+var ftickPlayers={},ftickStats=null,ftickPrevious=null,ftickLeaders={},ftickMatchLeaders={};
+var ftickRecent=[],ftickAlerts=[],ftickThresholds={},ftickBench={},ftickSections=[],ftickSection=0;
+var ftickPendingTD={};
+var ftickInterruptUntil=0,ftickRendered='',ftickBusy=false,ftickStatsAt=0,ftickStatsFresh=false;
+var ftickNextRotation=0;
+var FTICK_POSITIONS=['RB','WR','QB','TE','K','DEF'];
+var FTICK_BASE='https://api.sleeper.app/v1/';
+function ftickFetch(path){return fetch(FTICK_BASE+path,{cache:'no-store'}).then(function(r){
+  if(!r.ok)throw new Error('Sleeper '+r.status);return r.json()})}
+function ftickWindow(){
+  var now=new Date(),day=now.toLocaleDateString('en-US',{weekday:'long',timeZone:TZ});
+  var hour=parseInt(new Intl.DateTimeFormat('en-US',{hour:'numeric',hourCycle:'h23',timeZone:TZ}).format(now),10)%24;
+  return day==='Sunday'&&hour>=FTICK_FROM&&hour<FTICK_TO&&!ftickBlocked;
+}
+function ftickMetadata(){
+  try{var saved=JSON.parse(localStorage.getItem('ftick-players-v1'));
+    if(saved&&Date.now()-saved.at<86400000&&saved.data){ftickPlayers=saved.data;return Promise.resolve()}}
+  catch(e){}
+  return ftickFetch('players/nfl').then(function(data){
+    if(!data||typeof data!=='object')return;
+    var compact={};Object.keys(data).forEach(function(id){var p=data[id];if(!p||typeof p!=='object')return;
+      compact[id]={first_name:p.first_name,last_name:p.last_name,full_name:p.full_name,
+        position:p.position,team:p.team}});
+    ftickPlayers=compact;
+    try{localStorage.setItem('ftick-players-v1',JSON.stringify({at:Date.now(),data:compact}))}catch(e){}
+  }).catch(function(){});
+}
 function ftickSetup(){
   if(!FTICK_ON)return;
-  Promise.all([
-    ftickFetch('https://api.sleeper.app/v1/state/nfl'),
-    ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE),
-    ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE+'/users'),
-    ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE+'/rosters')
+  Promise.allSettled([
+    ftickFetch('state/nfl'),ftickFetch('league/'+SLEEPER_LEAGUE),
+    ftickFetch('league/'+SLEEPER_LEAGUE+'/users'),ftickFetch('league/'+SLEEPER_LEAGUE+'/rosters')
   ]).then(function(res){
-    var state=JSON.parse(res[0]),league=JSON.parse(res[1]),users=JSON.parse(res[2]),
-        rosters=JSON.parse(res[3]);
-    ftickWeek=state.display_week||state.week||1;
-    var byUser={};
-    users.forEach(function(u){byUser[u.user_id]=(u.metadata&&u.metadata.team_name)||u.display_name||'—'});
+    if(res[0].status!=='fulfilled')return;
+    var state=res[0].value;
+    ftickWeek=Number(state.display_week||state.week);
+    ftickSeason=String(state.league_season||state.season||'');
+    if(!Number.isInteger(ftickWeek)||ftickWeek<1||!/^\d{4}$/.test(ftickSeason))return;
+    var users=res[2].status==='fulfilled'&&Array.isArray(res[2].value)?res[2].value:[];
+    var rosters=res[3].status==='fulfilled'&&Array.isArray(res[3].value)?res[3].value:[];
+    var byUser={};users.forEach(function(u){byUser[u.user_id]=(u.metadata&&u.metadata.team_name)||u.display_name||'—'});
     rosters.forEach(function(r){ftickTeams[r.roster_id]=byUser[r.owner_id]||('Team '+r.roster_id)});
-    g('ftickTag').innerHTML='&#127944; '+esc((league.name||'League').trim())+' &middot; Wk '+ftickWeek;
-    ftickPoll(true);
-  }).catch(function(){ftickRender(null)});
+    var league=res[1].status==='fulfilled'?res[1].value:{};
+    g('ftickTag').textContent='🏈 '+String(league.name||'League').trim()+' · Wk '+ftickWeek;
+    ftickPoll();ftickMetadata().then(function(){ftickBuild();ftickRender()});
+  }).catch(function(){});
 }
-
-// The strip is up on Sundays only, 9am to 8pm Los Angeles time, and never
-// otherwise. That covers the whole slate from before the early games to after the
-// night game, and it cannot land on Shabbos, so no separate guard is needed.
-var FTICK_FROM=9,FTICK_TO=20;
-function ftickWindow(){
-  var now=new Date();
-  var day=now.toLocaleDateString('en-US',{weekday:'long',timeZone:TZ});
-  var hour=parseInt(new Intl.DateTimeFormat('en-US',{hour:'numeric',hourCycle:'h23',timeZone:TZ}).format(now),10)%24;
-  return day==='Sunday'&&hour>=FTICK_FROM&&hour<FTICK_TO;
+function ftickName(id,short){
+  var p=ftickPlayers[id]||{},name=p.full_name||[p.first_name,p.last_name].filter(Boolean).join(' ')||id;
+  return short?(p.last_name||name):name;
 }
-
-function ftickPoll(force){
-  if(!FTICK_ON||ftickWeek==null)return;
-  if(!ftickWindow()){ftickRender(null);return}
-  ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE+'/matchups/'+ftickWeek)
-    .then(function(txt){
-      var h=String(txt.length)+':'+txt.slice(0,64)+txt.slice(-64);
-      if(h===ftickHash)return;              // nothing moved: no repaint at all
-      ftickHash=h;
-      ftickLast=JSON.parse(txt);
-      ftickRender(ftickLast);
-    }).catch(function(){});
+function ftickPosition(id){var p=ftickPlayers[id]||{},pos=p.position;
+  if(pos==='DEF'||pos==='DST'||(!pos&&/^[A-Z]{2,3}$/.test(id)))return 'DEF';
+  return FTICK_POSITIONS.indexOf(pos)>=0?pos:null;
 }
-var ftickLast=null;
-
-function ftickRender(data){
-  var el=g('ftick'),run=g('ftickRun');
-  if(!el)return;
-  if(!FTICK_ON||!ftickWindow()){
-    el.classList.add('hidden');
-    document.body.classList.remove('has-ftick');   // no empty gap when it is down
-    return;
-  }
-  el.classList.remove('hidden');
-  document.body.classList.add('has-ftick');
-  var html='';
-  if(data&&data.length){
-    var pairs={};
-    data.forEach(function(m){(pairs[m.matchup_id]=pairs[m.matchup_id]||[]).push(m)});
-    Object.keys(pairs).forEach(function(k){
-      var p=pairs[k]; if(p.length<2)return;
-      var a=p[0],b=p[1],pa=Number(a.points||0),pb=Number(b.points||0);
-      html+='<span class="ftick-game"><b>'+esc(ftickTeams[a.roster_id]||'—')+'</b>'+
-        '<span class="pts'+(pa>pb?' lead':'')+'">'+pa.toFixed(1)+'</span>'+
-        '<span class="vs">&ndash;</span>'+
-        '<span class="pts'+(pb>pa?' lead':'')+'">'+pb.toFixed(1)+'</span>'+
-        '<b>'+esc(ftickTeams[b.roster_id]||'—')+'</b></span>';
+function ftickPairs(data){var groups={};
+  data.forEach(function(m){if(m&&m.matchup_id!=null)(groups[m.matchup_id]=groups[m.matchup_id]||[]).push(m)});
+  return Object.keys(groups).map(function(k){return groups[k]}).filter(function(p){return p.length===2&&p.every(function(m){return Number.isFinite(Number(m.points))})});
+}
+function ftickPlayersFrom(data){var all={};
+  data.forEach(function(m){if(!m||!Array.isArray(m.players)||!m.players_points)return;
+    var starters=Array.isArray(m.starters)?m.starters:[];
+    m.players.forEach(function(id){var points=Number(m.players_points[id]),pos=ftickPosition(id);
+      if(!pos||!Number.isFinite(points))return;
+      if(!all[id]||points>all[id].points)all[id]={id:id,points:points,pos:pos,roster:m.roster_id,bench:starters.indexOf(id)<0};
     });
+  });return all;
+}
+function ftickRank(all){var ranks={};FTICK_POSITIONS.forEach(function(p){ranks[p]=[]});
+  Object.keys(all).forEach(function(id){ranks[all[id].pos].push(all[id])});
+  FTICK_POSITIONS.forEach(function(p){ranks[p].sort(function(a,b){return b.points-a.points||ftickName(a.id).localeCompare(ftickName(b.id))})});
+  return ranks;
+}
+function ftickStatChange(id){if(!ftickStatsFresh)return '';
+  var before=ftickStats&&ftickStats.previous&&ftickStats.previous[id],
+  after=ftickStats&&ftickStats.current&&ftickStats.current[id];
+  if(!before||!after)return '';
+  var cats=[['rush_td','RUSH TD'],['rec_td','REC TD'],['pass_td','PASS TD'],['ret_td','RETURN TD']];
+  for(var i=0;i<cats.length;i++)if(Number(after[cats[i][0]]||0)>Number(before[cats[i][0]]||0))return cats[i][1];
+  return '';
+}
+function ftickEvent(text,priority){var e={text:text,at:Date.now(),priority:priority};
+  ftickRecent.unshift(e);ftickRecent=ftickRecent.slice(0,8);
+  if(priority>=2){ftickAlerts.push(e);ftickAlerts.sort(function(a,b){return b.priority-a.priority||a.at-b.at});
+    ftickAlerts=ftickAlerts.slice(0,6);ftickInterrupt()}
+  return e;
+}
+function ftickInterrupt(){if(!ftickWindow()||Date.now()<ftickInterruptUntil||!ftickAlerts.length)return;
+  var e=ftickAlerts.shift();ftickInterruptUntil=Date.now()+8500;
+  if(ftickNextRotation)ftickNextRotation+=8500;
+  ftickPaint('RECENT',e.text,true);
+  setTimeout(function(){ftickInterruptUntil=0;ftickRender();ftickInterrupt()},8500);
+}
+function ftickProcess(data){var all=ftickPlayersFrom(data),ranks=ftickRank(all),pairs=ftickPairs(data);
+  Object.keys(ftickPendingTD).forEach(function(id){
+    if(Date.now()-ftickPendingTD[id].at>600000)delete ftickPendingTD[id]
+  });
+  var matchLeaders={};pairs.forEach(function(p){var a=Number(p[0].points),b=Number(p[1].points);
+    matchLeaders[p[0].matchup_id]=a===b?null:(a>b?p[0].roster_id:p[1].roster_id)});
+  var leaders={};FTICK_POSITIONS.forEach(function(pos){leaders[pos]=ranks[pos][0]&&ranks[pos][0].id});
+  if(ftickPrevious){
+    var movers=[];
+    Object.keys(all).forEach(function(id){var p=all[id],old=ftickPrevious[id];if(!old)return;
+      var delta=p.points-old.points;
+      var stat=ftickStatChange(id),pending=ftickPendingTD[id];
+      var rank=ranks[p.pos].findIndex(function(x){return x.id===id})+1;
+      var label=ftickName(id,true)+' +'+delta.toFixed(1)+' FP · '+p.points.toFixed(1)+' total · '+p.pos+rank;
+      if(pending&&delta>0){
+        pending.event.text='TD · '+ftickName(id,true)+' · '+pending.stat+' · '+label;
+        delete ftickPendingTD[id];
+      }
+      if(stat&&delta<=0&&!pending){
+        ftickPendingTD[id]={stat:stat,at:Date.now(),event:ftickEvent(
+          'TD · '+ftickName(id,true)+' · '+stat+' · '+p.points.toFixed(1)+' FP shown',3)};
+      }else if((delta>=4||stat)&&(!pending||stat)){
+        movers.push({id:id,delta:delta,stat:stat,label:label})
+      }
+      else if(delta<=-4)ftickEvent('DROP · '+ftickName(id,true)+' '+delta.toFixed(1)+' FP · '+p.points.toFixed(1)+' total',1);
+      var crossed=[20,25,30,35,40].filter(function(n){return old.points<n&&p.points>=n&&!ftickThresholds[id+':'+n]});
+      if(crossed.length){var n=crossed[crossed.length-1];
+        crossed.forEach(function(value){ftickThresholds[id+':'+value]=true});
+        if(delta<4&&!stat)ftickEvent(n+' CLUB · '+ftickName(id)+' '+p.points.toFixed(1)+' FP · '+p.pos+rank,1)}
+      if(p.bench&&p.points>=20&&!ftickBench[id]){ftickBench[id]=true;
+        ftickEvent('BENCH BOMB · '+ftickName(id)+' '+p.points.toFixed(1)+' FP · '+(ftickTeams[p.roster]||'Team '+p.roster),1)}
+    });
+    movers.sort(function(a,b){return b.delta-a.delta});
+    movers.forEach(function(m,i){var prefix=m.stat?'TD · '+ftickName(m.id,true)+' · '+m.stat+' · ':(i===0?'HOT · ':'MOVE · ');
+      ftickEvent(prefix+m.label,m.stat||m.delta>=8?3:2)});
+    pairs.forEach(function(p){var key=p[0].matchup_id,leader=matchLeaders[key],old=ftickMatchLeaders[key];
+      if(old!=null&&leader!=null&&old!==leader){var a=Number(p[0].points),b=Number(p[1].points);
+        ftickEvent('LEAD CHANGE · '+(ftickTeams[leader]||'Team '+leader)+' leads '+Math.max(a,b).toFixed(1)+'–'+Math.min(a,b).toFixed(1),3)}
+    });
+    FTICK_POSITIONS.forEach(function(pos){if(ftickLeaders[pos]&&leaders[pos]&&ftickLeaders[pos]!==leaders[pos])
+      ftickEvent('NEW '+pos+'1 · '+ftickName(leaders[pos])+' · '+ranks[pos][0].points.toFixed(1)+' FP',3)});
+  }else{
+    // The first successful matchup poll is a baseline, including existing bench scores.
+    Object.keys(all).forEach(function(id){if(all[id].bench&&all[id].points>=20)ftickBench[id]=true});
   }
-  if(!html)html='<span class="ftick-idle">Week '+ftickWeek+' &middot; waiting for kickoff</span>';
-  run.innerHTML=html+html;                                  // duplicated for a seamless loop
-  run.style.setProperty('--ftick-dur',Math.max(24,Math.round(run.scrollWidth/2/95))+'s');
+  ftickPrevious=all;ftickLeaders=leaders;ftickMatchLeaders=matchLeaders;
+  ftickBuild(ranks,pairs);
+}
+// /scores is undocumented. Read only validated team, score and status fields.
+function ftickParseScores(data){if(!Array.isArray(data))throw new Error('Invalid Sleeper scores');
+  return data.map(function(game){var m=game&&game.metadata;if(!m)return null;
+    var date=m.date_time||game.date;
+    if(!date||Number.isNaN(Date.parse(date))||new Date(date).toLocaleDateString('en-US',{weekday:'long',timeZone:TZ})!=='Sunday')return null;
+    var away=m.away_team,home=m.home_team,a=m.away_score,h=m.home_score;
+    if(!/^[A-Z]{2,3}$/.test(away)||!/^[A-Z]{2,3}$/.test(home))return null;
+    var started=m.has_started===true||m.is_in_progress===true||m.is_over===true;
+    var final=m.is_over===true||m.status==='closed'||m.status==='complete';
+    var status=final?'FINAL':started?'LIVE':'UPCOMING';
+    if(started&&(!Number.isFinite(a)||!Number.isFinite(h)))return null;
+    return status+' · '+away+(started?' '+a:'')+'–'+home+(started?' '+h:'');
+  }).filter(Boolean);
+}
+function ftickBuild(ranks,pairs){if(!ftickLast&&!pairs&&!ftickScores)return;
+  ranks=ranks||ftickRank(ftickPlayersFrom(ftickLast||[]));pairs=pairs||ftickPairs(ftickLast||[]);
+  var sections=[];
+  if(ftickScores&&ftickScores.length)sections.push({tag:'NFL',text:ftickScores.join('   •   ')});
+  if(pairs.length)sections.push({tag:'FANTASY',text:pairs.map(function(p){return
+    (ftickTeams[p[0].roster_id]||'Team '+p[0].roster_id)+' '+Number(p[0].points).toFixed(1)+'–'+Number(p[1].points).toFixed(1)+' '+
+    (ftickTeams[p[1].roster_id]||'Team '+p[1].roster_id)}).join('   •   ')});
+  ['RB','WR','QB','TE','K','DEF'].forEach(function(pos){if(!ranks[pos].length)return;
+    sections.push({tag:pos,text:ranks[pos].slice(0,3).map(function(p,i){return (i+1)+' '+ftickName(p.id,true)+' '+p.points.toFixed(1)}).join('   •   ')})});
+  var close=pairs.filter(function(p){return Math.abs(Number(p[0].points)-Number(p[1].points))<=5});
+  if(close.length)sections.push({tag:'CLOSE',text:close.map(function(p){return
+    (ftickTeams[p[0].roster_id]||'Team '+p[0].roster_id)+' '+Number(p[0].points).toFixed(1)+'–'+Number(p[1].points).toFixed(1)+' '+
+    (ftickTeams[p[1].roster_id]||'Team '+p[1].roster_id)}).join('   •   ')});
+  var all=ftickPlayersFrom(ftickLast||[]);
+  var bombs=Object.keys(all).map(function(id){return all[id]}).filter(function(p){return p.bench&&p.points>=20});
+  if(bombs.length)sections.push({tag:'BENCH',text:bombs.sort(function(a,b){return b.points-a.points}).slice(0,2).map(function(p){return
+    ftickName(p.id,true)+' '+p.points.toFixed(1)+' FP · '+(ftickTeams[p.roster]||'Team '+p.roster)}).join('   •   ')});
+  if(ftickRecent.length)sections.push({tag:'RECENT',text:ftickRecent.slice(0,3).map(function(e){return e.text}).join('   •   ')});
+  ftickSections=sections;
+  if(ftickSection>=sections.length)ftickSection=0;
+  ftickRender();
+}
+function ftickPaint(tag,content,interrupt){var key=tag+'|'+content+'|'+interrupt;if(key===ftickRendered)return;
+  ftickRendered=key;
+  var run=g('ftickRun');g('ftickTag').textContent='🏈 '+tag;
+  var item='<span class="ftick-game"><b>'+esc(content)+'</b></span>';
+  run.innerHTML=interrupt?item:item+item;
+  if(interrupt){run.style.animation='none';return}
+  var width=run.scrollWidth/2,viewport=run.parentNode.clientWidth;
+  var duration=width<=viewport?20:Math.max(20,Math.ceil(width/95));
+  if(width<=viewport)run.innerHTML=item;
+  run.style.animation=width<=viewport?'none':'';
+  if(width>viewport)run.style.setProperty('--ftick-dur',duration+'s');
+  if(!ftickNextRotation)ftickNextRotation=Date.now()+(duration+1)*1000;
+}
+function ftickRender(){var el=g('ftick');if(!el)return;
+  var show=FTICK_ON&&ftickWindow()&&g('rambamScreen').classList.contains('hidden')&&g('ulmanScreen').classList.contains('hidden');
+  el.classList.toggle('hidden',!show);document.body.classList.toggle('has-ftick',show);
+  if(!show||Date.now()<ftickInterruptUntil)return;
+  var section=ftickSections[ftickSection]||{tag:'FANTASY',text:'Week '+(ftickWeek||'')+' · waiting for kickoff'};
+  ftickPaint(section.tag,section.text,false);
+}
+function ftickRotate(){if(!ftickWindow()||Date.now()<ftickInterruptUntil||Date.now()<ftickNextRotation)return;
+  if(ftickSections.length)ftickSection=(ftickSection+1)%ftickSections.length;
+  ftickNextRotation=0;
+  ftickRender();
+}
+function ftickPoll(){if(!FTICK_ON||!ftickWindow()||ftickWeek==null||ftickBusy){ftickRender();return}
+  ftickBusy=true;
+  var prefix='nfl/regular/'+ftickSeason+'/'+ftickWeek;
+  var statsDue=Date.now()-ftickStatsAt>=60000;
+  Promise.allSettled([
+    ftickFetch('league/'+SLEEPER_LEAGUE+'/matchups/'+ftickWeek),
+    ftickFetch('scores/'+prefix),
+    statsDue?ftickFetch('stats/'+prefix):Promise.resolve(null)
+  ]).then(function(res){
+    ftickStatsFresh=false;
+    if(res[2].status==='fulfilled'&&res[2].value&&typeof res[2].value==='object'&&!Array.isArray(res[2].value)){
+      ftickStats={previous:ftickStats&&ftickStats.current,current:res[2].value};ftickStatsAt=Date.now();ftickStatsFresh=true}
+    if(res[1].status==='fulfilled'){try{ftickScores=ftickParseScores(res[1].value)}catch(e){}}
+    if(res[0].status==='fulfilled'&&Array.isArray(res[0].value)){
+      ftickLast=res[0].value;ftickProcess(ftickLast);
+    }else if(ftickStatsFresh&&ftickLast)ftickProcess(ftickLast);
+    else ftickBuild();
+  }).catch(function(){}).finally(function(){ftickBusy=false;ftickRender()});
 }
 
 function startScreenRotation(){
@@ -878,6 +1019,8 @@ function checkShabbosMode(){
       }
     }
   }
+  ftickBlocked=isShabbosOrYT;
+  if(FTICK_ON)ftickRender();
   var vid=g('vid'),img=g('vImage');
   if(isShabbosOrYT){
     if(!vid.classList.contains('hidden')){
@@ -925,7 +1068,8 @@ document.addEventListener('visibilitychange',function(){
 });
 requestWakeLock();
 ftickSetup();
-setInterval(function(){ftickPoll(false)},60000);  // the window is re-checked on every tick
+setInterval(ftickPoll,60000);
+setInterval(ftickRotate,1000);  // each section stays until its full text has passed
 startScreenRotation();
 })();
 </script>
