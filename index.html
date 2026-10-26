@@ -454,7 +454,7 @@ function showUlman(onDone){
 }
 function showRambam(onDone){if(FTICK_ON)g('ftick').classList.add('hidden');g('ulmanScreen').classList.add('hidden');g('rambamScreen').classList.remove('hidden');g('leaderboardTrack').style.transform='translateY(0)';g('rambamProgress').style.width='0';startRambamScroll();setTimeout(function(){showDashboard();if(onDone)onDone()},RAMBAM_MS)}
 function loadRambamDatabase(){
-  return fetch('https://rambam-leaderboard.mendy-ez.chatgpt.site/api/leaderboard',{cache:'no-store'})
+  return fetch('https://rambam-leaderboard.mendy-ezagui.chatgpt.site/api/leaderboard',{cache:'no-store'})
     .then(function(response){if(!response.ok)throw new Error('database unavailable');return response.json()})
     .then(function(data){
       if(data.leaders&&data.leaders.length)RAMBAM_LEADERS=data.leaders;
