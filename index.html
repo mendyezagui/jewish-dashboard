@@ -696,7 +696,11 @@ function fetchHY(){
       }
       var html='<div class="fadein">';
       if(d.dateHeader){
-        html+='<div style="font-size:0.95rem;color:var(--text-2);margin-bottom:0.5rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border)">'+esc(d.dateHeader)+'</div>';
+        // 30 Cheshvan and 30 Kislev carry the 29th's entry, as chabad.org does.
+        // Name it, so it does not read as text written for today.
+        var hdr=esc(d.dateHeader)+(d.borrowedFrom
+          ? ' <span style="opacity:.65">&middot; '+esc(d.borrowedFrom)+' entry</span>' : '');
+        html+='<div style="font-size:0.95rem;color:var(--text-2);margin-bottom:0.5rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border)">'+hdr+'</div>';
       }
       if(en) html+='<div>'+esc(en).replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>')+'</div>';
       html+='</div>';

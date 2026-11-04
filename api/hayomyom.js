@@ -72,6 +72,17 @@ export function findEntry(dataset, hebMonth, dayNum) {
   if (!entry && dsMonth === 'Elul' && dayNum === 18) {
     entry = dataset.find(e => e && e.date && eq(e.date.month, 'Chai'));
   }
+
+  // Hayom Yom was compiled for 5703, which had a 29-day Cheshvan and a 29-day
+  // Kislev, so no text was ever written for 30 Cheshvan or 30 Kislev. In years
+  // where those months are full, chabad.org shows the 29th's entry on the 30th,
+  // keeping its original 'Cheshvan 29' label. We do the same, and say which
+  // entry it is rather than let it read as today's.
+  if (!entry && dayNum === 30 && (dsMonth === 'Cheshvan' || dsMonth === 'Kislev')) {
+    const prev = dataset.find(e => e && e.date
+      && eq(e.date.month, dsMonth) && Number(e.date.day) === 29);
+    if (prev) return { ...prev, borrowedFrom: dsMonth + ' 29' };
+  }
   return entry || null;
 }
 
@@ -122,6 +133,7 @@ export default async function handler(req) {
       dateHeader,
       hebrewDate: heb.hebrew || null,
       year: heb.hy ? String(heb.hy) : null,
+      borrowedFrom: entry.borrowedFrom || null,
       source: 'bundled-dataset',
       label: 'Hayom Yom',
       fetchedAt: new Date().toISOString(),
