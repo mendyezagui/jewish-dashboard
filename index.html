@@ -686,7 +686,12 @@ function fetchHY(){
       var en=d.teaching_en||'';
       var he=d.teaching_he||'';
       if(!en && !he){
-        g('hyBody').innerHTML='<div class="err" style="text-align:center;padding:1rem">Hayom Yom not available for today</div>';
+        // 30 Cheshvan and 30 Kislev have no entry: Hayom Yom was written for
+        // 5703, which had neither. Name the date rather than look broken.
+        var msg=(d.error==='no entry for today'&&d.hebrewDate)
+          ? 'No Hayom Yom entry for '+esc(d.hebrewDate.hd+' '+d.hebrewDate.hm)
+          : 'Hayom Yom not available for today';
+        g('hyBody').innerHTML='<div class="err" style="text-align:center;padding:1rem">'+msg+'</div>';
         return;
       }
       var html='<div class="fadein">';

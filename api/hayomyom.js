@@ -18,11 +18,8 @@ const MONTH_MAP = {
   'Tevet':    'Tevet',
   "Sh'vat":   "Sh'vat",
   'Shvat':    "Sh'vat",
-  'Adar':     'Adar',
   'Adar I':   'Adar I',
   'Adar 1':   'Adar I',
-  'Adar II':  'Adar',     // no Adar II in dataset → fall back to Adar
-  'Adar 2':   'Adar',
   'Nisan':    'Nissan',
   'Nissan':   'Nissan',
   'Iyyar':    'iyyar',
@@ -33,6 +30,50 @@ const MONTH_MAP = {
   'Av':       'Av',
   'Elul':     'Elul',
 };
+
+// In a leap year the dataset splits Adar two ways: month 'Adar I' with plain
+// numeric days, and month 'Adar' whose days read 'Sheini 1'...'Sheini 29',
+// meaning Adar Sheini (Adar II). A plain numeric lookup matches neither, which
+// silently blanked every Adar II day, all of a regular year's Adar, and
+// Adar I 28-30.
+//
+// A regular year has one Adar. Halachically it lines up with Adar II - that is
+// when Purim and most yahrzeits fall - so that is what we show. If your minhag
+// is to read Adar I's text in a regular year, change this to 'Adar I'.
+const ADAR_IN_REGULAR_YEAR = 'Adar II';
+
+// 32 of the 384 entries spell the key 'hayom-yom' rather than 'hayomYom'.
+export function entryText(entry) {
+  const t = (entry && (entry.hayomYom || entry['hayom-yom'])) || {};
+  return { en: t.english || '', he: t.hebrew || '' };
+}
+
+export function findEntry(dataset, hebMonth, dayNum) {
+  if (!Array.isArray(dataset)) return null;
+  const eq = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
+  let month = String(hebMonth || '');
+  if (/^adar\s*(ii|2|sheini)$/i.test(month)) month = 'Adar II';
+  else if (/^adar\s*(i|1)$/i.test(month)) month = 'Adar I';
+  else if (/^adar$/i.test(month)) month = ADAR_IN_REGULAR_YEAR;
+
+  if (month === 'Adar II') {
+    // stored as month 'Adar', day 'Sheini N'
+    const hit = dataset.find(e => e && e.date && eq(e.date.month, 'Adar')
+      && /^sheini\s+(\d+)$/i.test(String(e.date.day))
+      && Number(String(e.date.day).replace(/^sheini\s+/i, '')) === dayNum);
+    if (hit) return hit;
+  }
+
+  const dsMonth = MONTH_MAP[month] || month;
+  let entry = dataset.find(e => e && e.date
+    && eq(e.date.month, dsMonth) && Number(e.date.day) === dayNum);
+
+  // 18 Elul (Chai Elul) has its own entry, filed under month 'Chai'.
+  if (!entry && dsMonth === 'Elul' && dayNum === 18) {
+    entry = dataset.find(e => e && e.date && eq(e.date.month, 'Chai'));
+  }
+  return entry || null;
+}
 
 export default async function handler(req) {
   const headers = {
@@ -61,28 +102,19 @@ export default async function handler(req) {
     }
 
     const dayNum = Number(heb.hd);
-    const dsMonth = MONTH_MAP[heb.hm] || heb.hm;
-
-    // Find matching entry. Days are stored as strings or numbers depending on entry.
-    let entry = dataset.find(e => e && e.date
-      && String(e.date.month).toLowerCase() === String(dsMonth).toLowerCase()
-      && Number(e.date.day) === dayNum);
-
-    // Special case: 18 Elul = Chai Elul has its own entry in the dataset
-    if (!entry && dsMonth === 'Elul' && dayNum === 18) {
-      entry = dataset.find(e => e && e.date && e.date.month === 'Chai');
-    }
+    const entry = findEntry(dataset, heb.hm, dayNum);
 
     if (!entry) {
+      // Hayom Yom was written for 5703, so a day that year did not have has no
+      // entry: 30 Cheshvan and 30 Kislev, in years where those months are full.
       return json({
         error: 'no entry for today',
         hebrewDate: { hd: heb.hd, hm: heb.hm, hy: heb.hy },
-        triedMonth: dsMonth, triedDay: dayNum,
+        triedMonth: heb.hm, triedDay: dayNum,
       }, headers);
     }
 
-    const en = (entry.hayomYom && entry.hayomYom.english) || '';
-    const he = (entry.hayomYom && entry.hayomYom.hebrew) || '';
+    const { en, he } = entryText(entry);
     const dateHeader = `${heb.hd} ${heb.hm} ${heb.hy}`;
     return json({
       teaching_en: en || null,
