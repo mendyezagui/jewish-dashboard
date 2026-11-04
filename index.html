@@ -229,6 +229,7 @@ body.has-ftick .dashboard{padding-bottom:calc(clamp(34px,4.6vh,62px) + clamp(0.9
 .yamim-lines{font-family:'Oswald','Arial Narrow',sans-serif;font-size:clamp(2.3rem,5.4vw,7rem);font-weight:700;line-height:1.02;letter-spacing:-.02em;text-transform:uppercase;color:#f8f3e8;text-shadow:0 .06em 0 rgba(0,0,0,.3)}
 .yamim-lines span{color:#d5a817}
 .yamim-ask{font-size:clamp(.95rem,1.5vw,1.9rem);color:#cfc4b1;letter-spacing:.04em}
+.yamim-bracha.hidden{display:none}
 .yamim-bracha{margin-top:clamp(.6rem,1.4vh,1.4rem);padding-top:clamp(.8rem,1.6vh,1.6rem);border-top:1px solid rgba(213,168,23,.35);width:min(70%,900px)}
 .yamim-bracha-he{font-family:'Heebo',sans-serif;direction:rtl;font-size:clamp(1.25rem,2.3vw,2.9rem);font-weight:700;color:#d5a817}
 .yamim-bracha-en{margin-top:.25rem;font-size:clamp(.78rem,1.1vw,1.4rem);color:#a99e8c;letter-spacing:.04em}
@@ -308,7 +309,7 @@ body.has-ftick .dashboard{padding-bottom:calc(clamp(34px,4.6vh,62px) + clamp(0.9
     <div class="yamim-he">&#1493;&#1456;&#1488;&#1464;&#1492;&#1463;&#1489;&#1456;&#1514;&#1468;&#1464; &#1500;&#1456;&#1512;&#1461;&#1506;&#1458;&#1498;&#1464; &#1499;&#1468;&#1464;&#1502;&#1493;&#1465;&#1498;&#1464;</div>
     <div class="yamim-lines">Love yourself.<br>Love your friend.<br><span>Hear every word,<br>start to end.</span></div>
     <div class="yamim-ask">No talking during Kaddish or the Torah reading</div>
-    <div class="yamim-bracha">
+    <div class="yamim-bracha" id="yamimBracha">
       <div class="yamim-bracha-he">&#1499;&#1514;&#1497;&#1489;&#1492; &#1493;&#1495;&#1514;&#1497;&#1502;&#1492; &#1496;&#1493;&#1489;&#1492;</div>
       <div class="yamim-bracha-en">A good and sweet year to every one of us</div>
     </div>
@@ -359,6 +360,7 @@ function applyLetterMode(){
   if(!g('maamarBracha'))return;
   var inSeason=/^elul/i.test(String(hebData&&hebData.hm))||letterMode()==='yamim';
   g('maamarBracha').classList.toggle('hidden',!inSeason);
+  if(g('yamimBracha'))g('yamimBracha').classList.toggle('hidden',!inSeason);
 }
 function startUlmanProgress(){
   var bar=g('ulmanProgress'),start=performance.now();
