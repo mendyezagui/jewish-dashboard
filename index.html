@@ -124,6 +124,11 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-grad-from) 0%,var(-
 .ftick-game .pts{font-weight:800;color:#ffd979}
 .ftick-game .lead{color:#7ee0a5}
 .ftick-game .vs{color:#8fa0c8;font-size:.85em;margin:0 .1em}
+.ftick.note{background:#d4a017;border-top-color:#8a6709}
+.ftick.note .ftick-win{display:flex;align-items:center;justify-content:center}
+.ftick.note .ftick-run{animation:none;display:block;white-space:normal}
+.ftick-note{display:block;text-align:center;color:#1a1300;font-weight:800;
+  font-size:clamp(.82rem,1.42vw,1.75rem);letter-spacing:.07em;line-height:1.15}
 .ftick-idle{color:#a8b6d8;font-size:clamp(.75rem,1.02vw,1.18rem);margin-left:1.5rem}
 /* the cards must not hide behind the strip */
 body.has-ftick .dashboard{padding-bottom:calc(clamp(34px,4.6vh,62px) + clamp(0.9rem,1.7vw,2rem))}
@@ -364,7 +369,7 @@ function showDashboard(){g('rambamScreen').classList.add('hidden');g('ulmanScree
 // The slide is two beats of thirty seconds: the bracha first, then the reason.
 function showUlman(onDone){
   applyLetterMode();
-  if(FTICK_ON)g('ftick').classList.add('hidden');
+  if(FTICK_ON&&!ftickAnnouncement())g('ftick').classList.add('hidden');
   g('rambamScreen').classList.add('hidden');
   setLetterPanel('yamim');
   g('ulmanScreen').classList.remove('hidden');
@@ -373,7 +378,7 @@ function showUlman(onDone){
   var flip=setTimeout(function(){setLetterPanel('maamar')},ULMAN_HALF);
   setTimeout(function(){clearTimeout(flip);showDashboard();if(onDone)onDone()},ULMAN_MS);
 }
-function showRambam(onDone){if(FTICK_ON)g('ftick').classList.add('hidden');g('ulmanScreen').classList.add('hidden');g('rambamScreen').classList.remove('hidden');var board=g('rambamBoard');board.src=board.dataset.src;setTimeout(function(){showDashboard();if(onDone)onDone()},RAMBAM_MS)}
+function showRambam(onDone){if(FTICK_ON&&!ftickAnnouncement())g('ftick').classList.add('hidden');g('ulmanScreen').classList.add('hidden');g('rambamScreen').classList.remove('hidden');var board=g('rambamBoard');board.src=board.dataset.src;setTimeout(function(){showDashboard();if(onDone)onDone()},RAMBAM_MS)}
 
 
 // The page used to reload itself each time the leaderboard finished, which is how
@@ -400,6 +405,10 @@ function checkForUpdate(){
 // so we do not poll at all then.
 var SLEEPER_LEAGUE='1399682601484095488';
 var FTICK_ON=!/(^|&)ticker=(0|off)(&|$)/.test(location.search.slice(1));
+// The Sleeper football ticker is switched off, not deleted. Everything below it
+// still works; flip this to true (or load with ?sports=1) when there is a game
+// worth putting back on the strip.
+var FTICK_SPORTS=/(^|&)sports=(1|on)(&|$)/.test(location.search.slice(1));
 var ftickTeams={},ftickWeek=null,ftickHash='';
 
 function ftickFetch(u){return fetch(u,{cache:'no-store'}).then(function(r){
@@ -407,6 +416,8 @@ function ftickFetch(u){return fetch(u,{cache:'no-store'}).then(function(r){
 
 function ftickSetup(){
   if(!FTICK_ON)return;
+  ftickRender(null);                 // the announcement strip needs no network
+  if(!FTICK_SPORTS)return;           // ...and with sports off, nothing is fetched
   Promise.all([
     ftickFetch('https://api.sleeper.app/v1/state/nfl'),
     ftickFetch('https://api.sleeper.app/v1/league/'+SLEEPER_LEAGUE),
@@ -432,7 +443,27 @@ function ftickWindow(){
   var now=new Date();
   var day=now.toLocaleDateString('en-US',{weekday:'long',timeZone:TZ});
   var hour=parseInt(new Intl.DateTimeFormat('en-US',{hour:'numeric',hourCycle:'h23',timeZone:TZ}).format(now),10)%24;
-  return day==='Sunday'&&hour>=FTICK_FROM&&hour<FTICK_TO;
+  return FTICK_SPORTS&&day==='Sunday'&&hour>=FTICK_FROM&&hour<FTICK_TO;
+}
+
+// ---- Scheduled announcements -------------------------------------------------
+// The same strip, used for a standing notice. Times are local to TZ, 24-hour.
+// Add a row here for any other day and message.
+var ANNOUNCEMENTS=[
+  {day:'Saturday',from:'11:00',to:'11:45',
+   text:'AHAVAS YISROEL \u2014 HELP THE GUY NEXT TO YOU LISTEN TO KRIAH'}
+];
+function ftickAnnouncement(){
+  var now=new Date();
+  var day=now.toLocaleDateString('en-US',{weekday:'long',timeZone:TZ});
+  var hm=new Intl.DateTimeFormat('en-US',{hour:'2-digit',minute:'2-digit',hourCycle:'h23',timeZone:TZ}).format(now);
+  var mins=function(t){var a=t.split(':');return parseInt(a[0],10)*60+parseInt(a[1],10)};
+  var at=mins(hm);
+  for(var i=0;i<ANNOUNCEMENTS.length;i++){
+    var a=ANNOUNCEMENTS[i];
+    if(a.day===day&&at>=mins(a.from)&&at<mins(a.to))return a;
+  }
+  return null;
 }
 
 function ftickPoll(force){
@@ -452,13 +483,24 @@ var ftickLast=null;
 function ftickRender(data){
   var el=g('ftick'),run=g('ftickRun');
   if(!el)return;
-  if(!FTICK_ON||!ftickWindow()){
+  var note=FTICK_ON?ftickAnnouncement():null;
+  if(!FTICK_ON||(!note&&!ftickWindow())){
     el.classList.add('hidden');
+    el.classList.remove('note');
     document.body.classList.remove('has-ftick');   // no empty gap when it is down
     return;
   }
   el.classList.remove('hidden');
   document.body.classList.add('has-ftick');
+  // An announcement is a standing notice, so it sits still and centred rather
+  // than scrolling past like a score.
+  el.classList.toggle('note',!!note);
+  if(note){
+    g('ftickTag').textContent='';
+    run.style.removeProperty('--ftick-dur');
+    run.innerHTML='<span class="ftick-note">'+esc(note.text)+'</span>';
+    return;
+  }
   var html='';
   if(data&&data.length){
     var pairs={};
@@ -820,7 +862,8 @@ document.addEventListener('visibilitychange',function(){
 });
 requestWakeLock();
 ftickSetup();
-setInterval(function(){ftickPoll(false)},60000);  // the window is re-checked on every tick
+setInterval(function(){ftickPoll(false)},60000);
+setInterval(function(){ftickRender(ftickLast)},15000);  // so a notice starts within 15s of its time
 startScreenRotation();
 })();
 </script>
