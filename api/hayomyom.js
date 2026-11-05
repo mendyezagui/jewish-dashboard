@@ -48,9 +48,23 @@ const ADAR_IN_REGULAR_YEAR = 'Adar II';
 // change this one line to read that instead.
 const DATASET = 'hayomyom-data-clear.json';
 
+// Which English the panel shows.
+//   'clear'   - the newer translation carried by hayomyom-data-clear.json. It
+//               includes passages the Kehot English truncates (29 Sh'vat and
+//               1 Adar II), but renders only the teaching: liturgical
+//               instructions such as "Bless Rosh Chodesh ..." are left out of
+//               it by design.
+//   'english' - the Kehot text, which keeps those instructions.
+// Whichever is chosen, the other is the fallback, so the older dataset - which
+// has no 'clear' field - still works unchanged.
+const TEXT_FIELD = 'clear';
+
+// 32 of the 384 entries in the older dataset spell the key 'hayom-yom'.
 export function entryText(entry) {
   const t = (entry && (entry.hayomYom || entry['hayom-yom'])) || {};
-  return { en: t.english || '', he: t.hebrew || '' };
+  const first  = TEXT_FIELD === 'clear' ? t.clear : t.english;
+  const second = TEXT_FIELD === 'clear' ? t.english : t.clear;
+  return { en: (first || second || '').trim(), he: t.hebrew || '' };
 }
 
 export function findEntry(dataset, hebMonth, dayNum) {
