@@ -43,6 +43,11 @@ const MONTH_MAP = {
 const ADAR_IN_REGULAR_YEAR = 'Adar II';
 
 // 32 of the 384 entries spell the key 'hayom-yom' rather than 'hayomYom'.
+// The dataset the panel reads, served as a static file from the deployment
+// root. The older hayomyom-data.json is kept in the repository alongside it;
+// change this one line to read that instead.
+const DATASET = 'hayomyom-data-clear.json';
+
 export function entryText(entry) {
   const t = (entry && (entry.hayomYom || entry['hayom-yom'])) || {};
   return { en: t.english || '', he: t.hebrew || '' };
@@ -106,7 +111,7 @@ export default async function handler(req) {
     }
 
     // Load bundled dataset from same origin (Vercel serves it as a static asset)
-    const dataUrl = `${url.origin}/hayomyom-data.json`;
+    const dataUrl = `${url.origin}/${DATASET}`;
     const dataset = await fetch(dataUrl).then(r => r.json()).catch(() => null);
     if (!Array.isArray(dataset)) {
       return json({ error: 'dataset unavailable', tried: dataUrl }, headers);
